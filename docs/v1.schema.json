@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Custom Chest Menu Definition (v1)",
+  "type": "object",
+  "required": ["format_version", "id", "name", "size", "pages"],
+  "properties": {
+    "format_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_\\-]+$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "size": {
+      "type": "string",
+      "enum": ["single", "double"],
+      "description": "Determines chest size: single (3 rows) or double (6 rows)"
+    },
+    "filler": {
+      "type": "object",
+      "required": ["item"],
+      "properties": {
+        "item": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "lore": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "pages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["title", "items"],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["slot", "item", "name", "action"],
+              "properties": {
+                "slot": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 53
+                },
+                "item": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "lore": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "action": {
+                  "type": "object",
+                  "oneOf": [
+                    {
+                      "properties": {
+                        "type": { "const": "close" }
+                      },
+                      "required": ["type"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "properties": {
+                        "type": { "const": "teleport" },
+                        "x": { "type": "number" },
+                        "y": { "type": "number" },
+                        "z": { "type": "number" },
+                        "dimension": { "type": "string" }
+                      },
+                      "required": ["type", "x", "y", "z"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "properties": {
+                        "type": { "const": "next_page" }
+                      },
+                      "required": ["type"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "properties": {
+                        "type": { "const": "previous_page" }
+                      },
+                      "required": ["type"],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

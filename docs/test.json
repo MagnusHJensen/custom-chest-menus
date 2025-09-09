@@ -1,0 +1,23 @@
+{
+  "$schema": "v1.schema.json",
+  "format_version": 1,
+  "id": "test_menu",
+  "name": "Test Menu",
+  "size": "single",
+  "pages": [
+    {
+      "title": "First page",
+      "items": [
+        {
+          "name": "Close menu",
+          "slot": 1,
+          "item": "minecraft:barrier",
+          "action": {
+            "type": "close"
+          },
+          "lore": []
+        }
+      ]
+    }
+  ]
+}
