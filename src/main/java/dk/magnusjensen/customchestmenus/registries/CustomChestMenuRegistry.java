@@ -59,6 +59,8 @@ public class CustomChestMenuRegistry {
             String raw = Files.readString(path);
             JsonElement element = JsonParser.parseString(raw);
 
+            // TODO: Validate in terms of duplicate slots
+
             var result = MenuDefinition.CODEC.parse(JsonOps.INSTANCE, element)
                 .resultOrPartial(err ->
                     CustomChestMenus.LOGGER.warn("Menu parse error in {}: {}", path.getFileName(), err)

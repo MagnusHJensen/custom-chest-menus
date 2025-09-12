@@ -14,6 +14,8 @@ public class MenuReloadCommand {
                 .executes(ctx -> {
                     MinecraftServer server = ctx.getSource().getServer();
                     CustomChestMenuRegistry.loadMenus(server);
+
+                    // TODO: Spit out errors?
                     // TODO: Reload open menus on all players.
                     return 1;
                 })
