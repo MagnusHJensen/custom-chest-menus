@@ -30,14 +30,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
 
@@ -61,13 +59,6 @@ public class CustomChestMenus {
     @SubscribeEvent
     public static void onServerStarting(ServerStartingEvent event) {
         CustomChestMenuRegistry.loadMenus(event.getServer());
-    }
-
-    @SubscribeEvent
-    public static void onItemRightClick(PlayerInteractEvent.RightClickItem event) {
-        if (event.getSide().isServer() && event.getItemStack().getItem() == Items.STICK) {
-            openMenu((ServerPlayer) event.getEntity(), "test_menu", 0);
-        }
     }
 
     @SubscribeEvent

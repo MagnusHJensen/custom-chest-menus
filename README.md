@@ -43,6 +43,7 @@ Custom Chest Menus enables all server owners to create custom chest menus by wri
 
 - #### Better permission support
 - #### Reload menus open by players, if server owner reloads menus.
+- #### Bind menu opening to blocks and entities.
 
 ## Guides
 

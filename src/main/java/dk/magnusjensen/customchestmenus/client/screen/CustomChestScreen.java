@@ -21,7 +21,6 @@ package dk.magnusjensen.customchestmenus.client.screen;
 import dk.magnusjensen.customchestmenus.menu.CustomChestMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -36,8 +35,6 @@ public class CustomChestScreen extends AbstractContainerScreen<CustomChestMenu> 
 
     public CustomChestScreen(CustomChestMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
-        int i = 222;
-        int j = 114;
         this.containerRows = menu.getRowCount();
         this.imageHeight = 114 + this.containerRows * 18;
         this.inventoryLabelY = this.imageHeight - 94;
@@ -54,8 +51,8 @@ public class CustomChestScreen extends AbstractContainerScreen<CustomChestMenu> 
     protected void renderBg(GuiGraphics p_283694_, float p_282334_, int p_282603_, int p_282158_) {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
-        p_283694_.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_BACKGROUND, i, j, 0.0F, 0.0F, this.imageWidth, this.containerRows * 18 + 17, 256, 256);
-        p_283694_.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_BACKGROUND, i, j + this.containerRows * 18 + 17, 0.0F, 126.0F, this.imageWidth, 96, 256, 256);
+        p_283694_.blit(CONTAINER_BACKGROUND, i, j, 0.0F, 0.0F, this.imageWidth, this.containerRows * 18 + 17, 256, 256);
+        p_283694_.blit(CONTAINER_BACKGROUND, i, j + this.containerRows * 18 + 17, 0.0F, 126.0F, this.imageWidth, 96, 256, 256);
     }
 
     @Override
