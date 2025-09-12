@@ -1,6 +1,7 @@
 package dk.magnusjensen.customchestmenus;
 
 import com.mojang.logging.LogUtils;
+import dk.magnusjensen.customchestmenus.commands.MenuReloadCommand;
 import dk.magnusjensen.customchestmenus.menu.CustomChestMenu;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
 import dk.magnusjensen.customchestmenus.models.PagePayload;
@@ -17,7 +18,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ public class CustomChestMenus {
     public CustomChestMenus(IEventBus modEventBus, ModContainer modContainer) {
         MenuRegistry.MENUS.register(modEventBus);
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        //modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     @SubscribeEvent
@@ -49,6 +50,11 @@ public class CustomChestMenus {
         if (event.getSide().isServer() && event.getItemStack().getItem() == Items.STICK) {
             openMenu((ServerPlayer) event.getEntity(), "test_menu", 0);
         }
+    }
+
+    @SubscribeEvent
+    public static void onRegisterCommands(RegisterCommandsEvent event) {
+        MenuReloadCommand.register(event.getDispatcher());
     }
 
     public static void openMenu(ServerPlayer player, MenuDefinition def, int pageIndex) {

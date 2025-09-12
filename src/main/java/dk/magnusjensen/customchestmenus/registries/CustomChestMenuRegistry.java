@@ -28,6 +28,10 @@ public class CustomChestMenuRegistry {
         return dir;
     }
 
+    /**
+     * Load menus also function as reload, since it clears the MENUS map on each load.
+     * @param server
+     */
     public static void loadMenus(MinecraftServer server) {
         MENUS.clear();
 
