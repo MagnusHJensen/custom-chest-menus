@@ -14,6 +14,7 @@ public class CustomChestScreen extends AbstractContainerScreen<CustomChestMenu> 
      * Window height is calculated with these values" the more rows, the higher
      */
     private final int containerRows;
+    private Component dynamicTitle;
 
     public CustomChestScreen(CustomChestMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -22,6 +23,7 @@ public class CustomChestScreen extends AbstractContainerScreen<CustomChestMenu> 
         this.containerRows = menu.getRowCount();
         this.imageHeight = 114 + this.containerRows * 18;
         this.inventoryLabelY = this.imageHeight - 94;
+        this.dynamicTitle = title;
     }
 
     @Override
@@ -36,5 +38,15 @@ public class CustomChestScreen extends AbstractContainerScreen<CustomChestMenu> 
         int j = (this.height - this.imageHeight) / 2;
         p_283694_.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_BACKGROUND, i, j, 0.0F, 0.0F, this.imageWidth, this.containerRows * 18 + 17, 256, 256);
         p_283694_.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_BACKGROUND, i, j + this.containerRows * 18 + 17, 0.0F, 126.0F, this.imageWidth, 96, 256, 256);
+    }
+
+    @Override
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        guiGraphics.drawString(this.font, this.dynamicTitle, this.titleLabelX, this.titleLabelY, -12566464, false);
+        guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, -12566464, false);
+    }
+
+    public void setDynamicTitle(Component newTitle) {
+        this.dynamicTitle = newTitle;
     }
 }

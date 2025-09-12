@@ -2,6 +2,7 @@ package dk.magnusjensen.customchestmenus.models;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -16,4 +17,8 @@ public record MenuPage(
         Codec.STRING.fieldOf("title").forGetter(MenuPage::title),
         MenuItem.CODEC.listOf().fieldOf("items").forGetter(MenuPage::items)
     ).apply(instance, MenuPage::new));
+
+    public Component titleAsComponent() {
+        return Component.literal(this.title);
+    }
 }

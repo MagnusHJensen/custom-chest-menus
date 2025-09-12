@@ -4,17 +4,18 @@ import dk.magnusjensen.customchestmenus.menu.CustomChestMenu;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
 import dk.magnusjensen.customchestmenus.models.MenuSize;
 import dk.magnusjensen.customchestmenus.models.actions.TeleportAction;
+import dk.magnusjensen.customchestmenus.network.UpdateMenuTitleS2C;
 import dk.magnusjensen.customchestmenus.registries.CustomChestMenuRegistry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Set;
 
 public final class ActionExecutor {
-    private static final boolean REOPEN_FOR_TITLE = true;
 
     public static void onClick(ServerPlayer player, String menuId, int pageIndex, int slot) {
         var menu = CustomChestMenuRegistry.get(menuId);
@@ -43,13 +44,10 @@ public final class ActionExecutor {
 
         if (newPage == currentPage) return; // nothing to do
 
-        if (REOPEN_FOR_TITLE) {
-            // Re-open to also update the title bar (screens don't auto-refresh titles)
-            CustomChestMenus.openMenu(player, menu, newPage);
-        } else {
-            // Fast path: just swap page content (title stays as-is)
-            ccm.populateFromDefinition(menu, newPage);
-        }
+        // Fast path: just swap page content (title stays as-is)
+        ccm.populateFromDefinition(menu, newPage);
+
+        PacketDistributor.sendToPlayer(player, new UpdateMenuTitleS2C(ccm.menuId(), menu.pages().get(newPage).titleAsComponent()));
     }
 
     private static void doTeleport(ServerPlayer player, TeleportAction tp) {
