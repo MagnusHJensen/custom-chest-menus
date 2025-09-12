@@ -1,3 +1,21 @@
+/*
+ *     Custom Chest Menus, a Minecraft mod that allows servers to create custom chest menus.
+ *     Copyright (c) 2025  legenden (MagnusHJensen)
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package dk.magnusjensen.customchestmenus.models.actions;
 
 import com.mojang.serialization.Codec;
@@ -10,7 +28,8 @@ public enum MenuActionType {
     TELEPORT("teleport", TeleportAction.CODEC),
     NEXT_PAGE("next_page", PageAction.NEXT_CODEC),
     PREVIOUS_PAGE("previous_page", PageAction.PREVIOUS_CODEC),
-    JUMP_TO_PAGE("jump_to_page", PageAction.JUMP_TO_PAGE_CODEC);
+    JUMP_TO_PAGE("jump_to_page", PageAction.JUMP_TO_PAGE_CODEC),
+    COMMAND("command", CommandAction.CODEC);
 
     private final String id;
     private final MapCodec<? extends MenuAction> codec;

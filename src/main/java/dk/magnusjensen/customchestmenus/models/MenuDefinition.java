@@ -1,3 +1,21 @@
+/*
+ *     Custom Chest Menus, a Minecraft mod that allows servers to create custom chest menus.
+ *     Copyright (c) 2025  legenden (MagnusHJensen)
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package dk.magnusjensen.customchestmenus.models;
 
 import com.mojang.datafixers.util.Pair;
@@ -5,11 +23,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -58,28 +72,14 @@ public record MenuDefinition(String id,
         ItemStack filler = ItemStack.EMPTY;
         if (def.filler().isPresent()) {
             var f = def.filler().get();
-            filler = makeStack(f.item(), f.name(), f.lore().orElse(List.of()));
+            filler = f.makeItemStack();
         }
 
         List<PagePayload.Entry> entries = new ArrayList<>();
         for (MenuItem it : page.items()) {
-            entries.add(new PagePayload.Entry(it.slot(), makeStack(
-                it.item(), it.name(), it.lore().orElse(List.of())
-            )));
+            entries.add(new PagePayload.Entry(it.slot(), it.makeItemStack()));
         }
 
         return new PagePayload(size, Component.literal(page.title()), filler, entries);
-    }
-
-    private static ItemStack makeStack(ResourceLocation itemId, String name, List<String> lore) {
-        Item item = BuiltInRegistries.ITEM.getOptional(itemId)
-            .orElse(net.minecraft.world.item.Items.BARRIER);
-        ItemStack stack = new ItemStack(item);
-        if (!name.isEmpty()) stack.set(DataComponents.CUSTOM_NAME, Component.literal(name));
-        if (!lore.isEmpty()) {
-            // Build a lore component list appropriate for your MC version
-            // (for 1.21.x you can set DataComponents.LORE; for older, use display tag)
-        }
-        return stack;
     }
 }

@@ -1,3 +1,21 @@
+/*
+ *     Custom Chest Menus, a Minecraft mod that allows servers to create custom chest menus.
+ *     Copyright (c) 2025  legenden (MagnusHJensen)
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package dk.magnusjensen.customchestmenus.menu;
 
 import dk.magnusjensen.customchestmenus.ActionExecutor;
@@ -6,9 +24,7 @@ import dk.magnusjensen.customchestmenus.models.MenuItem;
 import dk.magnusjensen.customchestmenus.models.MenuSize;
 import dk.magnusjensen.customchestmenus.models.PagePayload;
 import dk.magnusjensen.customchestmenus.registries.MenuRegistry;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -17,10 +33,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.List;
 
 public class CustomChestMenu extends AbstractContainerMenu {
 
@@ -129,7 +142,7 @@ public class CustomChestMenu extends AbstractContainerMenu {
         this.backing.clearContent();
 
         def.filler().ifPresent(f -> {
-            ItemStack filler = makeStack(f.item(), f.name(), f.lore().orElse(List.of()));
+            ItemStack filler = f.makeItemStack();
             for (int i = 0; i < slotCount; i++) {
                 this.backing.setItem(i, filler.copy());
             }
@@ -144,7 +157,7 @@ public class CustomChestMenu extends AbstractContainerMenu {
                 // CustomChestMenus.LOGGER.warn("Item slot {} out of bounds (0..{}), menu={}, page={}", slot, slotCount-1, def.id(), this.pageIndex);
                 continue;
             }
-            ItemStack stack = makeStack(it.item(), it.name(), it.lore().orElse(List.of()));
+            ItemStack stack = it.makeItemStack();
             this.backing.setItem(slot, stack);
         }
 
@@ -158,43 +171,6 @@ public class CustomChestMenu extends AbstractContainerMenu {
 
     private static int sizeFor(MenuSize size) {
         return (size == MenuSize.SINGLE) ? 27 : 54;
-    }
-
-    private ItemStack makeStack(ResourceLocation itemId, String name, List<String> lore) {
-        // Resolve item, falling back to barrier if unknown
-        Item item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getOptional(itemId)
-            .orElse(net.minecraft.world.item.Items.BARRIER);
-
-        ItemStack stack = new ItemStack(item);
-
-        // Custom name
-        if (name != null && !name.isEmpty()) {
-            stack.set(DataComponents.CUSTOM_NAME, net.minecraft.network.chat.Component.literal(name));
-        }
-
-        // Lore (plug in your target-version implementation)
-        applyLore(stack, lore);
-
-        return stack;
-    }
-
-    /**
-     * Apply lore lines to an ItemStack.
-     * Implement this for your target MC version.
-     *
-     * For 1.21.x (Data Components), it roughly looks like:
-     *   stack.set(DataComponents.LORE, new ItemLore(List<Component> lines, boolean alwaysShow));
-     * For 1.20.4-and-earlier, you'd use the 'display' NBT tag with "Lore" (stringified JSON).
-     */
-    private static void applyLore(ItemStack stack, List<String> loreLines) {
-        if (loreLines == null || loreLines.isEmpty()) return;
-
-        // ---- 1.21.x (data components) example (fill in exact classes for your setup) ----
-        // var components = loreLines.stream().map(Component::literal).toList();
-        // stack.set(DataComponents.LORE, new ItemLore(components, false));
-
-        // ---- Simple, version-agnostic fallback: add italics-gray via name hint (optional) ----
-        // If you don't want to depend on version specifics yet, you can skip lore until you wire the proper API.
     }
 
     private static final class LockedSlot extends Slot {

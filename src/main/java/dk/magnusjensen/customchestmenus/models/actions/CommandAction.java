@@ -19,27 +19,32 @@
 package dk.magnusjensen.customchestmenus.models.actions;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.Optional;
 
-public record TeleportAction(
-    double x,
-    double y,
-    double z,
-    Optional<String> dimension
-) implements MenuAction {
+public record CommandAction(String command, Optional<Boolean> runAsPlayer) implements MenuAction {
 
-    public static final MapCodec<TeleportAction> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-        Codec.DOUBLE.fieldOf("x").forGetter(TeleportAction::x),
-        Codec.DOUBLE.fieldOf("y").forGetter(TeleportAction::y),
-        Codec.DOUBLE.fieldOf("z").forGetter(TeleportAction::z),
-        Codec.STRING.optionalFieldOf("dimension").forGetter(TeleportAction::dimension)
-    ).apply(i, TeleportAction::new));
+    public static final MapCodec<CommandAction> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+        Codec.STRING.fieldOf("command").validate((val) -> {
+            if (val.isBlank()) {
+                return DataResult.error(() -> "The command to run can not be empty.");
+            } else {
+                // TODO: Add command validation? Can we validate mod commands here?
+                return DataResult.success(val.startsWith("/") ? val.substring(1) : val); // Remove the leading slash if people put it there.
+            }
+        }).forGetter(CommandAction::command),
+        Codec.BOOL.optionalFieldOf("run_as_player").forGetter(CommandAction::runAsPlayer)
+    ).apply(i, CommandAction::new));
 
     @Override
     public MenuActionType type() {
-        return MenuActionType.TELEPORT;
+        return MenuActionType.COMMAND;
+    }
+
+    public boolean shouldRunAsPlayer() {
+        return runAsPlayer.orElse(false);
     }
 }

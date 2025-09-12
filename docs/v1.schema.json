@@ -108,6 +108,20 @@
                       },
                       "required": ["type", "target_page_index"],
                       "additionalProperties": false
+                    },
+                    {
+                      "properties": {
+                        "type": { "const": "command" },
+                        "command": { "type": "string",
+                          "description": "The full command to run when clicked. Supports placeholders, see GitHub README for more info."
+                        },
+                        "run_as_player": { "type": "boolean",
+                          "default": false,
+                          "description": "Determines whether or not the player will execute the command, or the server. BE AWARE of running server commands that users can run."
+                        }
+                      },
+                      "required": ["type", "command"],
+                      "additionalProperties": false
                     }
                   ]
                 }

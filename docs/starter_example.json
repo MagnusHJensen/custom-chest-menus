@@ -1,0 +1,154 @@
+{
+  "$schema": "https://raw.githubusercontent.com/MagnusHJensen/custom-chest-menus/refs/heads/main/docs/v1.schema.json",
+  "format_version": 1,
+  "id": "test_menu",
+  "name": "Test Menu",
+  "size": "single",
+  "filler": {
+    "slot": 0,
+    "item": "minecraft:gray_stained_glass_pane",
+    "name": " "
+  },
+  "pages": [
+    {
+      "title": "First page",
+      "items": [
+        {
+          "name": "Close menu",
+          "slot": 8,
+          "item": "minecraft:barrier",
+          "action": {
+            "type": "close"
+          },
+          "lore": ["My awesome LORE"]
+        },
+        {
+          "name": "Drop party!",
+          "slot": 13,
+          "item": "minecraft:diamond",
+          "action": {
+            "type": "command",
+            "command": "give %player% minecraft:diamond 10",
+            "run_as_player": true
+          }
+        },
+        {
+          "name": "Last page",
+          "slot": 24,
+          "item": "minecrat:arrow",
+          "action": {
+            "type": "jump_to_page",
+            "target_page_index": 500
+          },
+          "lore": []
+        },
+        {
+          "name": "Previous page",
+          "slot": 25,
+          "item": "minecraft:stone",
+          "action": {
+            "type": "previous_page"
+          },
+          "lore": []
+        },
+        {
+          "name": "Next page",
+          "slot": 26,
+          "item": "minecraft:grass_block",
+          "action": {
+            "type": "next_page"
+          },
+          "lore": []
+        }
+      ]
+    },
+    {
+      "title": "Second page",
+      "items": [
+        {
+          "name": "Close menu",
+          "slot": 0,
+          "item": "minecraft:barrier",
+          "action": {
+            "type": "close"
+          },
+          "lore": []
+        },
+        {
+          "name": "Teleport to spawn",
+          "action": {
+            "type": "teleport",
+            "x": 10,
+            "y": 10,
+            "z": 10,
+            "dimension": "minecraft:overworld"
+          },
+          "item": "minecraft:ender_pearl",
+          "slot": 13
+        },
+        {
+          "name": "Teleport to nether",
+          "action": {
+            "type": "teleport",
+            "x": 10,
+            "y": 10,
+            "z": 10,
+            "dimension": "minecraft:the_nether"
+          },
+          "item": "minecraft:blaze_rod",
+          "slot": 14
+        },
+        {
+          "name": "Previous page",
+          "slot": 25,
+          "item": "minecraft:stone",
+          "action": {
+            "type": "previous_page"
+          },
+          "lore": []
+        },
+        {
+          "name": "Next page",
+          "slot": 26,
+          "item": "minecraft:grass_block",
+          "action": {
+            "type": "next_page"
+          },
+          "lore": []
+        }
+      ]
+    },
+    {
+      "title": "Third page",
+      "items": [
+        {
+          "name": "Close menu",
+          "slot": 0,
+          "item": "minecraft:barrier",
+          "action": {
+            "type": "close"
+          },
+          "lore": []
+        },
+        {
+          "name": "Previous page",
+          "slot": 25,
+          "item": "minecraft:stone",
+          "action": {
+            "type": "previous_page"
+          },
+          "lore": []
+        },
+        {
+          "name": "Next page",
+          "slot": 26,
+          "item": "minecraft:grass_block",
+          "action": {
+            "type": "next_page"
+          },
+          "lore": []
+        }
+      ]
+    }
+  ]
+}

@@ -16,15 +16,16 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dk.magnusjensen.customchestmenus.models.actions;
+package dk.magnusjensen.customchestmenus.commands;
 
-import com.mojang.serialization.MapCodec;
+import com.mojang.brigadier.CommandDispatcher;
+import net.minecraft.commands.CommandSourceStack;
 
-public record CloseAction() implements MenuAction {
-    public static final MapCodec<CloseAction> CODEC = MapCodec.unit(CloseAction::new);
+public class CommandHandler {
+    public static final String COMMAND_ROOT = "ccm";
 
-    @Override
-    public MenuActionType type() {
-        return MenuActionType.CLOSE;
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        ReloadMenuCommand.register(dispatcher);
+        OpenMenuCommand.register(dispatcher);
     }
 }

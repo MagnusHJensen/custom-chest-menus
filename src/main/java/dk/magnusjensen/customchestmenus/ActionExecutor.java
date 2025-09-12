@@ -1,15 +1,36 @@
+/*
+ *     Custom Chest Menus, a Minecraft mod that allows servers to create custom chest menus.
+ *     Copyright (c) 2025  legenden (MagnusHJensen)
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package dk.magnusjensen.customchestmenus;
 
 import dk.magnusjensen.customchestmenus.menu.CustomChestMenu;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
 import dk.magnusjensen.customchestmenus.models.MenuSize;
+import dk.magnusjensen.customchestmenus.models.actions.CommandAction;
 import dk.magnusjensen.customchestmenus.models.actions.PageAction;
 import dk.magnusjensen.customchestmenus.models.actions.TeleportAction;
 import dk.magnusjensen.customchestmenus.network.UpdateMenuTitleS2C;
 import dk.magnusjensen.customchestmenus.registries.CustomChestMenuRegistry;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -41,6 +62,10 @@ public final class ActionExecutor {
                 // optional: close after teleport
                 player.closeContainer();
             }
+            case COMMAND -> {
+                CommandAction command = (CommandAction) item.action();
+                runCommand(player, command);
+            }
         }
     }
 
@@ -68,6 +93,20 @@ public final class ActionExecutor {
     private static boolean inBounds(MenuSize size, int slot) {
         int max = size == MenuSize.SINGLE ? 27 : 54;
         return slot >= 0 && slot < max;
+    }
+
+    private static void runCommand(ServerPlayer player, CommandAction action) {
+        String cmd = action.command()
+            .replace("%player%", player.getScoreboardName())
+            .replace("%uuid%", player.getStringUUID());
+
+        MinecraftServer server = player.getServer();
+        CommandSourceStack stack = server.createCommandSourceStack();
+        if (action.shouldRunAsPlayer()) {
+            stack = player.createCommandSourceStack();
+        }
+
+        server.getCommands().performPrefixedCommand(stack, cmd);
     }
 }
 
