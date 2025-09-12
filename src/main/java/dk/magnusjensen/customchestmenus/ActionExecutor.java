@@ -57,7 +57,7 @@ public final class ActionExecutor {
                 .orElse(player.level().dimension())
         );
         if (target == null) return;
-        player.teleportTo(target, tp.x(), tp.y(), tp.z(), Set.of(), player.getYRot(), player.getXRot(), false);
+        player.teleportTo(target, tp.x() + 0.5, tp.y(), tp.z() + 0.5, Set.of(), player.getYRot(), player.getXRot(), false);
     }
 
     private static boolean inBounds(MenuSize size, int slot) {
