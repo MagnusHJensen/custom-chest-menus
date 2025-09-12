@@ -28,8 +28,8 @@ import net.minecraft.server.MinecraftServer;
 public class ReloadMenuCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal(CommandHandler.COMMAND_ROOT)
-            .requires(src -> src.hasPermission(2))
             .then(Commands.literal("reload")
+                .requires(src -> src.hasPermission(2))
                 .executes(ctx -> {
                     MinecraftServer server = ctx.getSource().getServer();
                     CustomChestMenuRegistry.loadMenus(server);
