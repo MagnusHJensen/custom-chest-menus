@@ -9,7 +9,8 @@ public enum MenuActionType {
     CLOSE("close", CloseAction.CODEC),
     TELEPORT("teleport", TeleportAction.CODEC),
     NEXT_PAGE("next_page", PageAction.NEXT_CODEC),
-    PREVIOUS_PAGE("previous_page", PageAction.PREVIOUS_CODEC);
+    PREVIOUS_PAGE("previous_page", PageAction.PREVIOUS_CODEC),
+    JUMP_TO_PAGE("jump_to_page", PageAction.JUMP_TO_PAGE_CODEC);
 
     private final String id;
     private final MapCodec<? extends MenuAction> codec;

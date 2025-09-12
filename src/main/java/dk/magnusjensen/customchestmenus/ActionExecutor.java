@@ -3,6 +3,7 @@ package dk.magnusjensen.customchestmenus;
 import dk.magnusjensen.customchestmenus.menu.CustomChestMenu;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
 import dk.magnusjensen.customchestmenus.models.MenuSize;
+import dk.magnusjensen.customchestmenus.models.actions.PageAction;
 import dk.magnusjensen.customchestmenus.models.actions.TeleportAction;
 import dk.magnusjensen.customchestmenus.network.UpdateMenuTitleS2C;
 import dk.magnusjensen.customchestmenus.registries.CustomChestMenuRegistry;
@@ -30,6 +31,10 @@ public final class ActionExecutor {
             case CLOSE -> player.closeContainer();
             case NEXT_PAGE -> openPage(player, menu, pageIndex, Math.min(pageIndex + 1, menu.pages().size()-1));
             case PREVIOUS_PAGE -> openPage(player, menu, pageIndex, Math.max(pageIndex - 1, 0));
+            case JUMP_TO_PAGE -> {
+                PageAction pageAction = (PageAction) item.action();
+                openPage(player, menu, pageIndex, Math.clamp(pageAction.targetPage().orElse(0), 0, menu.pages().size()-1));
+            }
             case TELEPORT -> {
                 TeleportAction tp = (TeleportAction) item.action();
                 doTeleport(player, tp);

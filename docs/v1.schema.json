@@ -100,6 +100,14 @@
                       },
                       "required": ["type"],
                       "additionalProperties": false
+                    },
+                    {
+                      "properties": {
+                        "type": { "const":  "jump_to_page" },
+                        "target_page_index": { "type": "integer", "minimum": 0 }
+                      },
+                      "required": ["type", "target_page_index"],
+                      "additionalProperties": false
                     }
                   ]
                 }
