@@ -3,6 +3,8 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+
+    id "me.shedaniel.unified-publishing" version "0.1.+"
 }
 
 version = mod_version + "-" + minecraft_version
@@ -204,4 +206,35 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+unifiedPublishing {
+    project {
+        displayName = "${mod_name} - v${mod_version} - ${minecraft_version}" // Optional, name of the file
+        version = mod_version // Optional, Inferred from project by default
+        changelog = rootProject.file("CHANGELOG.md").text // Optional, in markdown format
+        releaseType = "release" // Optional, use "release", "beta" or "alpha"
+        gameVersions = ["1.20.1", "1.20.2", "1.20.3"]
+        gameLoaders = ["forge"]
+
+        mainPublication tasks.named('jar', Jar).flatMap { it.archiveFile } // Declares the publicated jar
+
+
+        var cfToken = System.getenv("CURSEFORGE_TOKEN")
+        if (cfToken != null) {
+            curseforge {
+                token = System.getenv("CURSEFORGE_TOKEN")
+                id = "1343005" // Required, must be a string, ID of CurseForge project
+            }
+        }
+
+
+        var mrToken = System.getenv("MODRINTH_TOKEN")
+        if (mrToken != null) {
+            modrinth {
+                token = System.getenv("MODRINTH_TOKEN")
+                id = "1rhw3Wyu" // Required, must be a string, ID of Modrinth project
+            }
+        }
+    }
 }

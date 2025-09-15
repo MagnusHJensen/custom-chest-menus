@@ -1,9 +1,10 @@
-name: Build
+name: Release
 
-on: [push, pull_request]
+on: ["create"]
 
 jobs:
   build:
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -28,3 +29,6 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
+
+      - name: Publish
+        run: ./gradlew publishUnified
