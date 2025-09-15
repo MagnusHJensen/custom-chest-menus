@@ -18,10 +18,10 @@
 
 package dk.magnusjensen.customchestmenus.models.actions;
 
-import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
 
 public record CloseAction() implements MenuAction {
-    public static final MapCodec<CloseAction> CODEC = MapCodec.unit(CloseAction::new);
+    public static final Codec<CloseAction> CODEC = Codec.unit(CloseAction::new);
 
     @Override
     public MenuActionType type() {

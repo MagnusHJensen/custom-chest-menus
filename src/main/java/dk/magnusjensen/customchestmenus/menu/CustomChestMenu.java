@@ -24,7 +24,7 @@ import dk.magnusjensen.customchestmenus.models.MenuItem;
 import dk.magnusjensen.customchestmenus.models.MenuSize;
 import dk.magnusjensen.customchestmenus.models.PagePayload;
 import dk.magnusjensen.customchestmenus.registries.MenuRegistry;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -43,7 +43,7 @@ public class CustomChestMenu extends AbstractContainerMenu {
     private int pageIndex;
 
     // Client constructor
-    public CustomChestMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf extraData) {
+    public CustomChestMenu(int containerId, Inventory playerInventory, FriendlyByteBuf extraData) {
         this(containerId, playerInventory, extraData.readUtf(), PagePayload.read(extraData));
     }
 

@@ -22,13 +22,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dk.magnusjensen.customchestmenus.models.actions.MenuAction;
 import dk.magnusjensen.customchestmenus.models.actions.NoopAction;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemLore;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,14 +57,17 @@ public record MenuItem(
         Item itemEntry = BuiltInRegistries.ITEM.getOptional(item)
             .orElse(net.minecraft.world.item.Items.BARRIER);
         ItemStack stack = new ItemStack(itemEntry);
-        if (!name.isEmpty()) stack.set(DataComponents.CUSTOM_NAME, Component.literal(name));
+        if (!name.isEmpty()) stack.setHoverName(Component.literal(name));
         var lore = this.lore.orElse(List.of());
         if (!lore.isEmpty()) {
-            var itemLore = ItemLore.EMPTY;
+            ListTag loreTag = new ListTag();
             for (String line : lore) {
-                itemLore = itemLore.withLineAdded(Component.literal(line));
+                loreTag.add(StringTag.valueOf(line));
             }
-            stack.set(DataComponents.LORE, itemLore);
+            CompoundTag tag = stack.getTag();
+            CompoundTag display = tag.getCompound("display");
+            display.put("Lore", loreTag);
+            stack.setTag(tag);
         }
         return stack;
     }

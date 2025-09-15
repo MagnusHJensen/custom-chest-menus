@@ -20,22 +20,22 @@ package dk.magnusjensen.customchestmenus.models.actions;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.Optional;
 
 public record CommandAction(String command, Optional<Boolean> runAsPlayer) implements MenuAction {
 
-    public static final MapCodec<CommandAction> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-        Codec.STRING.fieldOf("command").validate((val) -> {
-            if (val.isBlank()) {
-                return DataResult.error(() -> "The command to run can not be empty.");
-            } else {
-                // TODO: Add command validation? Can we validate mod commands here?
-                return DataResult.success(val.startsWith("/") ? val.substring(1) : val); // Remove the leading slash if people put it there.
-            }
-        }).forGetter(CommandAction::command),
+    public static final Codec<String> NON_BLANK =
+        Codec.STRING.flatXmap(
+            s -> (s != null && !s.isBlank())
+                ? DataResult.success(s)
+                : DataResult.error(() -> "String must be non-blank"),
+            DataResult::success // encoder path (value -> ok)
+        );
+
+    public static final Codec<CommandAction> CODEC = RecordCodecBuilder.create(i -> i.group(
+        NON_BLANK.fieldOf("command").forGetter(CommandAction::command),
         Codec.BOOL.optionalFieldOf("run_as_player").forGetter(CommandAction::runAsPlayer)
     ).apply(i, CommandAction::new));
 

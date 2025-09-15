@@ -18,10 +18,10 @@
 
 package dk.magnusjensen.customchestmenus.models.actions;
 
-import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
 
 public record NoopAction() implements MenuAction {
-    public static final MapCodec<NoopAction> CODEC = MapCodec.unit(NoopAction::new);
+    public static final Codec<NoopAction> CODEC = Codec.unit(NoopAction::new);
 
     @Override
     public MenuActionType type() {

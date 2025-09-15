@@ -20,7 +20,6 @@ package dk.magnusjensen.customchestmenus.models.actions;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.MapCodec;
 
 public enum MenuActionType {
     NOOP("noop", NoopAction.CODEC),
@@ -32,9 +31,9 @@ public enum MenuActionType {
     COMMAND("command", CommandAction.CODEC);
 
     private final String id;
-    private final MapCodec<? extends MenuAction> codec;
+    private final Codec<? extends MenuAction> codec;
 
-    MenuActionType(String id, MapCodec<? extends MenuAction> codec) {
+    MenuActionType(String id, Codec<? extends MenuAction> codec) {
         this.id = id;
         this.codec = codec;
     }
@@ -54,7 +53,7 @@ public enum MenuActionType {
     }
 
     // Used by dispatch(...) -> must return a MapCodec
-    public MapCodec<? extends MenuAction> subCodec() {
+    public Codec<? extends MenuAction> subCodec() {
         return this.codec;
     }
 }

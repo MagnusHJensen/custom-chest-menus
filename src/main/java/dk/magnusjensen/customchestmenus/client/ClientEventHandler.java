@@ -21,16 +21,17 @@ package dk.magnusjensen.customchestmenus.client;
 import dk.magnusjensen.customchestmenus.CustomChestMenus;
 import dk.magnusjensen.customchestmenus.client.screen.CustomChestScreen;
 import dk.magnusjensen.customchestmenus.registries.MenuRegistry;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-@EventBusSubscriber(modid = CustomChestMenus.MODID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = CustomChestMenus.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientEventHandler {
 
     @SubscribeEvent
-    public static void registerScreens(RegisterMenuScreensEvent event) {
-        event.register(MenuRegistry.CUSTOM_CHEST_MENU.get(), CustomChestScreen::new);
+    public static void clientSetupEvent(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> MenuScreens.register(MenuRegistry.CUSTOM_CHEST_MENU.get(), CustomChestScreen::new));
     }
 }

@@ -24,6 +24,7 @@ import dk.magnusjensen.customchestmenus.models.MenuSize;
 import dk.magnusjensen.customchestmenus.models.actions.CommandAction;
 import dk.magnusjensen.customchestmenus.models.actions.PageAction;
 import dk.magnusjensen.customchestmenus.models.actions.TeleportAction;
+import dk.magnusjensen.customchestmenus.network.PacketHandler;
 import dk.magnusjensen.customchestmenus.network.UpdateMenuTitleS2C;
 import dk.magnusjensen.customchestmenus.registries.CustomChestMenuRegistry;
 import net.minecraft.commands.CommandSourceStack;
@@ -33,7 +34,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.Set;
 
@@ -54,7 +55,7 @@ public final class ActionExecutor {
             case PREVIOUS_PAGE -> openPage(player, menu, pageIndex, Math.max(pageIndex - 1, 0));
             case JUMP_TO_PAGE -> {
                 PageAction pageAction = (PageAction) item.action();
-                openPage(player, menu, pageIndex, Math.clamp(pageAction.targetPage().orElse(0), 0, menu.pages().size()-1));
+                openPage(player, menu, pageIndex, org.joml.Math.clamp(pageAction.targetPage().orElse(0), 0, menu.pages().size()-1));
             }
             case TELEPORT -> {
                 TeleportAction tp = (TeleportAction) item.action();
@@ -77,7 +78,8 @@ public final class ActionExecutor {
         // Fast path: just swap page content (title stays as-is)
         ccm.populateFromDefinition(menu, newPage);
 
-        PacketDistributor.sendToPlayer(player, new UpdateMenuTitleS2C(ccm.menuId(), menu.pages().get(newPage).titleAsComponent()));
+        var clampedPage = org.joml.Math.clamp(0, menu.pages().size()-1, newPage);
+        PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new UpdateMenuTitleS2C(ccm.menuId(), menu.pages().get(clampedPage).titleAsComponent()));
     }
 
     private static void doTeleport(ServerPlayer player, TeleportAction tp) {

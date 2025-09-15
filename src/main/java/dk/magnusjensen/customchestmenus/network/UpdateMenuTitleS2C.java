@@ -19,26 +19,23 @@
 package dk.magnusjensen.customchestmenus.network;
 
 import dk.magnusjensen.customchestmenus.Utils;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
-public record UpdateMenuTitleS2C(String menuId, Component title) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<UpdateMenuTitleS2C> TYPE = new CustomPacketPayload.Type<>(Utils.modLoc("update_menu_title_s2c"));
+public record UpdateMenuTitleS2C(String menuId, Component title) {
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, UpdateMenuTitleS2C> STREAM_CODEC = StreamCodec.composite(
-        ByteBufCodecs.STRING_UTF8,
-        UpdateMenuTitleS2C::menuId,
-        ComponentSerialization.STREAM_CODEC,
-        UpdateMenuTitleS2C::title,
-        UpdateMenuTitleS2C::new
-    );
+    public static final ResourceLocation ID = Utils.modLoc("update_menu_title");
 
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public UpdateMenuTitleS2C(final FriendlyByteBuf buf) {
+        this(
+            buf.readUtf(Short.MAX_VALUE),
+            buf.readComponent()
+        );
+    }
+
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeUtf(menuId);
+        buffer.writeComponent(title);
     }
 }

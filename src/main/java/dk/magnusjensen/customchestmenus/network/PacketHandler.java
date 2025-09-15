@@ -18,23 +18,27 @@
 
 package dk.magnusjensen.customchestmenus.network;
 
-import dk.magnusjensen.customchestmenus.CustomChestMenus;
+import dk.magnusjensen.customchestmenus.Utils;
 import dk.magnusjensen.customchestmenus.client.ClientPayloadHandler;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 
-@EventBusSubscriber(modid = CustomChestMenus.MODID)
 public class PacketHandler {
 
-    @SubscribeEvent
-    public static void registerNetworkPackets(RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar registrar = event.registrar("1");
-        registrar.playToClient(
-            UpdateMenuTitleS2C.TYPE,
-            UpdateMenuTitleS2C.STREAM_CODEC,
-            ClientPayloadHandler::handleTitleUpdate
-        );
+    private static final String PROTOCOL_VERSION = "1";
+    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
+        Utils.modLoc("main"),
+        () -> PROTOCOL_VERSION,
+        PROTOCOL_VERSION::equals,
+        PROTOCOL_VERSION::equals
+    );
+
+    public static void register() {
+        INSTANCE.messageBuilder(UpdateMenuTitleS2C.class, 1, NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(UpdateMenuTitleS2C::new)
+                .encoder(UpdateMenuTitleS2C::write)
+                .consumerMainThread(ClientPayloadHandler::handleTitleUpdate)
+                .add();
     }
 }

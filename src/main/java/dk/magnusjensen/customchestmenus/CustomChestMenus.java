@@ -18,11 +18,11 @@
 
 package dk.magnusjensen.customchestmenus;
 
-import com.mojang.logging.LogUtils;
 import dk.magnusjensen.customchestmenus.commands.CommandHandler;
 import dk.magnusjensen.customchestmenus.menu.CustomChestMenu;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
 import dk.magnusjensen.customchestmenus.models.PagePayload;
+import dk.magnusjensen.customchestmenus.network.PacketHandler;
 import dk.magnusjensen.customchestmenus.registries.CustomChestMenuRegistry;
 import dk.magnusjensen.customchestmenus.registries.MenuRegistry;
 import net.minecraft.network.chat.Component;
@@ -30,30 +30,36 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import org.slf4j.Logger;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.network.NetworkHooks;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-// The value here should match an entry in the META-INF/neoforge.mods.toml file
+
+// The value here should match an entry in the META-INF/mods.toml file
 @Mod(CustomChestMenus.MODID)
-@EventBusSubscriber(modid = CustomChestMenus.MODID)
+@Mod.EventBusSubscriber(modid = CustomChestMenus.MODID)
 public class CustomChestMenus {
     // Define mod id in a common place for everything to reference
     public static final String MODID = "customchestmenus";
     // Directly reference a slf4j logger
-    public static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
-    public CustomChestMenus(IEventBus modEventBus, ModContainer modContainer) {
-        MenuRegistry.MENUS.register(modEventBus);
+    public CustomChestMenus() {
+        final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        MenuRegistry.MENUS.register(modBus);
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         //modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+
+        PacketHandler.register();
     }
 
     @SubscribeEvent
@@ -81,7 +87,7 @@ public class CustomChestMenus {
             }
         };
 
-        player.openMenu(provider, buf -> {
+        NetworkHooks.openScreen(player, provider, buf -> {
             buf.writeUtf(def.id());
             payload.write(buf);
         });

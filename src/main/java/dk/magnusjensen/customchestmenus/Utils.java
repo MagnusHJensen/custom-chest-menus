@@ -22,6 +22,6 @@ import net.minecraft.resources.ResourceLocation;
 
 public class Utils {
     public static ResourceLocation modLoc(String path) {
-        return ResourceLocation.fromNamespaceAndPath(CustomChestMenus.MODID, path);
+        return ResourceLocation.tryBuild(CustomChestMenus.MODID, path);
     }
 }

@@ -19,7 +19,6 @@
 package dk.magnusjensen.customchestmenus.models.actions;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.Optional;
@@ -31,7 +30,7 @@ public record TeleportAction(
     Optional<String> dimension
 ) implements MenuAction {
 
-    public static final MapCodec<TeleportAction> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+    public static final Codec<TeleportAction> CODEC = RecordCodecBuilder.create(i -> i.group(
         Codec.DOUBLE.fieldOf("x").forGetter(TeleportAction::x),
         Codec.DOUBLE.fieldOf("y").forGetter(TeleportAction::y),
         Codec.DOUBLE.fieldOf("z").forGetter(TeleportAction::z),
