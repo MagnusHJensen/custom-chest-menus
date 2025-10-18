@@ -19,6 +19,7 @@
 package dk.magnusjensen.customchestmenus.menu;
 
 import dk.magnusjensen.customchestmenus.ActionExecutor;
+import dk.magnusjensen.customchestmenus.CustomChestMenus;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
 import dk.magnusjensen.customchestmenus.models.MenuItem;
 import dk.magnusjensen.customchestmenus.models.MenuSize;
@@ -34,6 +35,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 public class CustomChestMenu extends AbstractContainerMenu {
 
@@ -106,7 +108,12 @@ public class CustomChestMenu extends AbstractContainerMenu {
         }
 
         if (slotId >= 0 && slotId < this.slotCount && player instanceof ServerPlayer sp) {
-            ActionExecutor.onClick(sp, customChestMenuId, this.pageIndex, slotId); // your action resolver (next/prev/teleport/close)
+            ActionExecutor.onClick(sp, customChestMenuId, this.pageIndex, slotId);
+
+            if (!FMLEnvironment.production) {
+                // Debug item NBT
+                CustomChestMenus.LOGGER.debug("Item NBT: {}",  this.backing.getItem(slotId).getTag().toString());
+            }
         }
         // Do NOT call super.clicked(...) or items will try to move.
     }

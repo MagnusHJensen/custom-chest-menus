@@ -122,6 +122,43 @@
                       },
                       "required": ["type", "command"],
                       "additionalProperties": false
+                    },
+                    {
+                      "properties": {
+                        "type": { "const": "craft_items" },
+                        "inputs": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "item": { "type": "string" },
+                              "quantity": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "default": 1
+                              }
+                            }
+                          },
+                          "minItems": 1
+                        },
+                        "outputs": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "item": { "type": "string" },
+                              "quantity": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "default": 1
+                              }
+                            }
+                          },
+                          "minItems": 1
+                        }
+                      },
+                      "required": ["type", "inputs", "outputs"],
+                      "additionalProperties": false
                     }
                   ]
                 }
