@@ -18,10 +18,20 @@
 
 package dk.magnusjensen.customchestmenus.client;
 
+import dk.magnusjensen.customchestmenus.Constants;
+import dk.magnusjensen.customchestmenus.client.screen.CustomChestScreen;
+import dk.magnusjensen.customchestmenus.registry.ForgeMenuRegistry;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-public class ClientEventHandler {
-    public static void registerMenuScreens() {
-        MenuScreens.re
+@Mod.EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+public class ForgeClientEventHandler {
+
+    @SubscribeEvent
+    public static void clientSetupEvent(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> MenuScreens.register(ForgeMenuRegistry.CUSTOM_CHEST_MENU.get(), CustomChestScreen::new));
     }
 }

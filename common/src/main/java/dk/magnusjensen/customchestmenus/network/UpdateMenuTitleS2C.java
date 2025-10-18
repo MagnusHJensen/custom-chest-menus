@@ -25,6 +25,8 @@ import net.minecraft.resources.ResourceLocation;
 
 public record UpdateMenuTitleS2C(String menuId, Component title) implements CustomPacket {
 
+    public static final ResourceLocation ID = Utils.modLoc("update_menu_title");
+
     public UpdateMenuTitleS2C(final FriendlyByteBuf buf) {
         this(
             buf.readUtf(Short.MAX_VALUE),
@@ -39,6 +41,6 @@ public record UpdateMenuTitleS2C(String menuId, Component title) implements Cust
 
     @Override
     public ResourceLocation getId() {
-        return Utils.modLoc("update_menu_title");
+        return ID;
     }
 }

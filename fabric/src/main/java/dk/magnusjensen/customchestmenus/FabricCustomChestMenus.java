@@ -23,7 +23,6 @@ import dk.magnusjensen.customchestmenus.registry.FabricMenuRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 public class FabricCustomChestMenus implements ModInitializer {
     
@@ -41,8 +40,6 @@ public class FabricCustomChestMenus implements ModInitializer {
 
         // Static load registries
         FabricMenuRegistry.register();
-
-        ServerPlayNetworking.send();
     }
 
 
