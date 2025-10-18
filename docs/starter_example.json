@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/MagnusHJensen/custom-chest-menus/refs/heads/main/docs/v1.schema.json",
+  "$schema": "https://raw.githubusercontent.com/MagnusHJensen/custom-chest-menus/refs/heads/1.21.8/docs/v1.schema.json",
   "format_version": 1,
   "id": "test_menu",
   "name": "Test Menu",
@@ -97,6 +97,25 @@
           },
           "item": "minecraft:blaze_rod",
           "slot": 14
+        },
+        {
+          "name": "Craft Grass block",
+          "slot": 20,
+          "item": "minecraft:crafting_table",
+          "action": {
+            "type": "craft_items",
+            "inputs": [
+              {
+                "item": "minecraft:diamond",
+                "quantity": 5
+              }
+            ],
+            "outputs": [
+              {
+                "item": "minecraft:grass_block"
+              }
+            ]
+          }
         },
         {
           "name": "Previous page",

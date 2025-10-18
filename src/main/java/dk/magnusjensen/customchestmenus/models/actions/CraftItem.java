@@ -19,10 +19,13 @@
 package dk.magnusjensen.customchestmenus.models.actions;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.resources.ResourceLocation;
 
-public sealed interface MenuAction permits NoopAction, CloseAction, TeleportAction, PageAction, CommandAction, CraftItemsAction {
-    MenuActionType type();
+public record CraftItem(ResourceLocation item, int quantity) {
 
-    Codec<MenuAction> CODEC = MenuActionType.TYPE_CODEC
-        .dispatch("type", MenuAction::type, MenuActionType::subCodec);
+    public static final Codec<CraftItem> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        ResourceLocation.CODEC.fieldOf("item").forGetter(CraftItem::item),
+        Codec.INT.optionalFieldOf("quantity", 1).forGetter(CraftItem::quantity)
+    ).apply(instance, CraftItem::new));
 }
