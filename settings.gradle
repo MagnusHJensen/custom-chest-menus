@@ -6,6 +6,7 @@ pluginManagement {
             url = 'https://maven.minecraftforge.net/'
         }
         maven { url "https://maven.architectury.dev/" }
+        maven { url = 'https://maven.parchmentmc.org' }
     }
 }
 

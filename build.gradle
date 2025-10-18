@@ -5,6 +5,7 @@ plugins {
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 
     id "me.shedaniel.unified-publishing" version "0.1.+"
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
 version = mod_version + "-" + minecraft_version
@@ -90,7 +91,6 @@ minecraft {
 
         server {
             property 'forge.enabledGameTestNamespaces', mod_id
-            args '--nogui'
         }
 
         // This run config launches GameTestServer and runs all registered gametests, then exits.
