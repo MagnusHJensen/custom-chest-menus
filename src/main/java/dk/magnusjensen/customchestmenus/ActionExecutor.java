@@ -21,20 +21,22 @@ package dk.magnusjensen.customchestmenus;
 import dk.magnusjensen.customchestmenus.menu.CustomChestMenu;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
 import dk.magnusjensen.customchestmenus.models.MenuSize;
-import dk.magnusjensen.customchestmenus.models.actions.CommandAction;
-import dk.magnusjensen.customchestmenus.models.actions.PageAction;
-import dk.magnusjensen.customchestmenus.models.actions.TeleportAction;
+import dk.magnusjensen.customchestmenus.models.actions.*;
 import dk.magnusjensen.customchestmenus.network.UpdateMenuTitleS2C;
 import dk.magnusjensen.customchestmenus.registries.CustomChestMenuRegistry;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.util.Map;
 import java.util.Set;
 
 public final class ActionExecutor {
@@ -65,6 +67,10 @@ public final class ActionExecutor {
             case COMMAND -> {
                 CommandAction command = (CommandAction) item.action();
                 runCommand(player, command);
+            }
+            case CRAFT_ITEMS -> {
+                CraftItemsAction action = (CraftItemsAction) item.action();
+                craftItems(player, action);
             }
         }
     }
@@ -107,6 +113,32 @@ public final class ActionExecutor {
         }
 
         server.getCommands().performPrefixedCommand(stack, cmd);
+    }
+
+    private static void craftItems(ServerPlayer player, CraftItemsAction action) {
+        if (!action.canCraft(player)) {
+            // TODO: Improve error message and display of error
+            player.sendSystemMessage(Component.literal("Can't craft, missing input items"));
+            return;
+        }
+
+        // Map of inv. slot -> how many needs to be removed.
+        Map<Integer, Integer> slotToQuantity = action.getInputSlots(player);
+
+        // We can safely removeItems here, as the canCraft checks quantity and items being in the inventory.
+        for (Map.Entry<Integer, Integer> entry : slotToQuantity.entrySet()) {
+            // Remove the items from the inventory
+            player.getInventory().removeItem(entry.getKey(), entry.getValue());
+        }
+
+        // Add the output items
+        for (CraftItem item : action.outputs()) {
+            ItemStack toGive = new ItemStack(BuiltInRegistries.ITEM.get(item.item()), item.quantity());
+            if (!player.getInventory().add(toGive)) {
+                // If inventory is full, drop the item in the world
+                player.drop(toGive, false);
+            }
+        }
     }
 }
 

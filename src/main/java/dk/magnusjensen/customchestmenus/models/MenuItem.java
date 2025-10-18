@@ -20,6 +20,8 @@ package dk.magnusjensen.customchestmenus.models;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dk.magnusjensen.customchestmenus.models.actions.CraftItem;
+import dk.magnusjensen.customchestmenus.models.actions.CraftItemsAction;
 import dk.magnusjensen.customchestmenus.models.actions.MenuAction;
 import dk.magnusjensen.customchestmenus.models.actions.NoopAction;
 import net.minecraft.core.component.DataComponents;
@@ -55,6 +57,11 @@ public record MenuItem(
     public ItemStack makeItemStack() {
         Item itemEntry = BuiltInRegistries.ITEM.getOptional(item)
             .orElse(net.minecraft.world.item.Items.BARRIER);
+
+        if (action instanceof CraftItemsAction craftItemsAction) {
+            return makeCraftingItemStack(craftItemsAction, itemEntry);
+        }
+
         ItemStack stack = new ItemStack(itemEntry);
         if (!name.isEmpty()) stack.set(DataComponents.CUSTOM_NAME, Component.literal(name));
         var lore = this.lore.orElse(List.of());
@@ -65,6 +72,30 @@ public record MenuItem(
             }
             stack.set(DataComponents.LORE, itemLore);
         }
+        return stack;
+    }
+
+    private ItemStack makeCraftingItemStack(CraftItemsAction craftItemsAction, Item item) {
+        ItemStack stack = new ItemStack(item);
+        if (!name.isEmpty()) stack.set(DataComponents.CUSTOM_NAME, Component.literal(name));
+
+
+        var itemLore = ItemLore.EMPTY;
+        itemLore.withLineAdded(Component.literal("§lInputs:§r"));
+        for (CraftItem craftItem : craftItemsAction.inputs()) {
+            Item craftItemEntry = BuiltInRegistries.ITEM.get(craftItem.item());
+            itemLore.withLineAdded(Component.literal(" - " + craftItem.quantity() + "x " + craftItemEntry.getDescription().getString()));
+        }
+        itemLore.withLineAdded(Component.literal(""));
+
+        itemLore.withLineAdded(Component.literal(String.format("§lOutput%s:§r", craftItemsAction.outputs().size() == 1 ? "" : "s")));
+        for (CraftItem craftItem : craftItemsAction.outputs()) {
+            Item craftItemEntry = BuiltInRegistries.ITEM.get(craftItem.item());
+            itemLore.withLineAdded(Component.literal(" - " + craftItem.quantity() + "x " + craftItemEntry.getDescription().getString()));
+        }
+
+        stack.set(DataComponents.LORE, itemLore);
+
         return stack;
     }
 }
