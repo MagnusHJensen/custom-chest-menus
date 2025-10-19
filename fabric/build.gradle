@@ -1,0 +1,71 @@
+plugins {
+    id 'multiloader-loader'
+    id 'fabric-loom'
+
+    id "me.shedaniel.unified-publishing" version "0.1.+"
+}
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+    }
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+}
+
+loom {
+    def aw = project(':common').file("src/main/resources/${mod_id}.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
+    }
+    mixin {
+        defaultRefmapName.set("${mod_id}.refmap.json")
+    }
+    runs {
+        client {
+            client()
+            setConfigName('Fabric Client')
+            ideConfigGenerated(true)
+            runDir('runs/client')
+        }
+        server {
+            server()
+            setConfigName('Fabric Server')
+            ideConfigGenerated(true)
+            runDir('runs/server')
+        }
+    }
+}
+
+unifiedPublishing {
+    def mod_version = version
+    project {
+        displayName = "${mod_name} (Fabric) - v${mod_version} - ${minecraft_version}" // Optional, name of the file
+        version = mod_version // Optional, Inferred from project by default
+        changelog = rootProject.file("CHANGELOG.md").text // Optional, in markdown format
+        releaseType = "release" // Optional, use "release", "beta" or "alpha"
+        gameVersions = ["1.21.6", "1.21.7", "1.21.8"] // Required, list of supported game versions
+        gameLoaders = ["fabric"]
+
+        mainPublication tasks.named('jar', Jar).flatMap { it.archiveFile } // Declares the publicated jar
+
+
+        var cfToken = System.getenv("CURSEFORGE_TOKEN")
+        if (cfToken != null) {
+            curseforge {
+                token = System.getenv("CURSEFORGE_TOKEN")
+                id = "1343005" // Required, must be a string, ID of CurseForge project
+            }
+        }
+
+
+        var mrToken = System.getenv("MODRINTH_TOKEN")
+        if (mrToken != null) {
+            modrinth {
+                token = System.getenv("MODRINTH_TOKEN")
+                id = "1rhw3Wyu" // Required, must be a string, ID of Modrinth project
+            }
+        }
+    }
+}
