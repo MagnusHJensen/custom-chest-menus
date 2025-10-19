@@ -1,2 +1,2 @@
 # 1.2.0 - 1.21.1
-- Added multi loader support! (Fabric & NeoForge)
+- Added multi loader support! (NeoForge & Fabric)

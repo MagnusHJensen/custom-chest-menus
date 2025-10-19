@@ -10,9 +10,10 @@ This mod is designed to enhance the gameplay experience by providing interactive
 Custom Chest Menus enables all server owners to create custom chest menus by writing it out in JSON files.
 
 ### Player
-- Open any menu with a single command: `/ccm open <menu>`
+- Open any menu with a single command: `/ccm open <menu_id>`
 
 ### Server owners
+- Open any menu for a given player with a single command: `/ccm open <menu_id> [player]` _(Requires permission level 2)_
 - Create custom chest menus using JSON files
     - See [JSON Spec](docs/v1.schema.json) file for structure of JSON file.
     - Or use the [starter example menu](#starter-example).
@@ -42,8 +43,6 @@ This section provides small, but meaningful guides/snippets for server owners to
 ### Starter example
 
 You can find the starter example JSON file [here](./docs/starter_example.json).
-
-
 
 ## Links
 
