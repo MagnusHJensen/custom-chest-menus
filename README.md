@@ -21,7 +21,7 @@ _If you aren't good with how to write JSON, you can use [this website](https://j
 - Currently supported actions:
     - Teleport to a location (also supports cross dimensions)
     - Craft Items
-    - Run a command as player or server
+    - Run a command/commands as player or server
         - Placeholders:
             - `%player%` will be replaced with the player's name.
             - `%uuid` will be replaced with the player's UUID.
