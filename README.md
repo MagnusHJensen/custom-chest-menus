@@ -9,7 +9,7 @@ This mod is designed to enhance the gameplay experience by providing interactive
 
 Custom Chest Menus enables all server owners to create custom chest menus by writing it out in JSON files.
 
-_If you aren't good with how to write JSON, you can use [this website](https://json.magnusjensen.dk/?utm_source=github&utm_medium=ccm-1.21.8&schemaUrl=https%3A%2F%2Fraw.githubusercontent.com%2FMagnusHJensen%2Fcustom-chest-menus%2Frefs%2Fheads%2F1.21.1%2Fdocs%2Fv1.schema.json) to help build out a menu._
+_If you aren't good with how to write JSON, you can use [this website](https://json.magnusjensen.dk/?utm_source=github&utm_medium=ccm-1.21.9&schemaUrl=https%3A%2F%2Fraw.githubusercontent.com%2FMagnusHJensen%2Fcustom-chest-menus%2Frefs%2Fheads%2F1.21.1%2Fdocs%2Fv1.schema.json) to help build out a menu._
 
 ### Player
 - Open any menu with a single command: `/ccm open <menu_id>`
@@ -21,7 +21,7 @@ _If you aren't good with how to write JSON, you can use [this website](https://j
 - Currently supported actions:
     - Teleport to a location (also supports cross dimensions)
     - Craft Items
-    - Run a command as player or server
+    - Run a command/commands as player or server
         - Placeholders:
             - `%player%` will be replaced with the player's name.
             - `%uuid` will be replaced with the player's UUID.

@@ -16,29 +16,17 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dk.magnusjensen.customchestmenus.platform;
+package dk.magnusjensen.customchestmenus.models;
 
-import dk.magnusjensen.customchestmenus.platform.services.IPlatformHelper;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.loading.FMLLoader;
+import java.util.Arrays;
 
-public class NeoforgePlatformHelper implements IPlatformHelper {
-
-    @Override
-    public String getPlatformName() {
-
-        return "Forge";
+public class MenuValidationException extends RuntimeException {
+    public MenuValidationException(String message) {
+        super(message);
     }
 
     @Override
-    public boolean isModLoaded(String modId) {
-
-        return ModList.get().isLoaded(modId);
-    }
-
-    @Override
-    public boolean isDevelopmentEnvironment() {
-
-        return !FMLLoader.getCurrent().isProduction();
+    public StackTraceElement[] getStackTrace() {
+        return Arrays.copyOf(super.getStackTrace(), 0);
     }
 }

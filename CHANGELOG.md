@@ -1,2 +1,2 @@
-# 1.2.0 - 1.21.6-8
-- Added multi loader support! (NeoForge & Fabric)
+# 1.3.0 - 1.21.9
+- Added support for `commands` key in `command` actions to allow multiple commands to be executed in sequence.

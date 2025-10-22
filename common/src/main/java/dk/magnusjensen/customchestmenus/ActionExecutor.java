@@ -89,7 +89,7 @@ public final class ActionExecutor {
     }
 
     private static void doTeleport(ServerPlayer player, TeleportAction tp) {
-        ServerLevel target = player.getServer().getLevel(
+        ServerLevel target = player.level().getServer().getLevel(
             tp.dimension().map(ResourceLocation::tryParse)
                 .map(rl -> ResourceKey.create(Registries.DIMENSION, rl))
                 .orElse(player.level().dimension())
@@ -104,17 +104,19 @@ public final class ActionExecutor {
     }
 
     private static void runCommand(ServerPlayer player, CommandAction action) {
-        String cmd = action.command()
-            .replace("%player%", player.getScoreboardName())
-            .replace("%uuid%", player.getStringUUID());
-
-        MinecraftServer server = player.getServer();
+        MinecraftServer server = player.level().getServer();
         CommandSourceStack stack = server.createCommandSourceStack();
         if (action.shouldRunAsPlayer()) {
             stack = player.createCommandSourceStack();
         }
 
-        server.getCommands().performPrefixedCommand(stack, cmd);
+        for (String cmd : action.commands()) {
+            String finalCmd = cmd
+                .replace("%player%", player.getScoreboardName())
+                .replace("%uuid%", player.getStringUUID());
+            server.getCommands().performPrefixedCommand(stack, finalCmd);
+        }
+
     }
 
     private static void craftItems(ServerPlayer player, CraftItemsAction action) {
