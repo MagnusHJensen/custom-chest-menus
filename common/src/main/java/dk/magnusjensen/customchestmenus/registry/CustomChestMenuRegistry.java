@@ -23,6 +23,7 @@ import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import dk.magnusjensen.customchestmenus.Constants;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
+import dk.magnusjensen.customchestmenus.models.MenuValidationException;
 import net.minecraft.server.MinecraftServer;
 
 import java.io.IOException;
@@ -79,17 +80,23 @@ public class CustomChestMenuRegistry {
 
             // TODO: Validate in terms of duplicate slots
 
-            var result = MenuDefinition.CODEC.parse(JsonOps.INSTANCE, element)
-                .resultOrPartial(err ->
-                    Constants.LOGGER.warn("Menu parse error in {}: {}", path.getFileName(), err)
-                );
+            MenuDefinition menu;
+            try {
+                var result = MenuDefinition.CODEC.parse(JsonOps.INSTANCE, element)
+                    .resultOrPartial(err ->
+                        Constants.LOGGER.warn("Menu parse error in {}: {}", path.getFileName(), err)
+                    );
 
-            if (result.isEmpty()) {
-                Constants.LOGGER.warn("Skipping {}, failed to parse.", path.getFileName());
+                if (result.isEmpty()) {
+                    Constants.LOGGER.warn("Skipping {}, failed to parse.", path.getFileName());
+                    return false;
+                }
+
+                menu = result.get();
+            } catch (MenuValidationException ex) {
+                Constants.LOGGER.warn("Menu validation error in {}: {}", path.getFileName(), ex.getMessage());
                 return false;
             }
-
-            MenuDefinition menu = result.get();
 
             // Collision policy: overwrite with a warning (or flip logic to "keep first and skip" if you prefer)
             MenuDefinition previous = MENUS.put(menu.id(), menu);

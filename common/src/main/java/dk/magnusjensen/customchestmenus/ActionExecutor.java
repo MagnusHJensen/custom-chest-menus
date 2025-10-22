@@ -104,17 +104,18 @@ public final class ActionExecutor {
     }
 
     private static void runCommand(ServerPlayer player, CommandAction action) {
-        String cmd = action.command()
-            .replace("%player%", player.getScoreboardName())
-            .replace("%uuid%", player.getStringUUID());
-
         MinecraftServer server = player.getServer();
         CommandSourceStack stack = server.createCommandSourceStack();
         if (action.shouldRunAsPlayer()) {
             stack = player.createCommandSourceStack();
         }
 
-        server.getCommands().performPrefixedCommand(stack, cmd);
+        for (String cmd : action.commands()) {
+            String finalCmd = cmd
+                .replace("%player%", player.getScoreboardName())
+                .replace("%uuid%", player.getStringUUID());
+            server.getCommands().performPrefixedCommand(stack, finalCmd);
+        }
     }
 
     private static void craftItems(ServerPlayer player, CraftItemsAction action) {

@@ -28,7 +28,7 @@
           "item": "minecraft:diamond",
           "action": {
             "type": "command",
-            "command": "give %player% minecraft:diamond 10",
+            "commands": ["give %player% minecraft:diamond 10", "say %player%! Enjoy your diamonds!"],
             "run_as_player": true
           }
         },
