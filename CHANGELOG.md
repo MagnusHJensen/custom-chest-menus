@@ -1,2 +1,2 @@
-# 1.2.0 - 1.21.6-8
-- Added multi loader support! (NeoForge & Fabric)
+# 1.2.1 - 1.21.6-8
+- Upload correct file to avoid crashes on Fabric.
