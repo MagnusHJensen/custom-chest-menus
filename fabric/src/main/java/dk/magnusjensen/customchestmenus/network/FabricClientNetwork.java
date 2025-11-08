@@ -18,11 +18,16 @@
 
 package dk.magnusjensen.customchestmenus.network;
 
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import dk.magnusjensen.customchestmenus.client.ClientPayloadHandler;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
-public class FabricNetwork {
+public class FabricClientNetwork {
     public static void register() {
-        PayloadTypeRegistry.playS2C().register(UpdateMenuTitleS2C.TYPE, UpdateMenuTitleS2C.STREAM_CODEC);
+        ClientPlayNetworking.registerGlobalReceiver(UpdateMenuTitleS2C.TYPE, (packet, context) -> {
+            context.client().execute(() -> {
+                ClientPayloadHandler.handleTitleUpdate(packet);
+            });
+        });
     }
 
 }
