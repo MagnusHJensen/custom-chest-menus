@@ -18,8 +18,17 @@
 
 package dk.magnusjensen.customchestmenus.network;
 
-public class FabricNetwork {
+import dk.magnusjensen.customchestmenus.client.ClientPayloadHandler;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+
+public class FabricClientNetwork {
     public static void register() {
+        ClientPlayNetworking.registerGlobalReceiver(UpdateMenuTitleS2C.ID, (minecraft, clientPacketListener, friendlyByteBuf, packetSender) -> {
+            var packet = new UpdateMenuTitleS2C(friendlyByteBuf);
+            minecraft.execute(() -> {
+                ClientPayloadHandler.handleTitleUpdate(packet);
+            });
+        });
     }
 
 }

@@ -1,2 +1,2 @@
-# 1.3.1 - 1.20.1
-- Upload correct file for Fabric to avoid startup crash
+# 1.3.3 - 1.20.1
+- Fix Fabric server crash due to incorrectly configured client networking.
