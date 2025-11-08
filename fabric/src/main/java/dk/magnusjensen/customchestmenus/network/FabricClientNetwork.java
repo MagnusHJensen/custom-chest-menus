@@ -16,18 +16,20 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dk.magnusjensen.customchestmenus;
+package dk.magnusjensen.customchestmenus.network;
 
-import dk.magnusjensen.customchestmenus.client.screen.CustomChestScreen;
-import dk.magnusjensen.customchestmenus.network.FabricClientNetwork;
-import dk.magnusjensen.customchestmenus.registry.FabricMenuRegistry;
-import net.fabricmc.api.ClientModInitializer;
-import net.minecraft.client.gui.screens.MenuScreens;
+import dk.magnusjensen.customchestmenus.client.ClientPayloadHandler;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 
-public class FabricClientCustomChestMenus implements ClientModInitializer {
-    @Override
-    public void onInitializeClient() {
-        FabricClientNetwork.register();
-        MenuScreens.register(FabricMenuRegistry.CUSTOM_CHEST_MENU, CustomChestScreen::new);
+public class FabricClientNetwork {
+    public static void register() {
+
+        ClientPlayNetworking.registerGlobalReceiver(UpdateMenuTitleS2C.TYPE, (packet, context) -> {
+            context.client().execute(() -> {
+                ClientPayloadHandler.handleTitleUpdate(packet);
+            });
+        });
     }
+
 }
