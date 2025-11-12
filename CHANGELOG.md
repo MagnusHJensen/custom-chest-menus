@@ -1,2 +1,7 @@
-# 1.3.3 - 1.21.10 (+.9 Fabric)
-- Fix Fabric Server crash due to incorrectly registered networking.
+# 1.4.0 - 1.21.10 (+.9 Fabric)
+- Added interactivity for Custom Chest Menus
+  - `/ccm bind <menu_id>` Starts binding process, where if a block is right-clicked it will bind the menu to the block.
+    - If a user right clicks this block it opens the menu.
+    - `/ccm stop-binding` to exit binding mode.
+    - `/ccm unbind` to start unbinding blocks, where if a bound block is right-clicked it will unbind the menu from the block.
+  - `/ccm list-bindings` Shows a chat list of all bound blocks and a text element to teleport to it.

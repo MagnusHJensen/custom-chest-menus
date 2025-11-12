@@ -16,17 +16,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dk.magnusjensen.customchestmenus.commands;
+package dk.magnusjensen.customchestmenus.platform.services;
 
-import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
 
-public class CommandHandler {
-    public static final String COMMAND_ROOT = "ccm";
-
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        ReloadMenuCommand.register(dispatcher);
-        OpenMenuCommand.register(dispatcher);
-        BindingCommand.register(dispatcher);
-    }
+public interface IAttachmentHelper {
+    <T> T getPlayerAttachment(ServerPlayer player, Class<T> clazz);
+    <T> void setPlayerAttachment(ServerPlayer player, T attachment);
 }

@@ -18,11 +18,15 @@
 
 package dk.magnusjensen.customchestmenus;
 
+import dk.magnusjensen.customchestmenus.events.EventHandler;
 import dk.magnusjensen.customchestmenus.network.FabricNetwork;
+import dk.magnusjensen.customchestmenus.registry.FabricAttachmentRegistry;
 import dk.magnusjensen.customchestmenus.registry.FabricMenuRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.minecraft.world.InteractionResult;
 
 public class FabricCustomChestMenus implements ModInitializer {
     
@@ -37,10 +41,19 @@ public class FabricCustomChestMenus implements ModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTING.register(CommonClass::loadMenus);
 
+        UseBlockCallback.EVENT.register((player, level, interactionHand, blockHitResult) -> {
+            var handled = EventHandler.onBlockRightClick(player, blockHitResult.getBlockPos(), interactionHand);
+            if (handled) {
+                return InteractionResult.SUCCESS;
+            }
+
+            return InteractionResult.PASS;
+        });
+
 
         // Static load registries
         FabricMenuRegistry.register();
+        FabricAttachmentRegistry.register();
     }
-
 
 }

@@ -16,17 +16,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dk.magnusjensen.customchestmenus.commands;
+package dk.magnusjensen.customchestmenus.models.interactivity;
 
-import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.commands.CommandSourceStack;
-
-public class CommandHandler {
-    public static final String COMMAND_ROOT = "ccm";
-
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        ReloadMenuCommand.register(dispatcher);
-        OpenMenuCommand.register(dispatcher);
-        BindingCommand.register(dispatcher);
-    }
+public enum BindingMode {
+    BIND,
+    UNBIND,
+    NONE;
 }

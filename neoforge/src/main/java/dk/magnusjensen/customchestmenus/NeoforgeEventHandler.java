@@ -18,34 +18,17 @@
 
 package dk.magnusjensen.customchestmenus;
 
-import dk.magnusjensen.customchestmenus.registry.NeoforgeAttachmentRegistry;
-import dk.magnusjensen.customchestmenus.registry.NeoforgeMenuRegistry;
-import net.neoforged.bus.api.IEventBus;
+import dk.magnusjensen.customchestmenus.events.EventHandler;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
-@Mod(Constants.MOD_ID)
 @EventBusSubscriber(modid = Constants.MOD_ID)
-public class NeoforgeCustomChestMenus {
-    
-    public NeoforgeCustomChestMenus(IEventBus modEventBus, ModContainer modContainer) {
-        CommonClass.init();
-
-        NeoforgeMenuRegistry.MENUS.register(modEventBus);
-        NeoforgeAttachmentRegistry.ATTACHMENT_TYPES.register(modEventBus);
-    }
+public class NeoforgeEventHandler {
 
     @SubscribeEvent
-    public static void onRegisterCommands(RegisterCommandsEvent event) {
-        CommonClass.registerCommands(event.getDispatcher());
-    }
-
-    @SubscribeEvent
-    public static void onServerStarting(ServerStartingEvent event) {
-        CommonClass.loadMenus(event.getServer());
+    public static void onBlockRightClick(PlayerInteractEvent.RightClickBlock event) {
+        var shouldCancel = EventHandler.onBlockRightClick(event.getEntity(), event.getPos(), event.getHand());
+        event.setCanceled(shouldCancel);
     }
 }
