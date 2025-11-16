@@ -21,21 +21,23 @@ package dk.magnusjensen.customchestmenus.events;
 import dk.magnusjensen.customchestmenus.data.ChestMenuSavedData;
 import dk.magnusjensen.customchestmenus.data.PlayerDataAttachment;
 import dk.magnusjensen.customchestmenus.models.interactivity.InteractiveBlock;
+import dk.magnusjensen.customchestmenus.models.interactivity.InteractiveEntity;
 import dk.magnusjensen.customchestmenus.platform.Services;
 import dk.magnusjensen.customchestmenus.registry.CustomChestMenuRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 
 public class EventHandler {
-    /**
-     * @return A boolean, true if event should be cancelled
-     */
+
+    // ---- Block right click
     public static boolean onBlockRightClick(Player player, BlockPos pos, InteractionHand hand) {
         if (player.level().isClientSide()) {
             return false;
@@ -52,7 +54,7 @@ public class EventHandler {
 
         Block block = serverPlayer.level().getBlockState(pos).getBlock();
 
-        if (handleBinding(pos, block, serverPlayer)) {
+        if (handleBlockBinding(pos, block, serverPlayer)) {
             return true;
         }
 
@@ -63,7 +65,7 @@ public class EventHandler {
         return false;
     }
 
-    private static boolean handleBinding(BlockPos pos, Block block, ServerPlayer serverPlayer) {
+    private static boolean handleBlockBinding(BlockPos pos, Block block, ServerPlayer serverPlayer) {
         var playerData = Services.ATTACHMENT.getPlayerAttachment(serverPlayer, PlayerDataAttachment.class);
         if (playerData == null) {
             return false;
@@ -117,5 +119,104 @@ public class EventHandler {
 
         Services.NETWORK.openChestMenuScreen(player, CustomChestMenuRegistry.get(interactiveBlock.menuId()), 0);
         return true;
+    }
+
+    // ---- Entity right click
+
+    public static boolean onEntityRightClick(Player player, Entity target, InteractionHand hand) {
+        if (player.level().isClientSide()) {
+            return false;
+        }
+
+        if (hand != InteractionHand.MAIN_HAND) {
+            return false;
+        }
+
+
+        if (!(player instanceof ServerPlayer serverPlayer)) {
+            return false;
+        }
+
+        if (handleEntityBinding(target, serverPlayer)) {
+            return true;
+        }
+
+        if (checkMenuEntity(target, serverPlayer)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static boolean handleEntityBinding(Entity entity, ServerPlayer serverPlayer) {
+        var playerData = Services.ATTACHMENT.getPlayerAttachment(serverPlayer, PlayerDataAttachment.class);
+        if (playerData == null) {
+            return false;
+        }
+
+        if (!playerData.isBindingMode() && !playerData.isUnbindingMode()) {
+            return false;
+        }
+
+        var savedData = serverPlayer.level().getDataStorage().computeIfAbsent(ChestMenuSavedData.ID);
+        if (savedData.getMenuEntities().containsKey(entity.getUUID())) { // Entity is already bound
+
+            if (playerData.isBindingMode()) {
+                // and we try to bind a menu
+                serverPlayer.sendSystemMessage(Component.literal("This entity is already bound to a menu, to unbind it run /ccm unbind and right click"), true);
+                return true; // we want to "handle" the event, and cancel block interaction.
+            }
+
+            if (playerData.isUnbindingMode()) {
+                // and we try to unbind
+                savedData.removeMenuEntity(entity.getUUID());
+                serverPlayer.sendSystemMessage(Component.literal("Successfully unbound the menu from this entity."), true);
+                return true;
+            }
+
+            return false;
+        }
+
+        // Entity is not bound
+        if (playerData.isUnbindingMode()) {
+            // but trying to unbind
+            serverPlayer.sendSystemMessage(Component.literal("This entity is not bound to any menu."), true);
+            return true;
+        } else if (playerData.isBindingMode()) {
+            ResourceLocation entityType = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+            savedData.addMenuEntity(new InteractiveEntity(playerData.getMenuToBind(), entity.getUUID(), entity.blockPosition(), entityType));
+            serverPlayer.sendSystemMessage(Component.literal("Successfully bound menu '" + playerData.getMenuToBind() + "' to this entity."), true);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static boolean checkMenuEntity(Entity entity, ServerPlayer player) {
+        var savedData = player.level().getDataStorage().computeIfAbsent(ChestMenuSavedData.ID);
+        var interactiveEntity = savedData.getMenuEntities().get(entity.getUUID());
+        if (interactiveEntity == null) {
+            return false;
+        }
+
+        Services.NETWORK.openChestMenuScreen(player, CustomChestMenuRegistry.get(interactiveEntity.menuId()), 0);
+        return true;
+    }
+
+
+    // ---- Entity unload, to keep lastSeenPos up to date, we only store the change on unload to avoid too many saves.
+
+    public static void onEntityUnload(Entity entity) {
+        if (entity.level().isClientSide() || !(entity.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        var savedData = serverLevel.getDataStorage().computeIfAbsent(ChestMenuSavedData.ID);
+        var interactiveEntity = savedData.getMenuEntities().get(entity.getUUID());
+        if (interactiveEntity == null) {
+            return;
+        }
+
+        savedData.addMenuEntity(interactiveEntity.setLastSeen(entity.blockPosition()));
     }
 }

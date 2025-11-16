@@ -24,8 +24,10 @@ import dk.magnusjensen.customchestmenus.registry.FabricAttachmentRegistry;
 import dk.magnusjensen.customchestmenus.registry.FabricMenuRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.world.InteractionResult;
 
 public class FabricCustomChestMenus implements ModInitializer {
@@ -41,6 +43,7 @@ public class FabricCustomChestMenus implements ModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTING.register(CommonClass::loadMenus);
 
+        // Register event handlers
         UseBlockCallback.EVENT.register((player, level, interactionHand, blockHitResult) -> {
             var handled = EventHandler.onBlockRightClick(player, blockHitResult.getBlockPos(), interactionHand);
             if (handled) {
@@ -49,6 +52,17 @@ public class FabricCustomChestMenus implements ModInitializer {
 
             return InteractionResult.PASS;
         });
+
+        UseEntityCallback.EVENT.register((player, level, interactionHand, entity, entityHitResult) -> {
+            var handled = EventHandler.onEntityRightClick(player, entity, interactionHand);
+            if (handled) {
+                return InteractionResult.SUCCESS;
+            }
+
+            return InteractionResult.PASS;
+        });
+
+        ServerEntityEvents.ENTITY_UNLOAD.register((entity, serverLevel) -> EventHandler.onEntityUnload(entity));
 
 
         // Static load registries

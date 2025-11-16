@@ -20,13 +20,16 @@ package dk.magnusjensen.customchestmenus.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dk.magnusjensen.customchestmenus.Constants;
 import dk.magnusjensen.customchestmenus.models.interactivity.InteractiveBlock;
+import dk.magnusjensen.customchestmenus.models.interactivity.InteractiveEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class ChestMenuSavedData extends SavedData {
 
@@ -47,10 +50,31 @@ public class ChestMenuSavedData extends SavedData {
         InteractiveBlock.CODEC
     );
 
+    public static final Codec<Map<UUID, InteractiveEntity>> MENU_ENTITIES_CODEC = Codec.unboundedMap(
+        Codec.STRING.xmap(
+            // Decode: uuid string -> UUID
+            s -> {
+                try {
+                    return UUID.fromString(s);
+                } catch (Exception e) {
+                    Constants.LOGGER.warn("Failed to parse UUID in saved data", e);
+                    return UUID.fromString("00000000-0000-0000-0000-00000000000");
+                    // 628b90e2-118a-43cf-8cca-0fa0a98f04de
+                }
+            },
+            // Encode: UUID -> uuid string
+            UUID::toString
+        ),
+        InteractiveEntity.CODEC
+    );
+
     public static final Codec<ChestMenuSavedData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         MENU_BLOCKS_CODEC
             .fieldOf("menuBlocks")
-            .forGetter(ChestMenuSavedData::getMenuBlocks)
+            .forGetter(ChestMenuSavedData::getMenuBlocks),
+        MENU_ENTITIES_CODEC
+            .fieldOf("menuEntities")
+            .forGetter(ChestMenuSavedData::getMenuEntities)
     ).apply(instance, ChestMenuSavedData::new));
 
     public static final SavedDataType<ChestMenuSavedData> ID = new SavedDataType<>(
@@ -63,15 +87,18 @@ public class ChestMenuSavedData extends SavedData {
     // Map of block positions to InteractiveBlock data classes, that when interacted with will open the menu
     private final Map<BlockPos, InteractiveBlock> menuBlocks = new HashMap<>();
 
-    public ChestMenuSavedData(Map<BlockPos, InteractiveBlock> menuBlocks) {
+    private final Map<UUID, InteractiveEntity> menuEntities = new HashMap<>();
+
+    public ChestMenuSavedData(Map<BlockPos, InteractiveBlock> menuBlocks, Map<UUID, InteractiveEntity> menuEntities) {
         this.menuBlocks.putAll(menuBlocks);
+        this.menuEntities.putAll(menuEntities);
     }
 
     public ChestMenuSavedData() {
     }
 
     public Map<BlockPos, InteractiveBlock> getMenuBlocks() {
-        return menuBlocks;
+        return Map.copyOf(menuBlocks);
     }
 
     public void addMenuBlock(InteractiveBlock block) {
@@ -81,6 +108,20 @@ public class ChestMenuSavedData extends SavedData {
 
     public void removeMenuBlock(BlockPos pos) {
         menuBlocks.remove(pos);
+        setDirty();
+    }
+
+    public Map<UUID, InteractiveEntity> getMenuEntities() {
+        return Map.copyOf(menuEntities);
+    }
+
+    public void addMenuEntity(InteractiveEntity entity) {
+        menuEntities.put(entity.entityUUID(), entity);
+        setDirty();
+    }
+
+    public void removeMenuEntity(UUID entityUUID) {
+        menuEntities.remove(entityUUID);
         setDirty();
     }
 

@@ -21,6 +21,7 @@ package dk.magnusjensen.customchestmenus;
 import dk.magnusjensen.customchestmenus.events.EventHandler;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 @EventBusSubscriber(modid = Constants.MOD_ID)
@@ -30,5 +31,16 @@ public class NeoforgeEventHandler {
     public static void onBlockRightClick(PlayerInteractEvent.RightClickBlock event) {
         var shouldCancel = EventHandler.onBlockRightClick(event.getEntity(), event.getPos(), event.getHand());
         event.setCanceled(shouldCancel);
+    }
+
+    @SubscribeEvent
+    public static void onEntityRightClock(PlayerInteractEvent.EntityInteract event) {
+        boolean shouldCancel = EventHandler.onEntityRightClick(event.getEntity(), event.getTarget(), event.getHand());
+        event.setCanceled(shouldCancel);
+    }
+
+    @SubscribeEvent
+    public static void onEntityLoad(EntityLeaveLevelEvent event) {
+        EventHandler.onEntityUnload(event.getEntity());
     }
 }

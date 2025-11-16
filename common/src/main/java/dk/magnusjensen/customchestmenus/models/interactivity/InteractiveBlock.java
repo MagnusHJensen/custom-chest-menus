@@ -27,10 +27,16 @@ import net.minecraft.resources.ResourceLocation;
  * Data class representing a block that can be interacted with to open a custom chest menu.
  * @param blockType A resource location of the block type bound to, e.g., "minecraft:chest".
  */
-public record InteractiveBlock(String menuId, BlockPos pos, ResourceLocation blockType){
+public record InteractiveBlock(
+    String menuId,
+    BlockPos pos,
+    ResourceLocation blockType
+){
+
     public static final Codec<InteractiveBlock> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.STRING.fieldOf("menuId").forGetter(InteractiveBlock::menuId),
         BlockPos.CODEC.fieldOf("pos").forGetter(InteractiveBlock::pos),
         ResourceLocation.CODEC.fieldOf("blockType").forGetter(InteractiveBlock::blockType)
     ).apply(instance, InteractiveBlock::new));
+
 }
