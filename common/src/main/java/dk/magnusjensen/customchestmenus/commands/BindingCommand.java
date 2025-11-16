@@ -34,6 +34,7 @@ public class BindingCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal(CommandHandler.COMMAND_ROOT)
             .then(Commands.literal("bind")
+                .requires(source -> source.hasPermission(2))
                 .then(Commands.argument("menu", StringArgumentType.word())
                     .suggests(MenuArgument.MENU_IDS)
                     .executes(ctx -> {
@@ -56,6 +57,7 @@ public class BindingCommand {
                 )
             )
             .then(Commands.literal("unbind")
+                .requires(src -> src.hasPermission(2))
                 .executes(ctx -> {
                     var player = ctx.getSource().getPlayerOrException();
 
@@ -74,6 +76,7 @@ public class BindingCommand {
                 })
             )
             .then(Commands.literal("stop-binding") // Stops all bindings
+                .requires(src -> src.hasPermission(2))
                 .executes(ctx -> {
                     var player = ctx.getSource().getPlayerOrException();
 
@@ -87,6 +90,7 @@ public class BindingCommand {
                 })
             )
             .then(Commands.literal("list-bindings")
+                .requires(src -> src.hasPermission(2))
                 .executes(ctx -> {
                     var savedData = ctx.getSource().getLevel().getDataStorage().computeIfAbsent(ChestMenuSavedData.ID);
 
