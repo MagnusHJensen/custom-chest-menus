@@ -35,7 +35,7 @@ public class NeoforgeAttachmentRegistry {
     private static final Map<Class<?>, Supplier<? extends AttachmentType<?>>> TYPE_MAP = new HashMap<>();
 
     public static final Supplier<AttachmentType<PlayerDataAttachment>> PLAYER_DATA = registerAttachment(PlayerDataAttachment.class, "player_data",
-        () -> AttachmentType.builder(() -> new PlayerDataAttachment()).serialize(PlayerDataAttachment.MAP_CODEC).build());
+        () -> AttachmentType.builder(() -> new PlayerDataAttachment()).build());
 
     private static <T> Supplier<AttachmentType<T>> registerAttachment(
         Class<T> clazz, String name, Supplier<AttachmentType<T>> factory) {

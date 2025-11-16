@@ -31,7 +31,7 @@ public class FabricAttachmentRegistry {
     public static final DataComponentType<PlayerDataAttachment> PLAYER_DATA = Registry.register(
         BuiltInRegistries.DATA_COMPONENT_TYPE,
         ResourceLocation.tryBuild(Constants.MOD_ID, "player_data"),
-        DataComponentType.<PlayerDataAttachment>builder().persistent(PlayerDataAttachment.CODEC).build()
+        DataComponentType.<PlayerDataAttachment>builder().build()
     );
 
     public static <T> Optional<DataComponentType<T>> findByClass(Class<T> clazz) {
