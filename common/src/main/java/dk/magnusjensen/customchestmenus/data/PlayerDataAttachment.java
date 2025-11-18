@@ -20,20 +20,40 @@ package dk.magnusjensen.customchestmenus.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import dk.magnusjensen.customchestmenus.Utils;
 import dk.magnusjensen.customchestmenus.models.interactivity.BindingMode;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Stores and serializes per-player data related to custom chest menus.
  */
 public class PlayerDataAttachment {
+    public static final ResourceLocation ID = Utils.modLoc("player_data");
 
-
+    // Server saving serializing/deserializing CODECS
     public static final MapCodec<PlayerDataAttachment> MAP_CODEC = MapCodec.unit(new PlayerDataAttachment());
     /*public static final MapCodec<PlayerDataAttachment> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
         Codec.BOOL.fieldOf("inBindingMode").forGetter(PlayerDataAttachment::isInBindingMode)
     ).apply(instance, PlayerDataAttachment::new));*/
     public static final Codec<PlayerDataAttachment> CODEC = MAP_CODEC.codec();
 
+    // Server <-> Client syncing CODECS
+    public static final StreamCodec<RegistryFriendlyByteBuf, PlayerDataAttachment> SYNC_CODEC = StreamCodec.composite(
+        ByteBufCodecs.BOOL, PlayerDataAttachment::hasOverlay,
+        BlockPos.STREAM_CODEC.apply(ByteBufCodecs.list()), PlayerDataAttachment::boundBlocks,
+        ByteBufCodecs.INT.apply(ByteBufCodecs.list()), PlayerDataAttachment::boundEntities,
+        PlayerDataAttachment::new
+    );
+
+
+    //region Server only fields
     /**
      * Whether the player is currently in binding mode, which means:
      * Right-clicking on any block or Entity will bind a menu to it.
@@ -42,10 +62,29 @@ public class PlayerDataAttachment {
      */
     private BindingMode inBindingMode = BindingMode.NONE;
     private String menuToBind = null;
+    //endregion
+
+    //region Client synced fields
+    private List<BlockPos> boundBlocks = new ArrayList<>();
+    private List<Integer> boundEntities = new ArrayList<>(); // List of entity ID's
+    private boolean hasOverlay = false;
+    //endregion
 
     public PlayerDataAttachment() {
     }
 
+    // Client constructor
+    public PlayerDataAttachment(boolean hasOverlay, List<BlockPos> boundBlocks, List<Integer> boundEntities) {
+        this.hasOverlay = hasOverlay;
+        this.boundBlocks = boundBlocks;
+        this.boundEntities = boundEntities;
+    }
+
+    public ResourceLocation getId() {
+        return ID;
+    }
+
+    //region Server only methods
     public boolean isBindingMode() {
         return inBindingMode == BindingMode.BIND;
     }
@@ -76,4 +115,47 @@ public class PlayerDataAttachment {
         this.inBindingMode = BindingMode.NONE;
         this.menuToBind = null;
     }
+
+    // Setters for client methods, so that it syncs the values when we set the data attachment.
+    public void setBoundBlocks(List<BlockPos> boundBlocks) {
+        this.boundBlocks = boundBlocks;
+    }
+
+    public void setBoundEntities(List<Integer> boundEntities) {
+        this.boundEntities = boundEntities;
+    }
+
+    public void resetServerSideVersionData() {
+        this.boundBlocks = new ArrayList<>();
+        this.boundEntities = new ArrayList<>();
+    }
+
+    // Only copies server attributes
+    public void copyFrom(PlayerDataAttachment existing) {
+        this.inBindingMode = existing.getBindingMode();
+        this.menuToBind = existing.getMenuToBind();
+        this.hasOverlay = existing.hasOverlay();
+        this.boundBlocks = existing.boundBlocks;
+        this.boundEntities = existing.boundEntities;
+    }
+    //endregion
+
+    //region Client available methods
+    public List<BlockPos> boundBlocks() {
+        return new ArrayList<>(boundBlocks);
+    }
+
+    public List<Integer> boundEntities() {
+        return new ArrayList<>(boundEntities);
+    }
+
+    public void setHasOverlay(boolean hasOverlay) {
+        this.hasOverlay = hasOverlay;
+    }
+
+    public boolean hasOverlay() {
+        return hasOverlay;
+    }
+    //endregion
+
 }

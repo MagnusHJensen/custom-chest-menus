@@ -20,6 +20,8 @@ package dk.magnusjensen.customchestmenus.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import dk.magnusjensen.customchestmenus.Memory;
+import dk.magnusjensen.customchestmenus.Utils;
 import dk.magnusjensen.customchestmenus.commands.arguments.MenuArgument;
 import dk.magnusjensen.customchestmenus.data.ChestMenuSavedData;
 import dk.magnusjensen.customchestmenus.data.PlayerDataAttachment;
@@ -41,16 +43,18 @@ public class BindingCommand {
                         var menuDef = MenuArgument.requireMenu(ctx, "menu");
                         var player = ctx.getSource().getPlayerOrException();
 
-                        var playerData = Services.ATTACHMENT.getPlayerAttachment(player, PlayerDataAttachment.class);
+                        var playerData = Services.ATTACHMENT.<PlayerDataAttachment>getPlayerAttachment(player, PlayerDataAttachment.ID);
                         if (playerData != null && !playerData.isBindingMode()) {
                             playerData.activateBindingMode(menuDef.id());
-                            Services.ATTACHMENT.setPlayerAttachment(player, playerData);
                             player.sendSystemMessage(Component.literal("Binding mode activated for menu: " + menuDef.id() + ". Right-click a block/entity to bind it."), true);
                         } else if (playerData != null && playerData.isBindingMode()) {
                             playerData.disableBindingMode();
-                            Services.ATTACHMENT.setPlayerAttachment(player, playerData);
                             player.sendSystemMessage(Component.literal("Binding mode disabled."), true);
                         }
+
+                        var newPlayerData = new PlayerDataAttachment();
+                        newPlayerData.copyFrom(playerData);
+                        Services.ATTACHMENT.setPlayerAttachment(player, newPlayerData, newPlayerData.getId());
 
                         return 1;
                     })
@@ -61,16 +65,19 @@ public class BindingCommand {
                 .executes(ctx -> {
                     var player = ctx.getSource().getPlayerOrException();
 
-                    var playerData = Services.ATTACHMENT.getPlayerAttachment(player, PlayerDataAttachment.class);
+                    var playerData = Services.ATTACHMENT.<PlayerDataAttachment>getPlayerAttachment(player, PlayerDataAttachment.ID);
                     if (playerData != null && !playerData.isUnbindingMode()) {
                         playerData.activateUnbindingMode();
-                        Services.ATTACHMENT.setPlayerAttachment(player, playerData);
                         player.sendSystemMessage(Component.literal("Unbinding mode activated. Right-click a block/entity to unbind it."), true);
                     } else if (playerData != null && playerData.isUnbindingMode()) {
                         playerData.disableBindingMode();
-                        Services.ATTACHMENT.setPlayerAttachment(player, playerData);
                         player.sendSystemMessage(Component.literal("Unbinding mode disabled."), true);
                     }
+
+                    var newPlayerData = new PlayerDataAttachment();
+                    newPlayerData.copyFrom(playerData);
+                    Services.ATTACHMENT.setPlayerAttachment(player, newPlayerData, newPlayerData.getId());
+
 
                     return 1;
                 })
@@ -80,10 +87,12 @@ public class BindingCommand {
                 .executes(ctx -> {
                     var player = ctx.getSource().getPlayerOrException();
 
-                    var playerData = Services.ATTACHMENT.getPlayerAttachment(player, PlayerDataAttachment.class);
+                    var playerData = Services.ATTACHMENT.<PlayerDataAttachment>getPlayerAttachment(player, PlayerDataAttachment.ID);
                     if (playerData != null && (playerData.isBindingMode() || playerData.isUnbindingMode())) {
                         playerData.disableBindingMode();
-                        Services.ATTACHMENT.setPlayerAttachment(player, playerData);
+                        var newPlayerData = new PlayerDataAttachment();
+                        newPlayerData.copyFrom(playerData);
+                        Services.ATTACHMENT.setPlayerAttachment(player, newPlayerData, newPlayerData.getId());
                         player.sendSystemMessage(Component.literal("Stopped binding/unbinding mode."), true);
                     }
                     return 1;
@@ -151,6 +160,33 @@ public class BindingCommand {
                     return 1;
                 })
             )
+            .then(Commands.literal("bind-overlay")
+                .requires(src -> src.hasPermission(2))
+                .executes(ctx -> {
+                    var player = ctx.getSource().getPlayerOrException();
+
+                    var playerData = Services.ATTACHMENT.<PlayerDataAttachment>getPlayerAttachment(player, PlayerDataAttachment.ID);
+                    var newPlayerData = new PlayerDataAttachment();
+                    playerData.setHasOverlay(!playerData.hasOverlay()); // Toggle the overlay.
+
+                    newPlayerData.copyFrom(playerData);
+
+                    if (newPlayerData.hasOverlay()) {
+                        // Set initial data.
+                        Utils.populatePlayerDataForSync(ctx.getSource().getLevel(), newPlayerData, player);
+                        Memory.playersWithMenuHighlightEnabled.add(player.getUUID());
+                    } else {
+                        Memory.playersWithMenuHighlightEnabled.remove(player.getUUID());
+                    }
+                    Services.ATTACHMENT.setPlayerAttachment(player, newPlayerData, PlayerDataAttachment.ID);
+
+
+                    player.sendSystemMessage(Component.literal("Menu binding overlay " + (newPlayerData.hasOverlay() ? "enabled" : "disabled") + "."), true);
+                    return 0;
+                })
+            )
         );
     }
+
+
 }

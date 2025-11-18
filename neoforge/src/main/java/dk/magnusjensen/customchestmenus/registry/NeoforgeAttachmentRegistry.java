@@ -20,33 +20,24 @@ package dk.magnusjensen.customchestmenus.registry;
 
 import dk.magnusjensen.customchestmenus.Constants;
 import dk.magnusjensen.customchestmenus.data.PlayerDataAttachment;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 public class NeoforgeAttachmentRegistry {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Constants.MOD_ID);
 
-    private static final Map<Class<?>, Supplier<? extends AttachmentType<?>>> TYPE_MAP = new HashMap<>();
+    public static final Supplier<AttachmentType<PlayerDataAttachment>> PLAYER_DATA = ATTACHMENT_TYPES.register("player_data",
+        () -> AttachmentType.builder(() -> new PlayerDataAttachment()).sync(PlayerDataAttachment.SYNC_CODEC).build());
 
-    public static final Supplier<AttachmentType<PlayerDataAttachment>> PLAYER_DATA = registerAttachment(PlayerDataAttachment.class, "player_data",
-        () -> AttachmentType.builder(() -> new PlayerDataAttachment()).build());
 
-    private static <T> Supplier<AttachmentType<T>> registerAttachment(
-        Class<T> clazz, String name, Supplier<AttachmentType<T>> factory) {
-        Supplier<AttachmentType<T>> supplier = ATTACHMENT_TYPES.register(name, factory);
-        TYPE_MAP.put(clazz, supplier);
-        return supplier;
-    }
+    public static <T> Optional<AttachmentType<T>> findById(ResourceLocation id) {
+        var attachmentType = NeoForgeRegistries.ATTACHMENT_TYPES.get(id);
 
-    public static <T> Optional<AttachmentType<T>> findByClass(Class<T> clazz) {
-        @SuppressWarnings("unchecked")
-        Supplier<AttachmentType<T>> supplier = (Supplier<AttachmentType<T>>) TYPE_MAP.get(clazz);
-        return Optional.ofNullable(supplier).map(Supplier::get);
+        return attachmentType.map(attachmentTypeReference -> (AttachmentType<T>) attachmentTypeReference.value());
     }
 }

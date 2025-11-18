@@ -18,6 +18,8 @@
 
 package dk.magnusjensen.customchestmenus.events;
 
+import dk.magnusjensen.customchestmenus.Memory;
+import dk.magnusjensen.customchestmenus.Utils;
 import dk.magnusjensen.customchestmenus.data.ChestMenuSavedData;
 import dk.magnusjensen.customchestmenus.data.PlayerDataAttachment;
 import dk.magnusjensen.customchestmenus.models.interactivity.InteractiveBlock;
@@ -66,7 +68,7 @@ public class EventHandler {
     }
 
     private static boolean handleBlockBinding(BlockPos pos, Block block, ServerPlayer serverPlayer) {
-        var playerData = Services.ATTACHMENT.getPlayerAttachment(serverPlayer, PlayerDataAttachment.class);
+        var playerData = Services.ATTACHMENT.<PlayerDataAttachment>getPlayerAttachment(serverPlayer, PlayerDataAttachment.ID);
         if (playerData == null) {
             return false;
         }
@@ -88,6 +90,14 @@ public class EventHandler {
                 // and we try to unbind
                 savedData.removeMenuBlock(pos);
                 serverPlayer.sendSystemMessage(Component.literal("Successfully unbound the menu from this block."), true);
+
+                // Set player data attachments to sync
+                var newPlayerData = new PlayerDataAttachment();
+                newPlayerData.copyFrom(playerData);
+                var boundBlocks = playerData.boundBlocks();
+                boundBlocks.remove(pos);
+                newPlayerData.setBoundBlocks(boundBlocks);
+                Services.ATTACHMENT.setPlayerAttachment(serverPlayer, newPlayerData, playerData.getId());
                 return true;
             }
 
@@ -103,6 +113,12 @@ public class EventHandler {
             ResourceLocation blockType = BuiltInRegistries.BLOCK.getKey(block);
             savedData.addMenuBlock(new InteractiveBlock(playerData.getMenuToBind(), pos, blockType));
             serverPlayer.sendSystemMessage(Component.literal("Successfully bound menu '" + playerData.getMenuToBind() + "' to this block."), true);
+
+            // Set player data attachments to sync
+            var newPlayerData = new PlayerDataAttachment();
+            newPlayerData.copyFrom(playerData);
+            newPlayerData.setBoundBlocks(savedData.getMenuBlocks().keySet().stream().toList());
+            Services.ATTACHMENT.setPlayerAttachment(serverPlayer, newPlayerData, playerData.getId());
             return true;
         }
 
@@ -122,7 +138,6 @@ public class EventHandler {
     }
 
     // ---- Entity right click
-
     public static boolean onEntityRightClick(Player player, Entity target, InteractionHand hand) {
         if (player.level().isClientSide()) {
             return false;
@@ -149,7 +164,7 @@ public class EventHandler {
     }
 
     private static boolean handleEntityBinding(Entity entity, ServerPlayer serverPlayer) {
-        var playerData = Services.ATTACHMENT.getPlayerAttachment(serverPlayer, PlayerDataAttachment.class);
+        var playerData = Services.ATTACHMENT.<PlayerDataAttachment>getPlayerAttachment(serverPlayer, PlayerDataAttachment.ID);
         if (playerData == null) {
             return false;
         }
@@ -171,6 +186,14 @@ public class EventHandler {
                 // and we try to unbind
                 savedData.removeMenuEntity(entity.getUUID());
                 serverPlayer.sendSystemMessage(Component.literal("Successfully unbound the menu from this entity."), true);
+
+                var boundEntities = playerData.boundEntities();
+                boundEntities.remove(Integer.valueOf(entity.getId()));
+
+                var newPlayerData = new PlayerDataAttachment();
+                newPlayerData.copyFrom(playerData);
+                newPlayerData.setBoundEntities(boundEntities);
+                Services.ATTACHMENT.setPlayerAttachment(serverPlayer, newPlayerData, playerData.getId());
                 return true;
             }
 
@@ -186,6 +209,15 @@ public class EventHandler {
             ResourceLocation entityType = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
             savedData.addMenuEntity(new InteractiveEntity(playerData.getMenuToBind(), entity.getUUID(), entity.blockPosition(), entityType));
             serverPlayer.sendSystemMessage(Component.literal("Successfully bound menu '" + playerData.getMenuToBind() + "' to this entity."), true);
+
+            // Set player data attachments to sync
+            var boundEntities = playerData.boundEntities();
+            boundEntities.add(entity.getId());
+
+            var newPlayerData = new PlayerDataAttachment();
+            newPlayerData.copyFrom(playerData);
+            newPlayerData.setBoundEntities(boundEntities);
+            Services.ATTACHMENT.setPlayerAttachment(serverPlayer, newPlayerData, playerData.getId());
             return true;
         }
 
@@ -204,7 +236,8 @@ public class EventHandler {
     }
 
 
-    // ---- Entity unload, to keep lastSeenPos up to date, we only store the change on unload to avoid too many saves.
+    // ---- Entity unload
+    // 1. Keep lastSeenPos up to date, we only store the change on unload to avoid too many saves.
 
     public static void onEntityUnload(Entity entity) {
         if (entity.level().isClientSide() || !(entity.level() instanceof ServerLevel serverLevel)) {
@@ -218,5 +251,88 @@ public class EventHandler {
         }
 
         savedData.addMenuEntity(interactiveEntity.setLastSeen(entity.blockPosition()));
+    }
+
+
+    // ---- Player stop tracking entity
+    // 1. Re-sync player attachment if it's a bound entity and player has overlay on
+    public static void onPlayerStopTracking(Player player, Entity entity) {
+        if (player.level().isClientSide() || !(player.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        if (!(player instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+
+        if (!Memory.playersWithMenuHighlightEnabled.contains(player.getUUID())) {
+            return;
+        }
+
+        var savedData = serverLevel.getDataStorage().computeIfAbsent(ChestMenuSavedData.ID);
+        var interactiveEntity = savedData.getMenuEntities().get(entity.getUUID());
+        if (interactiveEntity == null) {
+            return;
+        }
+
+        var playerData = Services.ATTACHMENT.<PlayerDataAttachment>getPlayerAttachment(player, PlayerDataAttachment.ID);
+        var boundEntities = playerData.boundEntities();
+        var newPlayerData = new PlayerDataAttachment();
+        newPlayerData.copyFrom(playerData);
+        boundEntities.remove(Integer.valueOf(entity.getId()));
+        newPlayerData.setBoundEntities(boundEntities);
+        Services.ATTACHMENT.setPlayerAttachment(serverPlayer, newPlayerData, PlayerDataAttachment.ID);
+    }
+
+    // ---- Player start tracking entity
+    // 1. Rsync player attachment if it's a bound entity.
+    public static void onPlayerStartTracking(Player player, Entity entity) {
+        if (player.level().isClientSide() || !(player.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        if (!(player instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+
+        if (!Memory.playersWithMenuHighlightEnabled.contains(player.getUUID())) {
+            return;
+        }
+
+        var savedData = serverLevel.getDataStorage().computeIfAbsent(ChestMenuSavedData.ID);
+        var interactiveEntity = savedData.getMenuEntities().get(entity.getUUID());
+        if (interactiveEntity == null) {
+            return;
+        }
+
+        var playerData = Services.ATTACHMENT.<PlayerDataAttachment>getPlayerAttachment(player, PlayerDataAttachment.ID);
+        var boundEntities = playerData.boundEntities();
+        boundEntities.add(entity.getId());
+
+        var newPlayerData = new PlayerDataAttachment();
+        newPlayerData.copyFrom(playerData);
+        newPlayerData.setBoundEntities(boundEntities);
+        Services.ATTACHMENT.setPlayerAttachment(serverPlayer, newPlayerData, PlayerDataAttachment.ID);
+    }
+
+
+    // ---- Player change dimension
+    // 1. Repopulate all sync data
+    public static void onPlayerChangeDimension(ServerPlayer player, ServerLevel level) {
+        if (!Memory.playersWithMenuHighlightEnabled.contains(player.getUUID())) {
+            return;
+        }
+
+        var playerData = Services.ATTACHMENT.<PlayerDataAttachment>getPlayerAttachment(player, PlayerDataAttachment.ID);
+        var newPlayerData = new PlayerDataAttachment();
+        newPlayerData.copyFrom(playerData);
+        Utils.populatePlayerDataForSync(level, newPlayerData, player);
+        Services.ATTACHMENT.setPlayerAttachment(player, newPlayerData, newPlayerData.getId());
+    }
+
+    // ---- On player leave
+    // 1. Remove player UUID from memory map
+    public static void onPlayerLeaveServer(ServerPlayer player) {
+        Memory.playersWithMenuHighlightEnabled.remove(player.getUUID());
     }
 }

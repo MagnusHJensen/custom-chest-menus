@@ -20,35 +20,27 @@ package dk.magnusjensen.customchestmenus.registry;
 
 import dk.magnusjensen.customchestmenus.Constants;
 import dk.magnusjensen.customchestmenus.data.PlayerDataAttachment;
-import net.minecraft.core.Registry;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import net.fabricmc.fabric.impl.attachment.AttachmentRegistryImpl;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Optional;
-
 public class FabricAttachmentRegistry {
-    public static final DataComponentType<PlayerDataAttachment> PLAYER_DATA = Registry.register(
-        BuiltInRegistries.DATA_COMPONENT_TYPE,
+    public static final AttachmentType<PlayerDataAttachment> PLAYER_DATA = AttachmentRegistry.create(
         ResourceLocation.tryBuild(Constants.MOD_ID, "player_data"),
-        DataComponentType.<PlayerDataAttachment>builder().build()
+        (builder) -> builder.initializer(() -> new PlayerDataAttachment())
+            .syncWith(PlayerDataAttachment.SYNC_CODEC, (attachmentTarget, serverPlayer) -> {
+                return true; // Sync all?
+            })
     );
 
-    public static <T> Optional<DataComponentType<T>> findByClass(Class<T> clazz) {
-        return BuiltInRegistries.DATA_COMPONENT_TYPE.stream()
-            .filter(dataComponentType -> {
-                // Use reflection to check if the generic type matches
-                try {
-                    return clazz.isAssignableFrom(dataComponentType.getClass().getGenericSuperclass().getClass());
-                } catch (Exception e) {
-                    return false;
-                }
-            })
-            .map(dataComponentType -> (DataComponentType<T>) dataComponentType)
-            .findFirst();
+    public static <T> AttachmentType<T> findById(ResourceLocation id) {
+        var attachmentType = AttachmentRegistryImpl.get(id);
+
+        return (AttachmentType<T>) attachmentType;
     }
 
     public static void register() {
-        Constants.LOGGER.info("Registering menus for Fabric.");
+        Constants.LOGGER.info("Registering attachments for Fabric.");
     }
 }

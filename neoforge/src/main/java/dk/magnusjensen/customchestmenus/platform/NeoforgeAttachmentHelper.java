@@ -21,21 +21,23 @@ package dk.magnusjensen.customchestmenus.platform;
 import dk.magnusjensen.customchestmenus.Constants;
 import dk.magnusjensen.customchestmenus.platform.services.IAttachmentHelper;
 import dk.magnusjensen.customchestmenus.registry.NeoforgeAttachmentRegistry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.attachment.AttachmentType;
 
 import java.util.Optional;
 
 public class NeoforgeAttachmentHelper implements IAttachmentHelper {
     @Override
-    public <T> T getPlayerAttachment(ServerPlayer player, Class<T> clazz) {
-        Optional<AttachmentType<T>> attachmentType = NeoforgeAttachmentRegistry.findByClass(clazz);
+    public <T> T getPlayerAttachment(Player player, ResourceLocation id) {
+        Optional<AttachmentType<T>> attachmentType = NeoforgeAttachmentRegistry.findById(id);
         return attachmentType.map(player::getData).orElse(null);
     }
 
     @Override
-    public <T> void setPlayerAttachment(ServerPlayer player, T attachment) {
-        Optional<AttachmentType<T>> attachmentType = NeoforgeAttachmentRegistry.findByClass((Class<T>)attachment.getClass());
+    public <T> void setPlayerAttachment(ServerPlayer player, T attachment, ResourceLocation id) {
+        Optional<AttachmentType<T>> attachmentType = NeoforgeAttachmentRegistry.findById(id);
 
         if (attachmentType.isEmpty()) {
             Constants.LOGGER.error("No attachment found for {}", attachment.getClass());

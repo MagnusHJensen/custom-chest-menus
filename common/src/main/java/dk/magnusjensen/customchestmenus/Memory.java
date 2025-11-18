@@ -16,14 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dk.magnusjensen.customchestmenus.network;
+package dk.magnusjensen.customchestmenus;
 
-import dk.magnusjensen.customchestmenus.network.overlay.UpdateMenuBoundEntityS2C;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-public class FabricNetwork {
-    public static void register() {
-        PayloadTypeRegistry.playS2C().register(UpdateMenuTitleS2C.TYPE, UpdateMenuTitleS2C.STREAM_CODEC);
-    }
+// This class is an in-memory store, for fast access to certain data, that we don't want to persist
+public class Memory {
 
+    public static List<UUID> playersWithMenuHighlightEnabled = new ArrayList<>();
 }

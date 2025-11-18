@@ -18,30 +18,24 @@
 
 package dk.magnusjensen.customchestmenus.platform;
 
-import dk.magnusjensen.customchestmenus.Constants;
 import dk.magnusjensen.customchestmenus.platform.services.IAttachmentHelper;
 import dk.magnusjensen.customchestmenus.registry.FabricAttachmentRegistry;
-import net.minecraft.core.component.DataComponentType;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-
-import java.util.Optional;
+import net.minecraft.world.entity.player.Player;
 
 public class FabricAttachmentHelper implements IAttachmentHelper {
     @Override
-    public <T> T getPlayerAttachment(ServerPlayer player, Class<T> clazz) {
-        Optional<DataComponentType<T>> componentType = FabricAttachmentRegistry.findByClass(clazz);
-        return componentType.map(player::get).orElse(null);
+    public <T> T getPlayerAttachment(Player player, ResourceLocation id) {
+        var attachmentType = FabricAttachmentRegistry.<T>findById(id);
+        return player.getAttachedOrCreate(attachmentType);
     }
 
     @Override
-    public <T> void setPlayerAttachment(ServerPlayer player, T attachment) {
-        Optional<DataComponentType<T>> componentType = FabricAttachmentRegistry.findByClass((Class<T>)attachment.getClass());
+    public <T> void setPlayerAttachment(ServerPlayer player, T attachment, ResourceLocation id) {
+        AttachmentType<T> attachmentType = FabricAttachmentRegistry.findById(id);
 
-        if (componentType.isEmpty()) {
-            Constants.LOGGER.error("No attachment found for {}", attachment.getClass());
-            return;
-        }
-
-        player.setComponent(componentType.get(), attachment);
+        player.setAttached(attachmentType, attachment);
     }
 }

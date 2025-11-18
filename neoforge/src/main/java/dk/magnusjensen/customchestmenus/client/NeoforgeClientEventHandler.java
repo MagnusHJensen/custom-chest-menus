@@ -25,6 +25,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 @EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT)
 public class NeoforgeClientEventHandler {
@@ -32,5 +33,12 @@ public class NeoforgeClientEventHandler {
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(NeoforgeMenuRegistry.CUSTOM_CHEST_MENU.get(), CustomChestScreen::new);
+    }
+
+    @SubscribeEvent
+    public static void renderLevel(RenderLevelStageEvent.AfterEntities event) {
+        MenuHighlightRenderer.renderLevelOverlay(
+            event.getPoseStack()
+        );
     }
 }
