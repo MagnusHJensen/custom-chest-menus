@@ -1,5 +1,7 @@
 # Custom Chest Menus - Just like you know them from plugin servers
 
+## This version is no longer maintained.
+
 ![Screenshot of starter example custom chest menu first page](./docs/starter-custom-chest-menu.png)
 
 Custom Chest Menus is a mod for Minecraft that allows server owners to create custom chest menus with various functionalities.
