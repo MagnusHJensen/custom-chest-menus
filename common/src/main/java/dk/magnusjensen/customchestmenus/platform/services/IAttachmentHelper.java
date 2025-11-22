@@ -16,18 +16,17 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dk.magnusjensen.customchestmenus.client;
+package dk.magnusjensen.customchestmenus.platform.services;
 
-import dk.magnusjensen.customchestmenus.network.SyncAttachmentDataS2C;
-import dk.magnusjensen.customchestmenus.network.UpdateMenuTitleS2C;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
-public class NeoforgeClientPayloadHandler {
-    public static void handleTitleUpdatePacket(final UpdateMenuTitleS2C packet, IPayloadContext context) {
-        ClientPayloadHandler.handleTitleUpdate(packet);
-    }
+public interface IAttachmentHelper {
+    <T> T getPlayerAttachment(Player player, ResourceLocation id);
+    <T> void setPlayerAttachment(ServerPlayer player, T attachment, ResourceLocation id);
 
-    public static void handleAttachmentDataPacket(SyncAttachmentDataS2C syncAttachmentDataS2C, IPayloadContext iPayloadContext) {
-        ClientPayloadHandler.handleAttachmentDataPacket(syncAttachmentDataS2C.attachment());
-    }
+    // Function that is primarily used for NeoForge to sync data attachments if a client field has changed.
+    // Fabric just calls the other setPlayerAttachment
+    <T> void setPlayerAttachmentSync(ServerPlayer player, T attachment, ResourceLocation id);
 }

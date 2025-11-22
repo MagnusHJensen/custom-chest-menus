@@ -36,5 +36,10 @@ public class NeoforgeNetwork {
             UpdateMenuTitleS2C.STREAM_CODEC,
             NeoforgeClientPayloadHandler::handleTitleUpdatePacket
         );
+        registrar.playToClient(
+            SyncAttachmentDataS2C.TYPE,
+            SyncAttachmentDataS2C.STREAM_CODEC,
+            NeoforgeClientPayloadHandler::handleAttachmentDataPacket
+        );
     }
 }

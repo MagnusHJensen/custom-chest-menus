@@ -18,20 +18,41 @@
 
 package dk.magnusjensen.customchestmenus;
 
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import dk.magnusjensen.customchestmenus.data.ChestMenuSavedData;
+import dk.magnusjensen.customchestmenus.data.PlayerDataAttachment;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.saveddata.SavedData;
+
+import java.util.ArrayList;
 
 public class Utils {
     public static ResourceLocation modLoc(String path) {
         return ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, path);
     }
 
-    public static RegistryFriendlyByteBuf fbbToRfbb(FriendlyByteBuf buf) {
-        // Use the current registry context (built-in + dynamic)
-        RegistryAccess access = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
-        return new RegistryFriendlyByteBuf(buf, access);
+    /**
+     * Handles populating player data for syncing to the client
+     * @param level
+     * @param playerData
+     * @param player
+     */
+    public static void populatePlayerDataForSync(ServerLevel level, PlayerDataAttachment playerData, ServerPlayer player) {
+        playerData.resetServerSideVersionData(); // To ensure sync happens for Fabric
+        var savedData = level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(ChestMenuSavedData::new, ChestMenuSavedData::load, null), ChestMenuSavedData.CHEST_MENU_KEY);
+        playerData.setBoundBlocks(savedData.getMenuBlocks().keySet().stream().toList());
+
+        var boundEntities = new ArrayList<Integer>();
+        savedData.getMenuEntities().keySet().stream().forEach(
+            (uuid) -> {
+                var entity = level.getEntity(uuid);
+                if (entity != null) {
+                    boundEntities.add(entity.getId());
+                }
+            }
+        );
+        playerData.setBoundEntities(boundEntities);
+
     }
 }

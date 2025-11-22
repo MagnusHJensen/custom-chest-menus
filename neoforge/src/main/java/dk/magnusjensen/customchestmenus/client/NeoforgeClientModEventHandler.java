@@ -18,24 +18,19 @@
 
 package dk.magnusjensen.customchestmenus.client;
 
+import dk.magnusjensen.customchestmenus.Constants;
 import dk.magnusjensen.customchestmenus.client.screen.CustomChestScreen;
-import dk.magnusjensen.customchestmenus.data.PlayerDataAttachment;
-import dk.magnusjensen.customchestmenus.network.UpdateMenuTitleS2C;
-import net.minecraft.client.Minecraft;
+import dk.magnusjensen.customchestmenus.registry.NeoforgeMenuRegistry;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
-import java.util.Objects;
+@EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+public class NeoforgeClientModEventHandler {
 
-public class ClientPayloadHandler {
-    public static void handleTitleUpdate(UpdateMenuTitleS2C packet) {
-        if (!(Minecraft.getInstance().screen instanceof CustomChestScreen ccs) || !Objects.equals(ccs.getMenu().menuId(), packet.menuId()))  {
-            return; // Do nothing
-        }
-
-        ccs.setDynamicTitle(packet.title());
-    }
-
-    public static void handleAttachmentDataPacket(PlayerDataAttachment packet) {
-        // This getInstance also calls set methods internally
-        ClientMemory.getInstance(packet.hasOverlay(), packet.boundBlocks(), packet.boundEntities());
+    @SubscribeEvent
+    public static void registerScreens(RegisterMenuScreensEvent event) {
+        event.register(NeoforgeMenuRegistry.CUSTOM_CHEST_MENU.get(), CustomChestScreen::new);
     }
 }

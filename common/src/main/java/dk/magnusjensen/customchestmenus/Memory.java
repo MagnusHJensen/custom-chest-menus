@@ -16,18 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dk.magnusjensen.customchestmenus.client;
+package dk.magnusjensen.customchestmenus;
 
-import dk.magnusjensen.customchestmenus.network.SyncAttachmentDataS2C;
-import dk.magnusjensen.customchestmenus.network.UpdateMenuTitleS2C;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-public class NeoforgeClientPayloadHandler {
-    public static void handleTitleUpdatePacket(final UpdateMenuTitleS2C packet, IPayloadContext context) {
-        ClientPayloadHandler.handleTitleUpdate(packet);
-    }
+// This class is an in-memory store, for fast access to certain data, that we don't want to persist
+public class Memory {
 
-    public static void handleAttachmentDataPacket(SyncAttachmentDataS2C syncAttachmentDataS2C, IPayloadContext iPayloadContext) {
-        ClientPayloadHandler.handleAttachmentDataPacket(syncAttachmentDataS2C.attachment());
-    }
+    public static List<UUID> playersWithMenuHighlightEnabled = new ArrayList<>();
 }

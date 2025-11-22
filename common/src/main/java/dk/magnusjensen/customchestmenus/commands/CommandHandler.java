@@ -27,5 +27,6 @@ public class CommandHandler {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         ReloadMenuCommand.register(dispatcher);
         OpenMenuCommand.register(dispatcher);
+        BindingCommand.register(dispatcher);
     }
 }

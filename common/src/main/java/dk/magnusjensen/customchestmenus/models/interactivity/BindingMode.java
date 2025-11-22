@@ -16,18 +16,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dk.magnusjensen.customchestmenus.client;
+package dk.magnusjensen.customchestmenus.models.interactivity;
 
-import dk.magnusjensen.customchestmenus.network.SyncAttachmentDataS2C;
-import dk.magnusjensen.customchestmenus.network.UpdateMenuTitleS2C;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-public class NeoforgeClientPayloadHandler {
-    public static void handleTitleUpdatePacket(final UpdateMenuTitleS2C packet, IPayloadContext context) {
-        ClientPayloadHandler.handleTitleUpdate(packet);
-    }
-
-    public static void handleAttachmentDataPacket(SyncAttachmentDataS2C syncAttachmentDataS2C, IPayloadContext iPayloadContext) {
-        ClientPayloadHandler.handleAttachmentDataPacket(syncAttachmentDataS2C.attachment());
-    }
+public enum BindingMode {
+    BIND,
+    UNBIND,
+    NONE;
 }

@@ -18,10 +18,12 @@
 
 package dk.magnusjensen.customchestmenus;
 
+import dk.magnusjensen.customchestmenus.client.MenuHighlightRenderer;
 import dk.magnusjensen.customchestmenus.client.screen.CustomChestScreen;
 import dk.magnusjensen.customchestmenus.network.FabricClientNetwork;
 import dk.magnusjensen.customchestmenus.registry.FabricMenuRegistry;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.gui.screens.MenuScreens;
 
 public class FabricClientCustomChestMenus implements ClientModInitializer {
@@ -29,5 +31,9 @@ public class FabricClientCustomChestMenus implements ClientModInitializer {
     public void onInitializeClient() {
         FabricClientNetwork.register();
         MenuScreens.register(FabricMenuRegistry.CUSTOM_CHEST_MENU, CustomChestScreen::new);
+
+        WorldRenderEvents.AFTER_ENTITIES.register(worldRenderContext -> {
+            MenuHighlightRenderer.renderLevelOverlay(worldRenderContext.matrixStack());
+        });
     }
 }

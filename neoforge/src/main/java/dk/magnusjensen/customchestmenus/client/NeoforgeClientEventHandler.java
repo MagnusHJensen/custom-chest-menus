@@ -19,18 +19,21 @@
 package dk.magnusjensen.customchestmenus.client;
 
 import dk.magnusjensen.customchestmenus.Constants;
-import dk.magnusjensen.customchestmenus.client.screen.CustomChestScreen;
-import dk.magnusjensen.customchestmenus.registry.NeoforgeMenuRegistry;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
-@EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT)
 public class NeoforgeClientEventHandler {
 
     @SubscribeEvent
-    public static void registerScreens(RegisterMenuScreensEvent event) {
-        event.register(NeoforgeMenuRegistry.CUSTOM_CHEST_MENU.get(), CustomChestScreen::new);
+    public static void renderLevel(RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+            return;
+        }
+        MenuHighlightRenderer.renderLevelOverlay(
+            event.getPoseStack()
+        );
     }
 }

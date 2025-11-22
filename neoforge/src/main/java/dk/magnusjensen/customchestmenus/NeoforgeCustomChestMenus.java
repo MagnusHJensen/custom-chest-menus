@@ -18,6 +18,7 @@
 
 package dk.magnusjensen.customchestmenus;
 
+import dk.magnusjensen.customchestmenus.registry.NeoforgeAttachmentRegistry;
 import dk.magnusjensen.customchestmenus.registry.NeoforgeMenuRegistry;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -35,6 +36,7 @@ public class NeoforgeCustomChestMenus {
         CommonClass.init();
 
         NeoforgeMenuRegistry.MENUS.register(modEventBus);
+        NeoforgeAttachmentRegistry.ATTACHMENT_TYPES.register(modEventBus);
     }
 
     @SubscribeEvent
