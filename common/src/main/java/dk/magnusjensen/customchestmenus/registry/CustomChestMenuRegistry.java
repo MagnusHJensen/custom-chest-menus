@@ -25,6 +25,7 @@ import dk.magnusjensen.customchestmenus.Constants;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
 import dk.magnusjensen.customchestmenus.models.MenuValidationException;
 import net.minecraft.server.MinecraftServer;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -51,34 +52,43 @@ public class CustomChestMenuRegistry {
      * Load menus also function as reload, since it clears the MENUS map on each load.
      * @param server
      */
-    public static void loadMenus(MinecraftServer server) {
+    public static Exception loadMenus(MinecraftServer server) {
         MENUS.clear();
 
         Path customMenusPath;
         try {
             customMenusPath = worldMenuDir(server);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            Constants.LOGGER.error("Failed to create or access custom menus directory.", e);
+            return new Exception("Failed to create or access custom menus directory.");
         }
 
         int loaded = 0;
+        StringBuilder fullExceptionMessage = new StringBuilder();
         try (Stream<Path> files = Files.list(customMenusPath)) {
             for (Path p : (Iterable<Path>) files.filter(f -> f.toString().endsWith(".json"))::iterator) {
-                if (loadMenuFile(p)) loaded++;
+                var ex = loadMenuFile(p);
+                if (ex == null) {
+                    loaded++;
+                } else {
+                    // We failed and ex contains the failure.
+                    fullExceptionMessage.append("\n").append(ex.getMessage());
+                }
             }
         } catch (IOException e) {
             Constants.LOGGER.error("Failed to list {}", customMenusPath.toAbsolutePath(), e);
         }
 
         Constants.LOGGER.info("Loaded {} menu(s) from {}", loaded, customMenusPath.toAbsolutePath());
+        return !fullExceptionMessage.isEmpty()
+            ? new Exception("Errors while loading menus:" + fullExceptionMessage)
+            : null;
     }
 
-    private static boolean loadMenuFile(Path path) {
+    private static @Nullable Exception loadMenuFile(Path path) {
         try {
             String raw = Files.readString(path);
             JsonElement element = JsonParser.parseString(raw);
-
-            // TODO: Validate in terms of duplicate slots
 
             MenuDefinition menu;
             try {
@@ -89,13 +99,13 @@ public class CustomChestMenuRegistry {
 
                 if (result.isEmpty()) {
                     Constants.LOGGER.warn("Skipping {}, failed to parse.", path.getFileName());
-                    return false;
+                    return new Exception("Failed to parse " + path.getFileName());
                 }
 
                 menu = result.get();
-            } catch (MenuValidationException ex) {
+            } catch (MenuValidationException|IllegalArgumentException ex) {
                 Constants.LOGGER.warn("Menu validation error in {}: {}", path.getFileName(), ex.getMessage());
-                return false;
+                return ex;
             }
 
 
@@ -109,11 +119,11 @@ public class CustomChestMenuRegistry {
             } else {
                 Constants.LOGGER.debug("Loaded menu '{}' from {}", menu.id(), path.getFileName());
             }
-            return true;
+            return null;
 
         } catch (Exception e) {
             Constants.LOGGER.error("Exception while loading {}", path.toAbsolutePath(), e);
-            return false;
+            return new Exception("Exception while loading " + path.toAbsolutePath());
         }
     }
 

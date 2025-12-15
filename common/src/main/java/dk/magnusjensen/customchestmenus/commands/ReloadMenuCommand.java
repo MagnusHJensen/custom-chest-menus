@@ -32,12 +32,15 @@ public class ReloadMenuCommand {
                 .requires(src -> src.hasPermission(2))
                 .executes(ctx -> {
                     MinecraftServer server = ctx.getSource().getServer();
-                    CustomChestMenuRegistry.loadMenus(server);
+                    var ex = CustomChestMenuRegistry.loadMenus(server);
 
-                    // TODO: Spit out errors?
-                    // TODO: Reload open menus on all players.
+
 
                     ctx.getSource().sendSystemMessage(Component.literal("Reloaded custom chest menus."));
+
+                    if (ex != null) {
+                        ctx.getSource().sendFailure(Component.literal(ex.getMessage()));
+                    }
                     return 1;
                 })
             )

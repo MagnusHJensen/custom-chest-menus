@@ -38,7 +38,33 @@ public record MenuDefinitionV1(int formatVersion,
         MenuSize.CODEC.fieldOf("size").forGetter(v -> v.size),
         MenuItem.CODEC.optionalFieldOf("filler").forGetter(v -> v.filler),
         MenuPage.CODEC.listOf().fieldOf("pages").forGetter(v -> v.pages)
-    ).apply(instance, MenuDefinitionV1::new));
+    ).apply(instance, (formatVersion, id, name, menuSize, menuItem, menuPages) -> {
+        StringBuilder errors = new StringBuilder();
+
+        var maxSlotsPerPage = menuSize.getSlots();
+
+        for (var i = 0; i <menuPages.size(); i++) {
+            var page = menuPages.get(i);
+            var pageErrors = page.validateParsing(page.items(), menuSize);
+            if (!pageErrors.isEmpty())
+                errors.append("Page[").append(i).append("] errors:\n").append(pageErrors);
+
+            if (page.items().size() > maxSlotsPerPage) {
+                if (errors.isEmpty()) {
+                    errors.append("Page[").append(i).append("] errors:\n");
+                }
+                errors.append("'").append(page.title()).append("' has ")
+                    .append(page.items().size()).append(" items, which exceeds the maximum of ")
+                    .append(maxSlotsPerPage).append(" for menu size ").append(menuSize).append("\n");
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            throw new MenuValidationException("Validation errors:\n" + errors);
+        }
+
+        return new MenuDefinitionV1(formatVersion, id, name, menuSize, menuItem, menuPages);
+    }));
 
     public MenuDefinition toMenuDefinition() {
         return new MenuDefinition(id, name, size, filler, pages);

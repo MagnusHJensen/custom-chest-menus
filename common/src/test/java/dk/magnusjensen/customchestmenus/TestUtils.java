@@ -18,24 +18,15 @@
 
 package dk.magnusjensen.customchestmenus;
 
-import com.mojang.brigadier.CommandDispatcher;
-import dk.magnusjensen.customchestmenus.commands.CommandHandler;
-import dk.magnusjensen.customchestmenus.registry.CustomChestMenuRegistry;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.server.MinecraftServer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
+public class TestUtils {
+    public static JsonElement NoopAction() {
 
-public class CommonClass {
+        var action = new JsonObject();
+        action.addProperty("type", "noop");
 
-    public static void init() {
-        // Move init code here
-    }
-
-    public static void loadMenus(MinecraftServer server) {
-        CustomChestMenuRegistry.loadMenus(server); // We don't care about the errors here as it's logged in the console on start up.
-    }
-
-    public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
-        CommandHandler.register(dispatcher);
+        return action;
     }
 }
