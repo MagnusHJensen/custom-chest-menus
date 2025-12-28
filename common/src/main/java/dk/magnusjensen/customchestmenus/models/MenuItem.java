@@ -26,10 +26,12 @@ import dk.magnusjensen.customchestmenus.models.actions.MenuAction;
 import dk.magnusjensen.customchestmenus.models.actions.NoopAction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemLore;
 
 import java.util.ArrayList;
@@ -44,14 +46,16 @@ public record MenuItem(
     ResourceLocation item,
     String name,
     Optional<List<String>> lore,
-    MenuAction action
+    MenuAction action,
+    Optional<CompoundTag> nbt
 ) {
     public static final Codec<MenuItem> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.INT.fieldOf("slot").forGetter(MenuItem::slot),
         ResourceLocation.CODEC.fieldOf("item").forGetter(MenuItem::item),
         Codec.STRING.fieldOf("name").forGetter(MenuItem::name),
         Codec.STRING.listOf().optionalFieldOf("lore").forGetter(MenuItem::lore),
-        MenuAction.CODEC.optionalFieldOf("action", new NoopAction()).forGetter(MenuItem::action)
+        MenuAction.CODEC.optionalFieldOf("action", new NoopAction()).forGetter(MenuItem::action),
+        CompoundTag.CODEC.optionalFieldOf("nbt").forGetter(MenuItem::nbt)
     ).apply(instance, MenuItem::new));
 
 
@@ -73,13 +77,16 @@ public record MenuItem(
             }
             stack.set(DataComponents.LORE, itemLore);
         }
+
+        nbt.ifPresent(compoundTag -> stack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag)));
+
         return stack;
     }
 
     private ItemStack makeCraftingItemStack(CraftItemsAction craftItemsAction, Item item) {
         ItemStack stack = new ItemStack(item);
         if (!name.isEmpty()) stack.set(DataComponents.CUSTOM_NAME, Component.literal(name));
-
+        nbt.ifPresent(compoundTag -> stack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag)));
 
         var itemLore = new ArrayList<Component>();
         itemLore.add(Component.literal("§lInputs:§r"));

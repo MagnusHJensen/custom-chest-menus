@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/MagnusHJensen/custom-chest-menus/refs/heads/1.21.8/docs/v1.schema.json",
+  "$schema": "https://raw.githubusercontent.com/MagnusHJensen/custom-chest-menus/refs/heads/1.21.10/docs/v1.schema.json",
   "format_version": 1,
   "id": "test_menu",
   "name": "Test Menu",
@@ -20,7 +20,10 @@
           "action": {
             "type": "close"
           },
-          "lore": ["My awesome LORE"]
+          "lore": ["My awesome LORE"],
+          "nbt": {
+            "CustomModelData": 123456
+          }
         },
         {
           "name": "Drop party!",
