@@ -9,7 +9,8 @@
     ],
     "contact": {
         "issues": "https://github.com/magnushjensen/custom-chest-menus/issues",
-        "sources": "https://github.com/magnushjensen/custom-chest-menus"
+        "sources": "https://github.com/magnushjensen/custom-chest-menus",
+        "homepage": "https://curseforge.com/minecraft/mc-mods/custom-chest-menus"
     },
     "license": "${license}",
     "icon": "${mod_id}.png",
