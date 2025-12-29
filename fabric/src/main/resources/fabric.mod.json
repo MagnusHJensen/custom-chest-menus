@@ -8,8 +8,9 @@
         "${mod_author}"
     ],
     "contact": {
-        "homepage": "https://fabricmc.net/",
-        "sources": "https://github.com/FabricMC/fabric-example-mod"
+        "homepage": "https://curseforge.com/minecraft/mc-mods/custom-chest-menus/",
+        "sources": "https://github.com/magnushjensen/custom-chest-menus",
+        "issues": "https://github.com/magnushjensen/custom-chest-menus/issues"
     },
     "license": "${license}",
     "icon": "${mod_id}.png",
@@ -31,9 +32,6 @@
         "fabric-api": "*",
         "minecraft": "${minecraft_version}",
         "java": ">=${java_version}"
-    },
-    "suggests": {
-        "another-mod": "*"
     }
 }
   

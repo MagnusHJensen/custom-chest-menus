@@ -178,6 +178,10 @@
                       "additionalProperties": false
                     }
                   ]
+                },
+                "nbt": {
+                  "type": "object",
+                  "description": "An object representing the NBT data for the item. Follows the standard Minecraft NBT JSON format."
                 }
               }
             }

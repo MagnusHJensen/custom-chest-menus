@@ -20,7 +20,10 @@
           "action": {
             "type": "close"
           },
-          "lore": ["My awesome LORE"]
+          "lore": ["My awesome LORE"],
+          "nbt": {
+            "CustomModelData": 123456
+          }
         },
         {
           "name": "Drop party!",
