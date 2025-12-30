@@ -4,7 +4,12 @@ plugins {
 }
 
 neoForge {
-    neoFormVersion = neo_form_version
+    enable {
+
+        neoFormVersion = neo_form_version
+        disableRecompilation = System.getenv("CI") == "true"
+
+    }
     // Automatically enable AccessTransformers if the file exists
     def at = file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {
@@ -19,7 +24,6 @@ neoForge {
         }
     }
 
-    // disableRecompilation = System.getenv("CI") == "true"
 }
 
 dependencies {
