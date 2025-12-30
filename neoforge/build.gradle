@@ -48,7 +48,7 @@ unifiedPublishing {
         version = mod_version // Optional, Inferred from project by default
         changelog = rootProject.file("CHANGELOG.md").text // Optional, in markdown format
         releaseType = "beta" // Optional, use "release", "beta" or "alpha"
-        gameVersions = ["26.1-snapshot.1"] // Required, list of supported game versions
+        gameVersions = ["26.1-snapshot"] // Required, list of supported game versions
         gameLoaders = ["neoforge"]
 
         mainPublication tasks.named('jar', Jar).flatMap { it.archiveFile } // Declares the publicated jar
