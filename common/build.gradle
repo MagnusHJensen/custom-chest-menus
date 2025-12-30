@@ -10,10 +10,6 @@ neoForge {
     if (at.exists()) {
         accessTransformers.from(at.absolutePath)
     }
-    parchment {
-        minecraftVersion = parchment_minecraft
-        mappingsVersion = parchment_version
-    }
 
     addModdingDependenciesTo sourceSets.test
 
@@ -22,6 +18,8 @@ neoForge {
             sourceSet sourceSets.main
         }
     }
+
+    // disableRecompilation = System.getenv("CI") == "true"
 }
 
 dependencies {

@@ -25,6 +25,7 @@ import dk.magnusjensen.customchestmenus.platform.Services;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.server.permissions.Permissions;
 
 public class OpenMenuCommand {
 
@@ -40,7 +41,7 @@ public class OpenMenuCommand {
                         return 1;
                     })
                     .then(Commands.argument("player", EntityArgument.player())
-                        .requires(ctx -> ctx.hasPermission(2))
+                        .requires(ctx -> ctx.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
                         .executes(ctx -> {
                             var menuDef = MenuArgument.requireMenu(ctx, "menu");
                             var targetPlayer = EntityArgument.getPlayer(ctx, "player");

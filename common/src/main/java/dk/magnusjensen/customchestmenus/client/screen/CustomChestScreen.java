@@ -23,11 +23,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 public class CustomChestScreen extends AbstractContainerScreen<CustomChestMenu> {
-    private static final ResourceLocation CONTAINER_BACKGROUND = ResourceLocation.withDefaultNamespace("textures/gui/container/generic_54.png");
+    private static final Identifier CONTAINER_BACKGROUND = Identifier.withDefaultNamespace("textures/gui/container/generic_54.png");
     /**
      * Window height is calculated with these values" the more rows, the higher
      */
@@ -35,14 +35,16 @@ public class CustomChestScreen extends AbstractContainerScreen<CustomChestMenu> 
     private Component dynamicTitle;
 
     public CustomChestScreen(CustomChestMenu menu, Inventory playerInventory, Component title) {
-        super(menu, playerInventory, title);
+        var rowCount = menu.getRowCount();
+        var imageHeight = 114 + rowCount * 18;
+        super(menu, playerInventory, title, 176, imageHeight);
         int i = 222;
         int j = 114;
-        this.containerRows = menu.getRowCount();
-        this.imageHeight = 114 + this.containerRows * 18;
+        this.containerRows = rowCount;
         this.inventoryLabelY = this.imageHeight - 94;
         this.dynamicTitle = title;
     }
+
 
     @Override
     public void render(GuiGraphics p_282060_, int p_282533_, int p_281661_, float p_281873_) {

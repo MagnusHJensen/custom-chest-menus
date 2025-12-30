@@ -33,7 +33,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -100,19 +100,19 @@ public class CustomChestMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotId, int dragType, ClickType clickType, Player player) {
+    public void clicked(int slotIndex, int buttonNum, ContainerInput containerInput, Player player) {
         // Block all transfer-y click types outright
-        if (clickType == ClickType.QUICK_MOVE   // shift-click
-            || clickType == ClickType.SWAP         // number keys
-            || clickType == ClickType.THROW        // Q
-            || clickType == ClickType.QUICK_CRAFT  // drag paint
-            || clickType == ClickType.PICKUP_ALL   // double-click collect to cursor
-            || clickType == ClickType.CLONE) {     // middle click in creative
+        if (containerInput == ContainerInput.QUICK_MOVE   // shift-click
+            || containerInput == ContainerInput.SWAP         // number keys
+            || containerInput == ContainerInput.THROW        // Q
+            || containerInput == ContainerInput.QUICK_CRAFT  // drag paint
+            || containerInput == ContainerInput.PICKUP_ALL   // double-click collect to cursor
+            || containerInput == ContainerInput.CLONE) {     // middle click in creative
             return;
         }
 
-        if (slotId >= 0 && slotId < this.slotCount && player instanceof ServerPlayer sp) {
-            ActionExecutor.onClick(sp, customChestMenuId, this.pageIndex, slotId); // your action resolver (next/prev/teleport/close)
+        if (slotIndex >= 0 && slotIndex < this.slotCount && player instanceof ServerPlayer sp) {
+            ActionExecutor.onClick(sp, customChestMenuId, this.pageIndex, slotIndex); // your action resolver (next/prev/teleport/close)
         }
         // Do NOT call super.clicked(...) or items will try to move.
     }

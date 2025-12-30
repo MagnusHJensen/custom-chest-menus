@@ -22,7 +22,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.UUID;
 
@@ -36,14 +36,14 @@ public record InteractiveEntity(
     String menuId,
     UUID entityUUID,
     BlockPos lastSeen,
-    ResourceLocation entityType
+    Identifier entityType
 ){
 
     public static final Codec<InteractiveEntity> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.STRING.fieldOf("menuId").forGetter(InteractiveEntity::menuId),
         UUIDUtil.CODEC.fieldOf("entityUUID").forGetter(InteractiveEntity::entityUUID),
         BlockPos.CODEC.fieldOf("lastSeen").forGetter(InteractiveEntity::lastSeen),
-        ResourceLocation.CODEC.fieldOf("entityType").forGetter(InteractiveEntity::entityType)
+        Identifier.CODEC.fieldOf("entityType").forGetter(InteractiveEntity::entityType)
     ).apply(instance, InteractiveEntity::new));
 
     public InteractiveEntity setLastSeen(BlockPos lastSeen) {

@@ -26,7 +26,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.List;
  * Stores and serializes per-player data related to custom chest menus.
  */
 public class PlayerDataAttachment {
-    public static final ResourceLocation ID = Utils.modLoc("player_data");
+    public static final Identifier ID = Utils.modLoc("player_data");
 
     // Server saving serializing/deserializing CODECS
     public static final MapCodec<PlayerDataAttachment> MAP_CODEC = MapCodec.unit(new PlayerDataAttachment());
@@ -80,7 +80,7 @@ public class PlayerDataAttachment {
         this.boundEntities = boundEntities;
     }
 
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 

@@ -28,7 +28,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -43,7 +43,7 @@ import java.util.Optional;
  */
 public record MenuItem(
     int slot,
-    ResourceLocation item,
+    Identifier item,
     String name,
     Optional<List<String>> lore,
     MenuAction action,
@@ -51,7 +51,7 @@ public record MenuItem(
 ) {
     public static final Codec<MenuItem> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.INT.fieldOf("slot").forGetter(MenuItem::slot),
-        ResourceLocation.CODEC.fieldOf("item").forGetter(MenuItem::item),
+        Identifier.CODEC.fieldOf("item").forGetter(MenuItem::item),
         Codec.STRING.fieldOf("name").forGetter(MenuItem::name),
         Codec.STRING.listOf().optionalFieldOf("lore").forGetter(MenuItem::lore),
         MenuAction.CODEC.optionalFieldOf("action", new NoopAction()).forGetter(MenuItem::action),

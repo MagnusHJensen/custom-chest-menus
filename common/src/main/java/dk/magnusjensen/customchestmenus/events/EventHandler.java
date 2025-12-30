@@ -29,7 +29,7 @@ import dk.magnusjensen.customchestmenus.registry.CustomChestMenuRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -110,7 +110,7 @@ public class EventHandler {
             serverPlayer.sendSystemMessage(Component.literal("This block is not bound to any menu."), true);
             return true;
         } else if (playerData.isBindingMode()) {
-            ResourceLocation blockType = BuiltInRegistries.BLOCK.getKey(block);
+            Identifier blockType = BuiltInRegistries.BLOCK.getKey(block);
             savedData.addMenuBlock(new InteractiveBlock(playerData.getMenuToBind(), pos, blockType));
             serverPlayer.sendSystemMessage(Component.literal("Successfully bound menu '" + playerData.getMenuToBind() + "' to this block."), true);
 
@@ -206,7 +206,7 @@ public class EventHandler {
             serverPlayer.sendSystemMessage(Component.literal("This entity is not bound to any menu."), true);
             return true;
         } else if (playerData.isBindingMode()) {
-            ResourceLocation entityType = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+            Identifier entityType = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
             savedData.addMenuEntity(new InteractiveEntity(playerData.getMenuToBind(), entity.getUUID(), entity.blockPosition(), entityType));
             serverPlayer.sendSystemMessage(Component.literal("Successfully bound menu '" + playerData.getMenuToBind() + "' to this entity."), true);
 

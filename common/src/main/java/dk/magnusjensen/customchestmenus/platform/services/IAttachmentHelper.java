@@ -18,11 +18,11 @@
 
 package dk.magnusjensen.customchestmenus.platform.services;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 public interface IAttachmentHelper {
-    <T> T getPlayerAttachment(Player player, ResourceLocation id);
-    <T> void setPlayerAttachment(ServerPlayer player, T attachment, ResourceLocation id);
+    <T> T getPlayerAttachment(Player player, Identifier id);
+    <T> void setPlayerAttachment(ServerPlayer player, T attachment, Identifier id);
 }

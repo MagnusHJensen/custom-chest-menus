@@ -37,8 +37,6 @@ public class NeoforgeClientEventHandler {
 
     @SubscribeEvent
     public static void renderLevel(RenderLevelStageEvent.AfterEntities event) {
-        MenuHighlightRenderer.renderLevelOverlay(
-            event.getPoseStack()
-        );
+        MenuHighlightRenderer.renderLevelOverlay();
     }
 }
