@@ -44,6 +44,7 @@ public record MenuItem(
     int slot,
     ResourceLocation item,
     String name,
+    int count,
     Optional<List<String>> lore,
     MenuAction action,
     Optional<CompoundTag> nbt
@@ -52,6 +53,7 @@ public record MenuItem(
         Codec.INT.fieldOf("slot").forGetter(MenuItem::slot),
         ResourceLocation.CODEC.fieldOf("item").forGetter(MenuItem::item),
         Codec.STRING.fieldOf("name").forGetter(MenuItem::name),
+        Codec.INT.optionalFieldOf("count", 1).forGetter(MenuItem::count),
         Codec.STRING.listOf().optionalFieldOf("lore").forGetter(MenuItem::lore),
         MenuAction.CODEC.optionalFieldOf("action", new NoopAction()).forGetter(MenuItem::action),
         CompoundTag.CODEC.optionalFieldOf("nbt").forGetter(MenuItem::nbt)
@@ -62,13 +64,16 @@ public record MenuItem(
         Item itemEntry = BuiltInRegistries.ITEM.getOptional(item)
             .orElse(net.minecraft.world.item.Items.BARRIER);
 
-        if (action instanceof CraftItemsAction craftItemsAction) {
-            return makeCraftingItemStack(craftItemsAction, itemEntry);
-        }
-
         ItemStack stack = new ItemStack(itemEntry);
         if (!name.isEmpty()) stack.set(DataComponents.CUSTOM_NAME, Component.literal(name));
         nbt.ifPresent(data -> stack.set(DataComponents.CUSTOM_DATA, CustomData.of(data)));
+        stack.setCount(this.count);
+
+        if (action instanceof CraftItemsAction craftItemsAction) {
+            return makeCraftingItemStack(craftItemsAction, stack);
+        }
+
+
         var lore = this.lore.orElse(List.of());
         if (!lore.isEmpty()) {
             var itemLore = ItemLore.EMPTY;
@@ -80,11 +85,7 @@ public record MenuItem(
         return stack;
     }
 
-    private ItemStack makeCraftingItemStack(CraftItemsAction craftItemsAction, Item item) {
-        ItemStack stack = new ItemStack(item);
-        if (!name.isEmpty()) stack.set(DataComponents.CUSTOM_NAME, Component.literal(name));
-        nbt.ifPresent(data -> stack.set(DataComponents.CUSTOM_DATA, CustomData.of(data)));
-
+    private ItemStack makeCraftingItemStack(CraftItemsAction craftItemsAction, ItemStack stack) {
         var itemLore = ItemLore.EMPTY;
         itemLore.withLineAdded(Component.literal("§lInputs:§r"));
         for (CraftItem craftItem : craftItemsAction.inputs()) {
