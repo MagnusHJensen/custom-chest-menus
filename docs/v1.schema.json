@@ -188,6 +188,10 @@
                 "nbt": {
                     "type": "object",
                     "description": "An object representing the NBT data for the item. Follows the standard Minecraft NBT JSON format."
+                },
+                "components": {
+                  "type": "object",
+                  "description": "An object representing the data components for the item. Keys are Data component identifiers, values are the component data in JSON format."
                 }
               }
             }

@@ -24,6 +24,7 @@ import dk.magnusjensen.customchestmenus.models.actions.CraftItem;
 import dk.magnusjensen.customchestmenus.models.actions.CraftItemsAction;
 import dk.magnusjensen.customchestmenus.models.actions.MenuAction;
 import dk.magnusjensen.customchestmenus.models.actions.NoopAction;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -34,9 +35,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemLore;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Represents an item definition with a custom menu.
@@ -48,7 +47,8 @@ public record MenuItem(
     int count,
     Optional<List<String>> lore,
     MenuAction action,
-    Optional<CompoundTag> nbt
+    Optional<CompoundTag> nbt,
+    Map<DataComponentType<?>, Object> components
 ) {
     public static final Codec<MenuItem> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.INT.fieldOf("slot").forGetter(MenuItem::slot),
@@ -57,7 +57,8 @@ public record MenuItem(
         Codec.INT.optionalFieldOf("count", 1).forGetter(MenuItem::count),
         Codec.STRING.listOf().optionalFieldOf("lore").forGetter(MenuItem::lore),
         MenuAction.CODEC.optionalFieldOf("action", new NoopAction()).forGetter(MenuItem::action),
-        CompoundTag.CODEC.optionalFieldOf("nbt").forGetter(MenuItem::nbt)
+        CompoundTag.CODEC.optionalFieldOf("nbt").forGetter(MenuItem::nbt),
+        DataComponentType.VALUE_MAP_CODEC.optionalFieldOf("components", Map.of()).forGetter(MenuItem::components)
     ).apply(instance, MenuItem::new));
 
 
@@ -69,6 +70,10 @@ public record MenuItem(
         if (!name.isEmpty()) stack.set(DataComponents.CUSTOM_NAME, Component.literal(name));
         nbt.ifPresent(compoundTag -> stack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundTag)));
         stack.setCount(this.count);
+
+        for (var entry : components.entrySet()) {
+            stack.set((DataComponentType) entry.getKey(), entry.getValue());
+        }
 
         if (action instanceof CraftItemsAction craftItemsAction) {
             return makeCraftingItemStack(craftItemsAction, stack);
