@@ -18,6 +18,7 @@
 
 package dk.magnusjensen.customchestmenus.client;
 
+import dk.magnusjensen.customchestmenus.network.SyncAttachmentDataS2C;
 import dk.magnusjensen.customchestmenus.network.UpdateMenuTitleS2C;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -26,6 +27,11 @@ import java.util.function.Supplier;
 public class ForgeClientPayloadHandler {
     public static void handleTitleUpdatePacket(final UpdateMenuTitleS2C packet, Supplier<NetworkEvent.Context> context) {
         ClientPayloadHandler.handleTitleUpdate(packet);
+        context.get().setPacketHandled(true);
+    }
+
+    public static void handleAttachmentDataPacket(SyncAttachmentDataS2C syncAttachmentDataS2C,  Supplier<NetworkEvent.Context> context) {
+        ClientPayloadHandler.handleAttachmentDataPacket(syncAttachmentDataS2C.attachment);
         context.get().setPacketHandled(true);
     }
 }

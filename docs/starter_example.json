@@ -26,10 +26,19 @@
           "name": "Drop party!",
           "slot": 13,
           "item": "minecraft:diamond",
+          "count": 10,
           "action": {
             "type": "command",
             "commands": ["give %player% minecraft:diamond 10", "say %player% just received 10 diamonds!"],
             "run_as_player": true
+          },
+          "nbt": {
+            "Enchantments": [
+              {
+                "id": "minecraft:sharpness",
+                "lvl": 1
+              }
+            ]
           }
         },
         {

@@ -43,15 +43,19 @@ public record MenuItem(
     int slot,
     ResourceLocation item,
     String name,
+    int count,
     Optional<List<String>> lore,
-    MenuAction action
+    MenuAction action,
+    Optional<CompoundTag> nbt
 ) {
     public static final Codec<MenuItem> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.INT.fieldOf("slot").forGetter(MenuItem::slot),
         ResourceLocation.CODEC.fieldOf("item").forGetter(MenuItem::item),
         Codec.STRING.fieldOf("name").forGetter(MenuItem::name),
+        Codec.INT.optionalFieldOf("count", 1).forGetter(MenuItem::count),
         Codec.STRING.listOf().optionalFieldOf("lore").forGetter(MenuItem::lore),
-        MenuAction.CODEC.optionalFieldOf("action", new NoopAction()).forGetter(MenuItem::action)
+        MenuAction.CODEC.optionalFieldOf("action", new NoopAction()).forGetter(MenuItem::action),
+        CompoundTag.CODEC.optionalFieldOf("nbt").forGetter(MenuItem::nbt)
     ).apply(instance, MenuItem::new));
 
 
@@ -59,13 +63,16 @@ public record MenuItem(
         Item itemEntry = BuiltInRegistries.ITEM.getOptional(item)
             .orElse(net.minecraft.world.item.Items.BARRIER);
 
+        ItemStack stack = new ItemStack(itemEntry);
+        if (!name.isEmpty()) stack.setHoverName(Component.literal(name));
+        nbt.ifPresent(stack::setTag);
+        stack.setCount(this.count);
+
         if (action instanceof CraftItemsAction craftItemsAction) {
-            return makeCraftingItemStack(craftItemsAction, itemEntry);
+            return makeCraftingItemStack(craftItemsAction, stack);
         }
 
 
-        ItemStack stack = new ItemStack(itemEntry);
-        if (!name.isEmpty()) stack.setHoverName(Component.literal(name));
         var lore = this.lore.orElse(List.of());
         if (!lore.isEmpty()) {
             ListTag loreTag = new ListTag();
@@ -81,10 +88,7 @@ public record MenuItem(
         return stack;
     }
 
-    private ItemStack makeCraftingItemStack(CraftItemsAction craftItemsAction, Item item) {
-        ItemStack stack = new ItemStack(item);
-        if (!name.isEmpty()) stack.setHoverName(Component.literal(name));
-
+    private ItemStack makeCraftingItemStack(CraftItemsAction craftItemsAction, ItemStack stack) {
         var loreTag = new ListTag();
         loreTag.add(StringTag.valueOf(Component.Serializer.toJson(Component.literal("§lInputs:§r"))));
         for (CraftItem craftItem : craftItemsAction.inputs()) {

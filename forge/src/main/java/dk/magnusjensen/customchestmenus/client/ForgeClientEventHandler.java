@@ -1,6 +1,6 @@
 /*
  *     Custom Chest Menus, a Minecraft mod that allows servers to create custom chest menus.
- *     Copyright (c) 2025  legenden (MagnusHJensen)
+ *     Copyright (c) 2026  legenden (MagnusHJensen)
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -19,19 +19,20 @@
 package dk.magnusjensen.customchestmenus.client;
 
 import dk.magnusjensen.customchestmenus.Constants;
-import dk.magnusjensen.customchestmenus.client.screen.CustomChestScreen;
-import dk.magnusjensen.customchestmenus.registry.ForgeMenuRegistry;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-@Mod.EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT)
 public class ForgeClientEventHandler {
-
     @SubscribeEvent
-    public static void clientSetupEvent(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> MenuScreens.register(ForgeMenuRegistry.CUSTOM_CHEST_MENU.get(), CustomChestScreen::new));
+    public static void renderLevel(RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+            return;
+        }
+        MenuHighlightRenderer.renderLevelOverlay(
+            event.getPoseStack()
+        );
     }
 }

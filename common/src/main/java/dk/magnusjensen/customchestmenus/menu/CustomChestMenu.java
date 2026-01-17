@@ -76,7 +76,7 @@ public class CustomChestMenu extends AbstractContainerMenu {
     // Optional: show player inventory but keep it locked (coords match vanilla)
     private void addPlayerInventoryLocked(Inventory inv, int gridRows) {
         // Baseline is just below the chest rows with a small gap.
-        int baseY = 18 + gridRows * 18 + 14;   // 84 for 3 rows, ~140 for 6 rows
+        int baseY = 18 + gridRows * 18 + 13;   // 84 for 3 rows, ~140 for 6 rows
         // Main inventory (3 rows)
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {

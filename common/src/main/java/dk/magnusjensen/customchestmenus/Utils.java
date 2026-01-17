@@ -18,10 +18,40 @@
 
 package dk.magnusjensen.customchestmenus;
 
+import dk.magnusjensen.customchestmenus.data.ChestMenuSavedData;
+import dk.magnusjensen.customchestmenus.data.PlayerDataAttachment;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+
+import java.util.ArrayList;
 
 public class Utils {
     public static ResourceLocation modLoc(String path) {
         return ResourceLocation.tryBuild(Constants.MOD_ID, path);
+    }
+
+    /**
+     * Handles populating player data for syncing to the client
+     * @param level
+     * @param playerData
+     * @param player
+     */
+    public static void populatePlayerDataForSync(ServerLevel level, PlayerDataAttachment playerData, ServerPlayer player) {
+        playerData.resetServerSideVersionData(); // To ensure sync happens for Fabric
+        var savedData = level.getDataStorage().computeIfAbsent(ChestMenuSavedData::load, ChestMenuSavedData::new, ChestMenuSavedData.CHEST_MENU_KEY);
+        playerData.setBoundBlocks(savedData.getMenuBlocks().keySet().stream().toList());
+
+        var boundEntities = new ArrayList<Integer>();
+        savedData.getMenuEntities().keySet().stream().forEach(
+            (uuid) -> {
+                var entity = level.getEntity(uuid);
+                if (entity != null) {
+                    boundEntities.add(entity.getId());
+                }
+            }
+        );
+        playerData.setBoundEntities(boundEntities);
+
     }
 }

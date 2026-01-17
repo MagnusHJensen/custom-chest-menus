@@ -29,6 +29,13 @@ public class FabricClientNetwork {
                 ClientPayloadHandler.handleTitleUpdate(packet);
             });
         });
+
+        ClientPlayNetworking.registerGlobalReceiver(SyncAttachmentDataS2C.ID, (minecraft, clientPacketListener, friendlyByteBuf, packetSender) -> {
+            var packet = new SyncAttachmentDataS2C(friendlyByteBuf);
+            minecraft.execute(() -> {
+                ClientPayloadHandler.handleAttachmentDataPacket(packet.attachment);
+            });
+        });
     }
 
 }

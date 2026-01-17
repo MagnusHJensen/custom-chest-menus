@@ -39,5 +39,11 @@ public class ForgeNetwork {
             .encoder(UpdateMenuTitleS2C::write)
             .consumerMainThread(ForgeClientPayloadHandler::handleTitleUpdatePacket)
             .add();
+
+        INSTANCE.messageBuilder(SyncAttachmentDataS2C.class, 2, NetworkDirection.PLAY_TO_CLIENT)
+            .decoder(SyncAttachmentDataS2C::new)
+            .encoder(SyncAttachmentDataS2C::write)
+            .consumerMainThread(ForgeClientPayloadHandler::handleAttachmentDataPacket)
+            .add();
     }
 }

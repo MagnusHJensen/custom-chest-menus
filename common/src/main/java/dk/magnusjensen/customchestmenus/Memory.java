@@ -1,6 +1,6 @@
 /*
  *     Custom Chest Menus, a Minecraft mod that allows servers to create custom chest menus.
- *     Copyright (c) 2025  legenden (MagnusHJensen)
+ *     Copyright (c) 2026  legenden (MagnusHJensen)
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -16,17 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dk.magnusjensen.customchestmenus.commands;
+package dk.magnusjensen.customchestmenus;
 
-import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.commands.CommandSourceStack;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-public class CommandHandler {
-    public static final String COMMAND_ROOT = "ccm";
+// This class is an in-memory store, for fast access to certain data, that we don't want to persist
+public class Memory {
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        ReloadMenuCommand.register(dispatcher);
-        OpenMenuCommand.register(dispatcher);
-        BindingCommand.register(dispatcher);
-    }
+    public static List<UUID> playersWithMenuHighlightEnabled = new ArrayList<>();
 }

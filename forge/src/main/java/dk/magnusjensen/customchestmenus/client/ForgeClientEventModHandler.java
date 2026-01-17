@@ -18,24 +18,22 @@
 
 package dk.magnusjensen.customchestmenus.client;
 
+import dk.magnusjensen.customchestmenus.Constants;
 import dk.magnusjensen.customchestmenus.client.screen.CustomChestScreen;
-import dk.magnusjensen.customchestmenus.data.PlayerDataAttachment;
-import dk.magnusjensen.customchestmenus.network.UpdateMenuTitleS2C;
-import net.minecraft.client.Minecraft;
+import dk.magnusjensen.customchestmenus.registry.ForgeMenuRegistry;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-import java.util.Objects;
+@Mod.EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+public class ForgeClientEventModHandler {
 
-public class ClientPayloadHandler {
-    public static void handleTitleUpdate(UpdateMenuTitleS2C packet) {
-        if (!(Minecraft.getInstance().screen instanceof CustomChestScreen ccs) || !Objects.equals(ccs.getMenu().menuId(), packet.menuId()))  {
-            return; // Do nothing
-        }
-
-        ccs.setDynamicTitle(packet.title());
+    @SubscribeEvent
+    public static void clientSetupEvent(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> MenuScreens.register(ForgeMenuRegistry.CUSTOM_CHEST_MENU.get(), CustomChestScreen::new));
     }
 
-    public static void handleAttachmentDataPacket(PlayerDataAttachment packet) {
-        // This getInstance also calls set methods internally
-        ClientMemory.getInstance(packet.hasOverlay(), packet.boundBlocks(), packet.boundEntities());
-    }
+
 }
