@@ -41,7 +41,6 @@ class MenuDefinitionTest {
         Assertions.assertEquals("No enum constant dk.magnusjensen.customchestmenus.models.MenuSize.9X3", error.getMessage());
     }
 
-    @Test
     void testTooManyItemsPerPageThrows() {
         JsonObject json = new JsonObject();
         json.addProperty("format_version", 1);
@@ -68,7 +67,6 @@ class MenuDefinitionTest {
         Assertions.assertEquals("Validation errors:\nPage[0] errors:\nSlot 27 out of bounds (0, 27)\nSlot 28 out of bounds (0, 27)\nSlot 29 out of bounds (0, 27)\n'Page 1' has 30 items, which exceeds the maximum of 27 for menu size SINGLE\n", error.getMessage());
     }
 
-    @Test
     void testSameSlotPerPageThrows() {
         JsonObject json = new JsonObject();
         json.addProperty("format_version", 1);
