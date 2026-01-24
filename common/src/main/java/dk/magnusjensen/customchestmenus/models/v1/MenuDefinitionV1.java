@@ -20,6 +20,7 @@ package dk.magnusjensen.customchestmenus.models.v1;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dk.magnusjensen.customchestmenus.models.MenuBackground;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
 import dk.magnusjensen.customchestmenus.models.MenuSize;
 
@@ -43,6 +44,6 @@ public record MenuDefinitionV1(int formatVersion,
     ).apply(instance, MenuDefinitionV1::new));
 
     public MenuDefinition toMenuDefinition() {
-        return new MenuDefinition(id, name, size, filler.map(MenuItemV1::toBaseItem), pages.stream().map(MenuPageV1::toMenuPage).toList());
+        return new MenuDefinition(id, name, size, MenuBackground.DEFAULT, filler.map(MenuItemV1::toBaseItem), pages.stream().map(MenuPageV1::toMenuPage).toList());
     }
 }

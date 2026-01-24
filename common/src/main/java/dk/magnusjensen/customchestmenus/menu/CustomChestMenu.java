@@ -19,10 +19,7 @@
 package dk.magnusjensen.customchestmenus.menu;
 
 import dk.magnusjensen.customchestmenus.ActionExecutor;
-import dk.magnusjensen.customchestmenus.models.MenuDefinition;
-import dk.magnusjensen.customchestmenus.models.MenuItem;
-import dk.magnusjensen.customchestmenus.models.MenuSize;
-import dk.magnusjensen.customchestmenus.models.PagePayload;
+import dk.magnusjensen.customchestmenus.models.*;
 import dk.magnusjensen.customchestmenus.platform.Services;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -43,6 +40,7 @@ public class CustomChestMenu extends AbstractContainerMenu {
     private final int slotCount;
     private final String customChestMenuId;
     private int pageIndex;
+    public final MenuBackground background;
 
     // Client constructor
     public CustomChestMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf extraData) {
@@ -60,11 +58,15 @@ public class CustomChestMenu extends AbstractContainerMenu {
         this.slotCount = payload.size() == MenuSize.SINGLE ? 27 : 54;
         this.backing = new SimpleContainer(slotCount);
         this.customChestMenuId = customChestMenuId;
+        this.background = payload.background();
 
 
         addGridSlots(backing, this.getRowCount());
 
-        addPlayerInventoryLocked(playerInventory, this.getRowCount());
+        if (this.background.showPlayerInventory()) {
+            // Only add slots if we show player inventory
+            addPlayerInventoryLocked(playerInventory, this.getRowCount());
+        }
     }
 
     private void addGridSlots(Container container, int rows) {

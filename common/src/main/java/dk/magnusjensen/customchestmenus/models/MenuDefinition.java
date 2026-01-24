@@ -38,6 +38,7 @@ import java.util.Optional;
 public record MenuDefinition(String id,
                              String name,
                              MenuSize size,
+                             MenuBackground background,
                              Optional<BaseItem> filler,
                              List<MenuPage> pages)
 {
@@ -86,6 +87,6 @@ public record MenuDefinition(String id,
             entries.add(new PagePayload.Entry(it.slot(), it.makeItemStack()));
         }
 
-        return new PagePayload(size, Component.literal(page.title()), filler, entries);
+        return new PagePayload(size, Component.literal(page.title()), background, filler, entries);
     }
 }

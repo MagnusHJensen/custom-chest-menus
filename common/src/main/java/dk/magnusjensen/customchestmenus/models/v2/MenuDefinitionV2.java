@@ -20,10 +20,7 @@ package dk.magnusjensen.customchestmenus.models.v2;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dk.magnusjensen.customchestmenus.models.BaseItem;
-import dk.magnusjensen.customchestmenus.models.MenuDefinition;
-import dk.magnusjensen.customchestmenus.models.MenuPage;
-import dk.magnusjensen.customchestmenus.models.MenuSize;
+import dk.magnusjensen.customchestmenus.models.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +29,7 @@ public record MenuDefinitionV2(int formatVersion,
                                String id,
                                String name,
                                MenuSize size,
+                               MenuBackground background,
                                Optional<BaseItem> filler,
                                List<MenuPage> pages) {
 
@@ -40,11 +38,12 @@ public record MenuDefinitionV2(int formatVersion,
         Codec.STRING.fieldOf("id").forGetter(v -> v.id),
         Codec.STRING.fieldOf("name").forGetter(v -> v.name),
         MenuSize.CODEC.fieldOf("size").forGetter(v -> v.size),
+        MenuBackground.CODEC.optionalFieldOf("background", MenuBackground.DEFAULT).forGetter(v -> v.background),
         BaseItem.CODEC.optionalFieldOf("filler").forGetter(v -> v.filler),
         MenuPage.CODEC.listOf().fieldOf("pages").forGetter(v -> v.pages)
     ).apply(instance, MenuDefinitionV2::new));
 
     public MenuDefinition toMenuDefinition() {
-        return new MenuDefinition(id, name, size, filler, pages);
+        return new MenuDefinition(id, name, size, background, filler, pages);
     }
 }

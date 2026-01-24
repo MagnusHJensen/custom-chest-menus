@@ -20,6 +20,44 @@
       "enum": ["single", "double"],
       "description": "Determines chest size: single (3 rows) or double (6 rows)"
     },
+    "background": {
+      "required": ["texture", "size", "show_player_inventory"],
+      "texture": {
+        "$ref": "#/$defs/resourceLocation"
+      },
+      "size": {
+        "type": "object",
+        "required": ["width", "height"],
+        "properties": {
+            "width": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 256
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 256
+            }
+        }
+      },
+      "title_location": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        },
+        "description": "Optional X and Y coordinates for the menu title text position."
+      },
+      "show_player_inventory": {
+        "type": "boolean",
+        "description": "If true, the player's inventory will be shown below the chest menu."
+      }
+    },
     "filler": {
       "oneOf": [
         {

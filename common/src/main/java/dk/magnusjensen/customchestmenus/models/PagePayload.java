@@ -31,6 +31,7 @@ import java.util.List;
 public record PagePayload(
     MenuSize size,                    // 27 or 54
     Component title,             // page title
+    MenuBackground background,
     ItemStack filler,  // may be ItemStack.EMPTY
     List<Entry> entries          // explicit slot -> stack
 ) {
@@ -39,9 +40,9 @@ public record PagePayload(
     public void write(RegistryFriendlyByteBuf buf) {
         buf.writeEnum(size);
         ComponentSerialization.STREAM_CODEC.encode(buf, title);
+        MenuBackground.STREAM_CODEC.encode(buf, background);
 
-        buf.writeBoolean(filler != null && !filler.isEmpty());
-        if (filler != null && !filler.isEmpty()) ItemStack.STREAM_CODEC.encode(buf, filler);
+        ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, filler);
         buf.writeVarInt(entries.size());
         for (Entry e : entries) {
             buf.writeVarInt(e.slot());
@@ -52,7 +53,8 @@ public record PagePayload(
     public static PagePayload read(RegistryFriendlyByteBuf buf) {
         MenuSize size = buf.readEnum(MenuSize.class);
         Component title = ComponentSerialization.STREAM_CODEC.decode(buf);
-        ItemStack filler = buf.readBoolean() ? ItemStack.STREAM_CODEC.decode(buf) : ItemStack.EMPTY;
+        MenuBackground background = MenuBackground.STREAM_CODEC.decode(buf);
+        ItemStack filler = ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
         int n = buf.readVarInt();
         List<Entry> entries = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
@@ -60,7 +62,7 @@ public record PagePayload(
             ItemStack stack = ItemStack.STREAM_CODEC.decode(buf);
             entries.add(new Entry(slot, stack));
         }
-        return new PagePayload(size, title, filler, entries);
+        return new PagePayload(size, title, background, filler, entries);
     }
 
     public static final StreamCodec<RegistryFriendlyByteBuf, Entry> ENTRY_STREAM_CODEC = StreamCodec.composite(
@@ -77,7 +79,8 @@ public record PagePayload(
             MenuSize::name
         ), PagePayload::size,
         ComponentSerialization.STREAM_CODEC, PagePayload::title,
-        ItemStack.STREAM_CODEC, PagePayload::filler,
+        MenuBackground.STREAM_CODEC, PagePayload::background,
+        ItemStack.OPTIONAL_STREAM_CODEC, PagePayload::filler,
         ENTRY_STREAM_CODEC.apply(ByteBufCodecs.list()), PagePayload::entries,
         PagePayload::new // Constructor
     );
