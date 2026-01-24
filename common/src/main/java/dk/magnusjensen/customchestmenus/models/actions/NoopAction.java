@@ -24,7 +24,12 @@ public record NoopAction() implements MenuAction {
     public static final MapCodec<NoopAction> CODEC = MapCodec.unit(NoopAction::new);
 
     @Override
-    public MenuActionType type() {
-        return MenuActionType.NOOP;
+    public MenuActionTypeUnified type() {
+        return MenuActionTypeUnified.NOOP;
+    }
+
+    @Override
+    public MenuActionTypeV1 typeV1() {
+        return MenuActionTypeV1.NOOP;
     }
 }

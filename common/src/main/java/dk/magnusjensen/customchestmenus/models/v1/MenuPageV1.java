@@ -16,29 +16,34 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dk.magnusjensen.customchestmenus.models.actions;
+package dk.magnusjensen.customchestmenus.models.v1;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dk.magnusjensen.customchestmenus.models.BaseItem;
-import net.minecraft.resources.ResourceLocation;
+import dk.magnusjensen.customchestmenus.models.MenuItem;
+import dk.magnusjensen.customchestmenus.models.MenuPage;
+import net.minecraft.network.chat.Component;
 
-import java.util.Map;
+import java.util.List;
 
+/**
+ * Represents a single page within a custom menu.
+ */
+public record MenuPageV1(
+    String title,
+    List<MenuItemV1> items
+) {
+    public static final Codec<MenuPageV1> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Codec.STRING.fieldOf("title").forGetter(MenuPageV1::title),
+        MenuItemV1.CODEC.listOf().fieldOf("items").forGetter(MenuPageV1::items)
+    ).apply(instance, MenuPageV1::new));
 
-public record CraftItem(ResourceLocation item, int quantity) {
+    public Component titleAsComponent() {
+        return Component.literal(this.title);
+    }
 
-    public static final Codec<CraftItem> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        ResourceLocation.CODEC.fieldOf("item").forGetter(CraftItem::item),
-        Codec.INT.optionalFieldOf("quantity", 1).forGetter(CraftItem::quantity)
-    ).apply(instance, CraftItem::new));
-
-    public BaseItem toBaseItem() {
-        return new BaseItem(
-            item,
-            item.getPath(),
-            quantity,
-            Map.of()
-        );
+    public MenuPage toMenuPage() {
+        List<MenuItem> mapped = this.items().stream().map(MenuItemV1::toMenuItem).toList();
+        return new MenuPage(this.title, mapped);
     }
 }

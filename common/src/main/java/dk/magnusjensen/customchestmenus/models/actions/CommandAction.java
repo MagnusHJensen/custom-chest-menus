@@ -59,12 +59,17 @@ public record CommandAction(List<String> commands, Optional<Boolean> runAsPlayer
         return new CommandAction(commands, runAsPlayer);
     }));
 
-    @Override
-    public MenuActionType type() {
-        return MenuActionType.COMMAND;
-    }
-
     public boolean shouldRunAsPlayer() {
         return runAsPlayer.orElse(false);
+    }
+
+    @Override
+    public MenuActionTypeUnified type() {
+        return MenuActionTypeUnified.COMMAND;
+    }
+
+    @Override
+    public MenuActionTypeV1 typeV1() {
+        return MenuActionTypeV1.COMMAND;
     }
 }

@@ -23,6 +23,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
+import dk.magnusjensen.customchestmenus.models.v1.MenuDefinitionV1;
+import dk.magnusjensen.customchestmenus.models.v2.MenuDefinitionV2;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
@@ -36,9 +38,11 @@ import java.util.Optional;
 public record MenuDefinition(String id,
                              String name,
                              MenuSize size,
-                             Optional<MenuItem> filler,
+                             Optional<BaseItem> filler,
                              List<MenuPage> pages)
 {
+
+
     public static final Codec<MenuDefinition> CODEC = new Codec<>() {
         @Override
         public <T> DataResult<Pair<MenuDefinition, T>> decode(DynamicOps<T> ops, T input) {
@@ -53,6 +57,8 @@ public record MenuDefinition(String id,
             return switch (version) {
                 case 1 -> MenuDefinitionV1.CODEC.decode(ops, input)
                     .map(pair -> pair.mapFirst(MenuDefinitionV1::toMenuDefinition));
+                case 2 -> MenuDefinitionV2.CODEC.decode(ops, input)
+                    .map(pair -> pair.mapFirst(MenuDefinitionV2::toMenuDefinition));
                 default -> DataResult.error(() -> "Unsupported format_version: " + version);
             };
         }

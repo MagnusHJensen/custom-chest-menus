@@ -18,8 +18,10 @@
 
 package dk.magnusjensen.customchestmenus.models.actions;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dk.magnusjensen.customchestmenus.models.BaseItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -28,18 +30,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public record CraftItemsAction(List<CraftItem> inputs, List<CraftItem> outputs) implements MenuAction {
+public record CraftItemsAction(List<BaseItem> inputs, List<BaseItem> outputs, boolean hideText) implements MenuAction {
 
 
     public static final MapCodec<CraftItemsAction> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-        CraftItem.CODEC.listOf().fieldOf("inputs").forGetter(CraftItemsAction::inputs),
-        CraftItem.CODEC.listOf().fieldOf("outputs").forGetter(CraftItemsAction::outputs)
+        BaseItem.CODEC.listOf().fieldOf("inputs").forGetter(CraftItemsAction::inputs),
+        BaseItem.CODEC.listOf().fieldOf("outputs").forGetter(CraftItemsAction::outputs),
+        Codec.BOOL.optionalFieldOf("hide_text", false).forGetter(CraftItemsAction::hideText)
     ).apply(i, CraftItemsAction::new));
-
-    @Override
-    public MenuActionType type() {
-        return MenuActionType.CRAFT_ITEMS;
-    }
 
     public boolean canCraft(ServerPlayer player) {
         for (Integer slot : getInputSlots(player).keySet()) {
@@ -52,18 +50,35 @@ public record CraftItemsAction(List<CraftItem> inputs, List<CraftItem> outputs) 
 
 
     /**
-     * This methods finds the slot numbers for the inputs required to craft the items.
+     * These methods find the slot numbers for the inputs required to craft the items.
      * @param player
      * @return A map with slot number -> quantity of the item.
      */
     public Map<Integer, Integer> getInputSlots(ServerPlayer player) {
         Map<Integer, Integer> inputSlots = new HashMap<>();
-        for (CraftItem item : inputs) {
-            ItemStack toFind = new ItemStack(BuiltInRegistries.ITEM.get(item.item()), item.quantity());
+        for (BaseItem item : inputs) {
+            ItemStack toFind = new ItemStack(BuiltInRegistries.ITEM.get(item.item()), item.count());
 
-            int slot = player.getInventory().findSlotMatchingUnusedItem(toFind);
-            inputSlots.put(slot, item.quantity());
+            // findSlotMatchingItem does not match on itemstack count.
+            int slot = player.getInventory().findSlotMatchingItem(toFind);
+            if (slot != -1) {
+                if (player.getInventory().getItem(slot).getCount() < item.count()) {
+                    inputSlots.put(-1, 0); // Short circuit if not enough items in the slot
+                    break;
+                }
+            }
+            inputSlots.put(slot, item.count());
         }
         return inputSlots;
+    }
+
+    @Override
+    public MenuActionTypeUnified type() {
+        return MenuActionTypeUnified.CRAFT_ITEMS;
+    }
+
+    @Override
+    public MenuActionTypeV1 typeV1() {
+        return null;
     }
 }

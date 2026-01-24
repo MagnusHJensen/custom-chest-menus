@@ -19,14 +19,17 @@
 package dk.magnusjensen.customchestmenus;
 
 import dk.magnusjensen.customchestmenus.menu.CustomChestMenu;
+import dk.magnusjensen.customchestmenus.models.BaseItem;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
 import dk.magnusjensen.customchestmenus.models.MenuSize;
-import dk.magnusjensen.customchestmenus.models.actions.*;
+import dk.magnusjensen.customchestmenus.models.actions.CommandAction;
+import dk.magnusjensen.customchestmenus.models.actions.CraftItemsAction;
+import dk.magnusjensen.customchestmenus.models.actions.PageAction;
+import dk.magnusjensen.customchestmenus.models.actions.TeleportAction;
 import dk.magnusjensen.customchestmenus.network.UpdateMenuTitleS2C;
 import dk.magnusjensen.customchestmenus.platform.Services;
 import dk.magnusjensen.customchestmenus.registry.CustomChestMenuRegistry;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -135,8 +138,8 @@ public final class ActionExecutor {
         }
 
         // Add the output items
-        for (CraftItem item : action.outputs()) {
-            ItemStack toGive = new ItemStack(BuiltInRegistries.ITEM.get(item.item()), item.quantity());
+        for (BaseItem item : action.outputs()) {
+            ItemStack toGive = item.makeItemStack();
             if (!player.getInventory().add(toGive)) {
                 // If inventory is full, drop the item in the world
                 player.drop(toGive, false);

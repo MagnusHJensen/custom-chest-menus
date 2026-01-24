@@ -39,7 +39,12 @@ public record TeleportAction(
     ).apply(i, TeleportAction::new));
 
     @Override
-    public MenuActionType type() {
-        return MenuActionType.TELEPORT;
+    public MenuActionTypeUnified type() {
+        return MenuActionTypeUnified.TELEPORT;
+    }
+
+    @Override
+    public MenuActionTypeV1 typeV1() {
+        return MenuActionTypeV1.TELEPORT;
     }
 }
