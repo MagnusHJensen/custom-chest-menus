@@ -31,7 +31,7 @@ public enum MenuActionTypeV1 {
     NEXT_PAGE("next_page", PageAction.NEXT_CODEC),
     PREVIOUS_PAGE("previous_page", PageAction.PREVIOUS_CODEC),
     JUMP_TO_PAGE("jump_to_page", PageAction.JUMP_TO_PAGE_CODEC),
-    COMMAND("command", CommandAction.CODEC),
+    COMMAND("command", CommandActionV1.CODEC),
     CRAFT_ITEMS("craft_items", CraftItemsActionV1.CODEC);
 
     private final String id;

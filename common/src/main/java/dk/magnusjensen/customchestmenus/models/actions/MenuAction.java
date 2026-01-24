@@ -20,7 +20,7 @@ package dk.magnusjensen.customchestmenus.models.actions;
 
 import com.mojang.serialization.Codec;
 
-public sealed interface MenuAction permits NoopAction, CloseAction, TeleportAction, PageAction, CommandAction, CraftItemsAction, CraftItemsActionV1 {
+public sealed interface MenuAction permits NoopAction, CloseAction, TeleportAction, PageAction, CommandAction, CommandActionV1, CraftItemsAction, CraftItemsActionV1 {
 
     MenuActionTypeUnified type();
     MenuActionTypeV1 typeV1();
