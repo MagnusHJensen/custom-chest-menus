@@ -19,14 +19,14 @@
 package dk.magnusjensen.customchestmenus.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import dk.magnusjensen.customchestmenus.data.PlayerDataAttachment;
 import dk.magnusjensen.customchestmenus.platform.Services;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShapeRenderer;
+import net.minecraft.gizmos.GizmoStyle;
+import net.minecraft.gizmos.Gizmos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -34,11 +34,8 @@ public class MenuHighlightRenderer {
     private static final double MAX_DIST_SQR = 64.0 * 64.0;
 
     public static void renderLevelOverlay(
-        PoseStack pose
     ) {
-        if (pose == null) {
-            return;
-        }
+
         var playerData = Services.ATTACHMENT.<PlayerDataAttachment>getPlayerAttachment(Minecraft.getInstance().player, PlayerDataAttachment.ID);
 
         if (!playerData.hasOverlay()) {
@@ -50,12 +47,10 @@ public class MenuHighlightRenderer {
 
 
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        var buffers = Minecraft.getInstance().renderBuffers().bufferSource();
 
-        Vec3 cam = camera.getPosition();
+        Vec3 cam = camera.position();
 
         // -------- Block wire boxes --------
-        VertexConsumer lineConsumer = buffers.getBuffer(RenderType.lines());
 
         for (var pos : boundBlocks) {
 
@@ -66,10 +61,9 @@ public class MenuHighlightRenderer {
             if (dx * dx + dy * dy + dz * dz > MAX_DIST_SQR) continue;
 
             // move box into camera-relative space
-            AABB box = new AABB(pos).inflate(0.002).move(-cam.x, -cam.y, -cam.z);
+            AABB box = new AABB(pos);
 
-            ShapeRenderer.renderLineBox(pose.last(), lineConsumer, box,
-                0.0f, 1.0f, 1.0f, 1.0f); // cyan
+            Gizmos.cuboid(box, GizmoStyle.stroke(DyeColor.CYAN.getTextColor()), true);
         }
 
         // -------- Entity outlines --------
@@ -84,13 +78,10 @@ public class MenuHighlightRenderer {
 
             // Get the entity's bounding box
             AABB entityBox = entity.getBoundingBox().inflate(0.1); // Slightly inflate for better visibility
-            AABB relativeBox = entityBox.move(-cam.x, -cam.y, -cam.z);
 
             // Render the outline
 
-            VertexConsumer outlineConsumer = buffers.getBuffer(RenderType.lines());
-            ShapeRenderer.renderLineBox(pose.last(), outlineConsumer, relativeBox,
-                0.0f, 1.0f, 1.0f, 1.0f); // Cyan outline
+            Gizmos.cuboid(entityBox, GizmoStyle.stroke(DyeColor.CYAN.getTextColor()), true);
         }
     }
 }

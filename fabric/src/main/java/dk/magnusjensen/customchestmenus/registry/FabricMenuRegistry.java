@@ -23,13 +23,13 @@ import dk.magnusjensen.customchestmenus.menu.CustomChestMenu;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.MenuType;
 
 public class FabricMenuRegistry {
     public static final MenuType<CustomChestMenu> CUSTOM_CHEST_MENU = Registry.register(
         BuiltInRegistries.MENU,
-        ResourceLocation.tryBuild(Constants.MOD_ID, "custom_chest_menu"),
+        Identifier.tryBuild(Constants.MOD_ID, "custom_chest_menu"),
         new ExtendedScreenHandlerType<>(CustomChestMenu::new, CustomChestMenu.Payload.STREAM_CODEC) // factory: (syncId, playerInv) -> new MyMenu(syncId, playerInv)
     );
 

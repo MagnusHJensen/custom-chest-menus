@@ -22,9 +22,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dk.magnusjensen.customchestmenus.models.MenuValidationException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,32 +38,21 @@ public record CommandAction(List<String> commands, Optional<Boolean> runAsPlayer
 
 
     public static final MapCodec<CommandAction> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-        NON_BLANK.optionalFieldOf("command").forGetter(ignored -> Optional.empty()), // backwards compat TODO: Remove in v2
-        NON_BLANK.listOf().optionalFieldOf("commands").forGetter(ignored -> Optional.empty()),
+        NON_BLANK.listOf().fieldOf("commands").forGetter(CommandAction::commands),
         Codec.BOOL.optionalFieldOf("run_as_player").forGetter(CommandAction::runAsPlayer)
-    ).apply(i, (commandOpt, commandsOpt, runAsPlayer) -> {
-        // Validation logic
-        if (commandOpt.isPresent() && commandsOpt.isPresent()) {
-            throw new MenuValidationException("Cannot have both 'command' and 'commands' fields set");
-        }
-        if (commandOpt.isEmpty() && commandsOpt.isEmpty()) {
-            throw new MenuValidationException("Either 'command' or 'commands' field must be present");
-        }
-
-        // Combine fields into a single list
-        List<String> commands = new ArrayList<>();
-        commandOpt.ifPresent(commands::add);
-        commandsOpt.ifPresent(commands::addAll);
-
-        return new CommandAction(commands, runAsPlayer);
-    }));
-
-    @Override
-    public MenuActionType type() {
-        return MenuActionType.COMMAND;
-    }
+    ).apply(i, CommandAction::new));
 
     public boolean shouldRunAsPlayer() {
         return runAsPlayer.orElse(false);
+    }
+
+    @Override
+    public MenuActionTypeUnified type() {
+        return MenuActionTypeUnified.COMMAND;
+    }
+
+    @Override
+    public MenuActionTypeV1 typeV1() {
+        return null;
     }
 }

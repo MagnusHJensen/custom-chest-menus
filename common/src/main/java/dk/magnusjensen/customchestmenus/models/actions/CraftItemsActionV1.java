@@ -1,6 +1,6 @@
 /*
  *     Custom Chest Menus, a Minecraft mod that allows servers to create custom chest menus.
- *     Copyright (c) 2025  legenden (MagnusHJensen)
+ *     Copyright (c) 2026  legenden (MagnusHJensen)
  *
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
@@ -19,17 +19,32 @@
 package dk.magnusjensen.customchestmenus.models.actions;
 
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dk.magnusjensen.customchestmenus.models.BaseItem;
 
-public record CloseAction() implements MenuAction {
-    public static final MapCodec<CloseAction> CODEC = MapCodec.unit(CloseAction::new);
+import java.util.List;
+
+public record CraftItemsActionV1(List<CraftItem> inputs, List<CraftItem> outputs) implements MenuAction {
+
+
+    public static final MapCodec<CraftItemsActionV1> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+        CraftItem.CODEC.listOf().fieldOf("inputs").forGetter(CraftItemsActionV1::inputs),
+        CraftItem.CODEC.listOf().fieldOf("outputs").forGetter(CraftItemsActionV1::outputs)
+    ).apply(i, CraftItemsActionV1::new));
 
     @Override
     public MenuActionTypeUnified type() {
-        return MenuActionTypeUnified.CLOSE;
+        return null;
     }
 
     @Override
     public MenuActionTypeV1 typeV1() {
-        return MenuActionTypeV1.CLOSE;
+        return MenuActionTypeV1.CRAFT_ITEMS;
+    }
+
+    public CraftItemsAction toUnified() {
+        List<BaseItem> mappedInputs = this.inputs.stream().map(CraftItem::toBaseItem).toList();
+        List<BaseItem> mappedOutputs = this.outputs.stream().map(CraftItem::toBaseItem).toList();
+        return new CraftItemsAction(mappedInputs, mappedOutputs, false);
     }
 }

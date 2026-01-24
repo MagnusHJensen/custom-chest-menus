@@ -23,18 +23,18 @@ import dk.magnusjensen.customchestmenus.data.PlayerDataAttachment;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.impl.attachment.AttachmentRegistryImpl;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class FabricAttachmentRegistry {
     public static final AttachmentType<PlayerDataAttachment> PLAYER_DATA = AttachmentRegistry.create(
-        ResourceLocation.tryBuild(Constants.MOD_ID, "player_data"),
+        Identifier.tryBuild(Constants.MOD_ID, "player_data"),
         (builder) -> builder.initializer(() -> new PlayerDataAttachment())
             .syncWith(PlayerDataAttachment.SYNC_CODEC, (attachmentTarget, serverPlayer) -> {
                 return true; // Sync all?
             })
     );
 
-    public static <T> AttachmentType<T> findById(ResourceLocation id) {
+    public static <T> AttachmentType<T> findById(Identifier id) {
         var attachmentType = AttachmentRegistryImpl.get(id);
 
         return (AttachmentType<T>) attachmentType;

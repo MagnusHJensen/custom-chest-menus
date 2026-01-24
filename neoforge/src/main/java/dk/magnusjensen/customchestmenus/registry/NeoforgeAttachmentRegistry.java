@@ -20,7 +20,7 @@ package dk.magnusjensen.customchestmenus.registry;
 
 import dk.magnusjensen.customchestmenus.Constants;
 import dk.magnusjensen.customchestmenus.data.PlayerDataAttachment;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -35,7 +35,7 @@ public class NeoforgeAttachmentRegistry {
         () -> AttachmentType.builder(() -> new PlayerDataAttachment()).sync(PlayerDataAttachment.SYNC_CODEC).build());
 
 
-    public static <T> Optional<AttachmentType<T>> findById(ResourceLocation id) {
+    public static <T> Optional<AttachmentType<T>> findById(Identifier id) {
         var attachmentType = NeoForgeRegistries.ATTACHMENT_TYPES.get(id);
 
         return attachmentType.map(attachmentTypeReference -> (AttachmentType<T>) attachmentTypeReference.value());

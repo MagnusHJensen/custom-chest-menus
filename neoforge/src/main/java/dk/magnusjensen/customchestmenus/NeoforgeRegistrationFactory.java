@@ -22,7 +22,7 @@ import dk.magnusjensen.customchestmenus.registry.provider.RegistrationProvider;
 import dk.magnusjensen.customchestmenus.registry.provider.RegistryObject;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.javafmlmod.FMLModContainer;
@@ -77,7 +77,7 @@ public class NeoforgeRegistrationFactory implements RegistrationProvider.Factory
                 }
 
                 @Override
-                public ResourceLocation getId() {
+                public Identifier getId() {
                     return obj.getId();
                 }
 

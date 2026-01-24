@@ -21,19 +21,19 @@ package dk.magnusjensen.customchestmenus.platform;
 import dk.magnusjensen.customchestmenus.platform.services.IAttachmentHelper;
 import dk.magnusjensen.customchestmenus.registry.FabricAttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 public class FabricAttachmentHelper implements IAttachmentHelper {
     @Override
-    public <T> T getPlayerAttachment(Player player, ResourceLocation id) {
+    public <T> T getPlayerAttachment(Player player, Identifier id) {
         var attachmentType = FabricAttachmentRegistry.<T>findById(id);
         return player.getAttachedOrCreate(attachmentType);
     }
 
     @Override
-    public <T> void setPlayerAttachment(ServerPlayer player, T attachment, ResourceLocation id) {
+    public <T> void setPlayerAttachment(ServerPlayer player, T attachment, Identifier id) {
         AttachmentType<T> attachmentType = FabricAttachmentRegistry.findById(id);
 
         player.setAttached(attachmentType, attachment);

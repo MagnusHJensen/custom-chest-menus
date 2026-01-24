@@ -22,7 +22,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 
-public enum MenuActionType {
+public enum MenuActionTypeUnified {
     NOOP("noop", NoopAction.CODEC),
     CLOSE("close", CloseAction.CODEC),
     TELEPORT("teleport", TeleportAction.CODEC),
@@ -35,7 +35,7 @@ public enum MenuActionType {
     private final String id;
     private final MapCodec<? extends MenuAction> codec;
 
-    MenuActionType(String id, MapCodec<? extends MenuAction> codec) {
+    MenuActionTypeUnified(String id, MapCodec<? extends MenuAction> codec) {
         this.id = id;
         this.codec = codec;
     }
@@ -44,12 +44,12 @@ public enum MenuActionType {
         return id;
     }
 
-    public static final Codec<MenuActionType> TYPE_CODEC = Codec.STRING.flatXmap(
+    public static final Codec<MenuActionTypeUnified> TYPE_CODEC = Codec.STRING.flatXmap(
         s -> byId(s).map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Unknown action type: " + s)),
         t -> DataResult.success(t.id)
     );
 
-    public static java.util.Optional<MenuActionType> byId(String id) {
+    public static java.util.Optional<MenuActionTypeUnified> byId(String id) {
         for (var t : values()) if (t.id.equals(id)) return java.util.Optional.of(t);
         return java.util.Optional.empty();
     }

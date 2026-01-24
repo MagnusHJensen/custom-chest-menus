@@ -1,13 +1,20 @@
 {
-  "$schema": "https://raw.githubusercontent.com/MagnusHJensen/custom-chest-menus/refs/heads/1.21.10/docs/v1.schema.json",
-  "format_version": 1,
+  "$schema": "https://raw.githubusercontent.com/MagnusHJensen/custom-chest-menus/refs/heads/1.21.11/docs/v2.schema.json",
+  "format_version": 2,
   "id": "test_menu",
   "name": "Test Menu",
   "size": "single",
-  "filler": {
-    "slot": 0,
-    "item": "minecraft:gray_stained_glass_pane",
-    "name": " "
+  "background": {
+    "texture": "ccm_pack:textures/ccm_single_with_inv_176_168.png",
+    "size": {
+      "width": 176,
+      "height": 168
+    },
+    "show_player_inventory": true,
+    "title_location": {
+      "x": 7,
+      "y": 7
+    }
   },
   "pages": [
     {
@@ -17,12 +24,27 @@
           "name": "Close menu",
           "slot": 8,
           "item": "minecraft:barrier",
+          "count": 64,
           "action": {
             "type": "close"
           },
-          "lore": ["My awesome LORE"],
-          "nbt": {
-            "CustomModelData": 123456
+          "components": {
+            "minecraft:lore": [
+              {
+                "text": "My awesome LORE",
+                "color": "aqua",
+                "bold": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "Test",
+          "slot": 10,
+          "item": "minecraft:player_head",
+          "count": 1,
+          "components": {
+            "minecraft:profile": "legendenv2"
           }
         },
         {
@@ -31,7 +53,7 @@
           "item": "minecraft:diamond",
           "action": {
             "type": "command",
-            "commands": ["give %player% minecraft:diamond 10", "say %player%, Enjoy your diamonds!"],
+            "commands": ["give %player% minecraft:diamond 10", "say Enjoy your diamonds, %player%!"],
             "run_as_player": true
           },
           "components": {
@@ -45,8 +67,7 @@
           "action": {
             "type": "jump_to_page",
             "target_page_index": 500
-          },
-          "lore": []
+          }
         },
         {
           "name": "Previous page",
@@ -54,8 +75,7 @@
           "item": "minecraft:stone",
           "action": {
             "type": "previous_page"
-          },
-          "lore": []
+          }
         },
         {
           "name": "Next page",
@@ -63,8 +83,7 @@
           "item": "minecraft:grass_block",
           "action": {
             "type": "next_page"
-          },
-          "lore": []
+          }
         }
       ]
     },
@@ -77,8 +96,7 @@
           "item": "minecraft:barrier",
           "action": {
             "type": "close"
-          },
-          "lore": []
+          }
         },
         {
           "name": "Teleport to spawn",
@@ -105,7 +123,7 @@
           "slot": 14
         },
         {
-          "name": "Craft Grass block",
+          "name": "Craft Grass block 2",
           "slot": 20,
           "item": "minecraft:crafting_table",
           "action": {
@@ -113,12 +131,21 @@
             "inputs": [
               {
                 "item": "minecraft:diamond",
-                "quantity": 5
+                "count": 5
               }
             ],
             "outputs": [
               {
-                "item": "minecraft:grass_block"
+                "item": "minecraft:grass_block",
+                "components": {
+                  "minecraft:lore": [
+                    {
+                      "text": "Crafted with diamonds!",
+                      "color": "green"
+                    }
+                  ],
+                  "minecraft:enchantment_glint_override": true
+                }
               }
             ]
           }
@@ -129,8 +156,7 @@
           "item": "minecraft:stone",
           "action": {
             "type": "previous_page"
-          },
-          "lore": []
+          }
         },
         {
           "name": "Next page",
@@ -138,8 +164,7 @@
           "item": "minecraft:grass_block",
           "action": {
             "type": "next_page"
-          },
-          "lore": []
+          }
         }
       ]
     },
@@ -152,8 +177,7 @@
           "item": "minecraft:barrier",
           "action": {
             "type": "close"
-          },
-          "lore": []
+          }
         },
         {
           "name": "Previous page",
@@ -161,8 +185,7 @@
           "item": "minecraft:stone",
           "action": {
             "type": "previous_page"
-          },
-          "lore": []
+          }
         },
         {
           "name": "Next page",
@@ -170,8 +193,7 @@
           "item": "minecraft:grass_block",
           "action": {
             "type": "next_page"
-          },
-          "lore": []
+          }
         }
       ]
     }

@@ -23,25 +23,35 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 public class CustomChestScreen extends AbstractContainerScreen<CustomChestMenu> {
-    private static final ResourceLocation CONTAINER_BACKGROUND = ResourceLocation.withDefaultNamespace("textures/gui/container/generic_54.png");
+    private static final Identifier DEFAULT_BACKGROUND = Identifier.tryParse("textures/gui/container/generic_54.png");
     /**
-     * Window height is calculated with these values" the more rows, the higher
+     * Window height is calculated with these values the more rows, the higher
      */
     private final int containerRows;
     private Component dynamicTitle;
 
     public CustomChestScreen(CustomChestMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
-        int i = 222;
-        int j = 114;
         this.containerRows = menu.getRowCount();
         this.imageHeight = 114 + this.containerRows * 18;
         this.inventoryLabelY = this.imageHeight - 94;
         this.dynamicTitle = title;
+
+        if (!menu.background.isDefault()) {
+            // Update imageHeight and imageWidth according to the custom background size
+            // this size would be the entire texture and also include space for player inventory if shown
+            this.imageWidth = menu.background.size().x();
+            this.imageHeight = menu.background.size().y();
+
+            menu.background.titleLocation().ifPresent(vec -> {
+                this.titleLabelX = vec.x();
+                this.titleLabelY = vec.y();
+            });
+        }
     }
 
     @Override
@@ -54,14 +64,23 @@ public class CustomChestScreen extends AbstractContainerScreen<CustomChestMenu> 
     protected void renderBg(GuiGraphics p_283694_, float p_282334_, int p_282603_, int p_282158_) {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
-        p_283694_.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_BACKGROUND, i, j, 0.0F, 0.0F, this.imageWidth, this.containerRows * 18 + 17, 256, 256);
-        p_283694_.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_BACKGROUND, i, j + this.containerRows * 18 + 17, 0.0F, 126.0F, this.imageWidth, 96, 256, 256);
+
+        if (menu.background.isDefault()) {
+            // Render the chest background in the default way
+            p_283694_.blit(RenderPipelines.GUI_TEXTURED, DEFAULT_BACKGROUND, i, j, 0.0F, 0.0F, this.imageWidth, this.containerRows * 18 + 17, 256, 256);
+            p_283694_.blit(RenderPipelines.GUI_TEXTURED, DEFAULT_BACKGROUND, i, j + this.containerRows * 18 + 17, 0.0F, 126.0F, this.imageWidth, 96, 256, 256);
+        } else {
+            // Custom background specified, blit the entire thing, but we still expect the same size.
+            p_283694_.blit(RenderPipelines.GUI_TEXTURED, menu.background.texture(), i, j, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
+        }
     }
 
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         guiGraphics.drawString(this.font, this.dynamicTitle, this.titleLabelX, this.titleLabelY, -12566464, false);
-        guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, -12566464, false);
+
+        if (menu.background.showPlayerInventory())
+            guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, -12566464, false);
     }
 
     public void setDynamicTitle(Component newTitle) {

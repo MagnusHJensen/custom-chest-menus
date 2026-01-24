@@ -21,7 +21,7 @@ package dk.magnusjensen.customchestmenus.models.interactivity;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Data class representing a block that can be interacted with to open a custom chest menu.
@@ -30,13 +30,13 @@ import net.minecraft.resources.ResourceLocation;
 public record InteractiveBlock(
     String menuId,
     BlockPos pos,
-    ResourceLocation blockType
+    Identifier blockType
 ){
 
     public static final Codec<InteractiveBlock> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.STRING.fieldOf("menuId").forGetter(InteractiveBlock::menuId),
         BlockPos.CODEC.fieldOf("pos").forGetter(InteractiveBlock::pos),
-        ResourceLocation.CODEC.fieldOf("blockType").forGetter(InteractiveBlock::blockType)
+        Identifier.CODEC.fieldOf("blockType").forGetter(InteractiveBlock::blockType)
     ).apply(instance, InteractiveBlock::new));
 
 }

@@ -20,13 +20,25 @@ package dk.magnusjensen.customchestmenus.models.actions;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import dk.magnusjensen.customchestmenus.models.BaseItem;
+import net.minecraft.resources.Identifier;
+
+import java.util.Map;
 
 
-public record CraftItem(ResourceLocation item, int quantity) {
+public record CraftItem(Identifier item, int quantity) {
 
     public static final Codec<CraftItem> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        ResourceLocation.CODEC.fieldOf("item").forGetter(CraftItem::item),
+        Identifier.CODEC.fieldOf("item").forGetter(CraftItem::item),
         Codec.INT.optionalFieldOf("quantity", 1).forGetter(CraftItem::quantity)
     ).apply(instance, CraftItem::new));
+
+    public BaseItem toBaseItem() {
+        return new BaseItem(
+            item,
+            item.getPath(),
+            quantity,
+            Map.of()
+        );
+    }
 }

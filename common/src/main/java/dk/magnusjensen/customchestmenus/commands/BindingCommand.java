@@ -31,12 +31,13 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.server.permissions.Permissions;
 
 public class BindingCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal(CommandHandler.COMMAND_ROOT)
             .then(Commands.literal("bind")
-                .requires(source -> source.hasPermission(2))
+                .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
                 .then(Commands.argument("menu", StringArgumentType.word())
                     .suggests(MenuArgument.MENU_IDS)
                     .executes(ctx -> {
@@ -61,7 +62,7 @@ public class BindingCommand {
                 )
             )
             .then(Commands.literal("unbind")
-                .requires(src -> src.hasPermission(2))
+                .requires(src -> src.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
                 .executes(ctx -> {
                     var player = ctx.getSource().getPlayerOrException();
 
@@ -83,7 +84,7 @@ public class BindingCommand {
                 })
             )
             .then(Commands.literal("stop-binding") // Stops all bindings
-                .requires(src -> src.hasPermission(2))
+                .requires(src -> src.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
                 .executes(ctx -> {
                     var player = ctx.getSource().getPlayerOrException();
 
@@ -99,7 +100,7 @@ public class BindingCommand {
                 })
             )
             .then(Commands.literal("list-bindings")
-                .requires(src -> src.hasPermission(2))
+                .requires(src -> src.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
                 .executes(ctx -> {
                     var savedData = ctx.getSource().getLevel().getDataStorage().computeIfAbsent(ChestMenuSavedData.ID);
 
@@ -161,7 +162,7 @@ public class BindingCommand {
                 })
             )
             .then(Commands.literal("bind-overlay")
-                .requires(src -> src.hasPermission(2))
+                .requires(src -> src.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
                 .executes(ctx -> {
                     var player = ctx.getSource().getPlayerOrException();
 

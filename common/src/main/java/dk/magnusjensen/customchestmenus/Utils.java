@@ -20,15 +20,15 @@ package dk.magnusjensen.customchestmenus;
 
 import dk.magnusjensen.customchestmenus.data.ChestMenuSavedData;
 import dk.magnusjensen.customchestmenus.data.PlayerDataAttachment;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
 
 public class Utils {
-    public static ResourceLocation modLoc(String path) {
-        return ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, path);
+    public static Identifier modLoc(String path) {
+        return Identifier.fromNamespaceAndPath(Constants.MOD_ID, path);
     }
 
     /**

@@ -1,0 +1,296 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Custom Chest Menu Definition (v1)",
+  "type": "object",
+  "required": ["format_version", "id", "name", "size", "pages"],
+  "properties": {
+    "format_version": {
+      "type": "integer",
+      "const": 2
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_\\-]+$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "size": {
+      "type": "string",
+      "enum": ["single", "double"],
+      "description": "Determines chest size: single (3 rows) or double (6 rows)"
+    },
+    "background": {
+      "required": ["texture", "size", "show_player_inventory"],
+      "texture": {
+        "$ref": "#/$defs/resourceLocation"
+      },
+      "size": {
+        "type": "object",
+        "required": ["width", "height"],
+        "properties": {
+          "width": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 256
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 256
+          }
+        }
+      },
+      "title_location": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        },
+        "description": "Optional X and Y coordinates for the menu title text position."
+      },
+      "show_player_inventory": {
+        "type": "boolean",
+        "description": "If true, the player's inventory will be shown below the chest menu."
+      }
+    },
+    "filler": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/baseItem"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "disable_slots": {
+              "type": "boolean",
+              "default": false,
+              "description": "If true, the menu will not generate slot entries for the filler item, effectively disabling those slots."
+            }
+          }
+        }
+      ]
+    },
+    "pages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["title", "items"],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/menuItem"
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "baseItem": {
+      "type": "object",
+      "required": ["item"],
+      "properties": {
+        "item": {
+          "$ref": "#/$defs/resourceLocation"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "count": {
+          "$ref": "#/$defs/itemCount"
+        },
+        "components": {
+          "type": "object",
+          "patternProperties": {
+            "^(?:[a-z0-9_\\-]+:)?[a-z0-9_\\-/.]+$": {
+              "type": ["object", "array", "string", "integer", "boolean", "number"]
+            }
+          }
+        }
+      }
+    },
+    "menuItem": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseItem"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "slot": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 53
+            },
+            "action": {
+              "description": "If not specified, the item will default to 'noop' action.",
+              "oneOf": [
+                { "$ref": "#/$defs/closeAction" },
+                { "$ref": "#/$defs/teleportAction" },
+                { "$ref": "#/$defs/pageAction" },
+                { "$ref": "#/$defs/commandAction" },
+                { "$ref": "#/$defs/craftItemsAction" }
+              ]
+            }
+          },
+          "required": [
+            "slot"
+          ]
+        }
+      ]
+    },
+    "resourceLocation": {
+      "type": "string",
+      "pattern": "^(?:[a-z0-9_\\-]+:)?[a-z0-9_\\-/.]+$",
+      "examples": [
+        "minecraft:stone",
+        "custom_mod:my_custom_item",
+        "my_namespace:items/special_item"
+      ]
+    },
+    "itemCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 64,
+      "default": 1
+    },
+    "closeAction": {
+      "properties": {
+        "type": {
+          "const": "close"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "teleportAction": {
+      "properties": {
+        "type": {
+          "const": "teleport"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "z": {
+          "type": "number"
+        },
+        "dimension": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "x",
+        "y",
+        "z"
+      ],
+      "additionalProperties": false
+    },
+    "pageAction": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "next_page",
+            "previous_page",
+            "jump_to_page"
+          ]
+        },
+        "target_page_index": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "jump_to_page" } }
+          },
+          "then": {
+            "required": ["target_page_index"]
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "commandAction": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "command"
+        },
+        "commands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of commands to run when clicked. Supports placeholders, see GitHub README for more info."
+        },
+        "run_as_player": {
+          "type": "boolean",
+          "default": false,
+          "description": "Determines whether or not the player will execute the command, or the server. BE AWARE of running server commands that users can run."
+        }
+      },
+      "required": [
+        "type",
+        "commands"
+      ],
+      "additionalProperties": false
+    },
+    "craftItemsAction": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "craft_items"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/baseItem"
+          },
+          "minItems": 1
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/baseItem"
+          },
+          "minItems": 1
+        },
+        "hide_text": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, the 'Craft Items' text will be hidden from the item lore."
+        }
+      },
+      "required": [
+        "type",
+        "inputs",
+        "outputs"
+      ],
+      "additionalProperties": false
+    }
+  }
+
+}

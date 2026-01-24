@@ -20,10 +20,15 @@ package dk.magnusjensen.customchestmenus.models.actions;
 
 import com.mojang.serialization.Codec;
 
-public sealed interface MenuAction permits NoopAction, CloseAction, TeleportAction, PageAction, CommandAction, CraftItemsAction {
+public sealed interface MenuAction permits NoopAction, CloseAction, TeleportAction, PageAction, CommandAction, CommandActionV1, CraftItemsAction, CraftItemsActionV1 {
 
-    MenuActionType type();
+    MenuActionTypeUnified type();
+    MenuActionTypeV1 typeV1();
 
-    Codec<MenuAction> CODEC = MenuActionType.TYPE_CODEC
-        .dispatch("type", MenuAction::type, MenuActionType::subCodec);
+    Codec<MenuAction> CODEC_UNIFIED =
+        MenuActionTypeUnified.TYPE_CODEC.dispatch("type", MenuAction::type, MenuActionTypeUnified::subCodec);
+
+    Codec<MenuAction> CODEC_V1 =
+        MenuActionTypeV1.TYPE_CODEC.dispatch("type", MenuAction::typeV1, MenuActionTypeV1::subCodec);
+
 }

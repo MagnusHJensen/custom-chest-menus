@@ -18,17 +18,22 @@
 
 package dk.magnusjensen.customchestmenus;
 
+import dk.magnusjensen.customchestmenus.client.MenuHighlightRenderer;
 import dk.magnusjensen.customchestmenus.client.screen.CustomChestScreen;
 import dk.magnusjensen.customchestmenus.network.FabricClientNetwork;
 import dk.magnusjensen.customchestmenus.registry.FabricMenuRegistry;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.mixin.client.rendering.WorldRendererMixin;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.minecraft.client.gui.screens.MenuScreens;
 
 public class FabricClientCustomChestMenus implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         FabricClientNetwork.register();
+
+        WorldRenderEvents.AFTER_ENTITIES.register(worldRenderContext -> {
+            MenuHighlightRenderer.renderLevelOverlay();
+        });
 
         MenuScreens.register(FabricMenuRegistry.CUSTOM_CHEST_MENU, CustomChestScreen::new);
     }
