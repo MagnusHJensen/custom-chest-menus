@@ -68,7 +68,7 @@ unifiedPublishing {
         gameVersions = ["1.20.1", "1.20.2", "1.20.3"]
         gameLoaders = ["forge"]
 
-        mainPublication tasks.named('jar', Jar).flatMap { it.archiveFile } // Declares the publicated jar
+        mainPublication tasks.named('reobfJar', Jar).flatMap { it.archiveFile } // Declares the publicated jar
 
 
         var cfToken = System.getenv("CURSEFORGE_TOKEN")
