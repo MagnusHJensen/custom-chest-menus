@@ -22,9 +22,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dk.magnusjensen.customchestmenus.models.BaseItem;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +55,7 @@ public record CraftItemsAction(List<BaseItem> inputs, List<BaseItem> outputs, bo
     public Map<Integer, Integer> getInputSlots(ServerPlayer player) {
         Map<Integer, Integer> inputSlots = new HashMap<>();
         for (BaseItem item : inputs) {
-            ItemStack toFind = new ItemStack(BuiltInRegistries.ITEM.getValue(item.item()), item.count());
+            var toFind = item.makeItemStack();
 
             // findSlotMatchingItem does not match on itemstack count.
             int slot = player.getInventory().findSlotMatchingItem(toFind);
