@@ -64,7 +64,7 @@ public record MenuItemV1(
     public BaseItem toBaseItem() {
         return new BaseItem(
             item,
-            name,
+            Component.literal(name),
             count,
             components
         );
@@ -87,7 +87,7 @@ public record MenuItemV1(
         nbt.ifPresent(data -> mergedComponents.put(DataComponents.CUSTOM_DATA, CustomData.of(data)));
         return new MenuItem(
             item,
-            name,
+            Component.literal(name),
             count,
             mergedComponents,
             slot,

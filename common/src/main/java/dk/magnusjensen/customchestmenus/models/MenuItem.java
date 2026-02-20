@@ -57,7 +57,7 @@ public class MenuItem extends BaseItem {
     private final int slot;
 
 
-    public MenuItem(Identifier item, String name, int count, Map<DataComponentType<?>, Object> components, int slot, MenuAction action) {
+    public MenuItem(Identifier item, Component name, int count, Map<DataComponentType<?>, Object> components, int slot, MenuAction action) {
         super(item, name, count, components);
         this.slot = slot;
         this.action = action;

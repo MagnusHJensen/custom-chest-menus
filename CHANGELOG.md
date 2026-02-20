@@ -1,2 +1,2 @@
-# 2.0.1 - 1.21.11
-- Fixed an issue where crafting inputs wasn't matched correctly across data components
+# 2.1.0 - 1.21.11
+- Added support for component JSON in item names, for better formatting.
