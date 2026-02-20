@@ -44,7 +44,7 @@ modrinth {
     projectId = "1rhw3Wyu" // Required, must be a string, ID of Modrinth project
     versionName = "${mod_name} (Fabric) - v${version} - ${minecraft_version}"
     versionType = "release"
-    uploadFile = jar
+    uploadFile = remapJar
     gameVersions = ["1.21.1"]
     loaders = ["fabric"]
     changelog = rootProject.file("CHANGELOG.md").text
@@ -61,7 +61,7 @@ curseforge {
         changelog = rootProject.file("CHANGELOG.md").text
         changelogType = "markdown"
         gameVersionStrings = ["1.21.1"]
-        mainArtifact(jar) {
+        mainArtifact(remapJar) {
             it.displayName = "${mod_name} (Fabric) - v${version} - ${minecraft_version}"
         }
     }
