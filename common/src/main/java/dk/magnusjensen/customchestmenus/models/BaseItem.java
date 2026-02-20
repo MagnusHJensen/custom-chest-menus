@@ -25,18 +25,19 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 
 public class BaseItem {
 
     public static final MapCodec<BaseItem> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
         ResourceLocation.CODEC.fieldOf("item").forGetter(BaseItem::item),
-        Codec.STRING.optionalFieldOf("name").xmap(opt -> opt.orElseGet(() -> ""), Optional::of).forGetter(bi -> bi.name),
+        ComponentSerialization.CODEC.optionalFieldOf("name", Component.empty()).forGetter(BaseItem::name),
         Codec.INT.optionalFieldOf("count", 1).forGetter(BaseItem::count),
         DataComponentType.VALUE_MAP_CODEC.optionalFieldOf("components", Map.of()).forGetter(BaseItem::components)
     ).apply(instance, BaseItem::new));
@@ -44,13 +45,13 @@ public class BaseItem {
     public static final Codec<BaseItem> CODEC = MAP_CODEC.codec();
 
     private final ResourceLocation item;
-    private String name;
+    private final Component name;
     private final int count;
     private final Map<DataComponentType<?>, Object> components;
 
     public BaseItem(
         ResourceLocation item,
-        String name,
+        Component name,
         int count,
         Map<DataComponentType<?>, Object> components
     ) {
@@ -71,9 +72,9 @@ public class BaseItem {
         stack.setCount(this.count);
 
         // For now, we allow overriding the custom name in the components, since that takes a proper Component codec.
-        if (!name.isEmpty()) {
-            stack.set(DataComponents.CUSTOM_NAME, Component.literal(name));
-        }
+        if (!Objects.equals(name, Component.empty()))
+            stack.set(DataComponents.CUSTOM_NAME, name);
+
 
         for (var entry : components.entrySet()) {
             stack.set((DataComponentType) entry.getKey(), entry.getValue());
@@ -86,7 +87,7 @@ public class BaseItem {
         return item;
     }
 
-    public String name() {
+    public Component name() {
         return name;
     }
 

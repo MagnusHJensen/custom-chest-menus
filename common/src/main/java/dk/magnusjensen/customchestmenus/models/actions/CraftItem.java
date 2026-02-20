@@ -21,6 +21,7 @@ package dk.magnusjensen.customchestmenus.models.actions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dk.magnusjensen.customchestmenus.models.BaseItem;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;
@@ -36,7 +37,7 @@ public record CraftItem(ResourceLocation item, int quantity) {
     public BaseItem toBaseItem() {
         return new BaseItem(
             item,
-            item.getPath(),
+            Component.empty(),
             quantity,
             Map.of()
         );
