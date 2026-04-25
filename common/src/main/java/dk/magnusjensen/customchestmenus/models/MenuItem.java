@@ -39,25 +39,33 @@ public class MenuItem extends BaseItem {
     public static final Codec<MenuItem> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         BaseItem.MAP_CODEC.forGetter(mi -> mi),
         Codec.INT.fieldOf("slot").forGetter(MenuItem::slot),
-        MenuAction.CODEC_UNIFIED.optionalFieldOf("action", new NoopAction()).forGetter(MenuItem::action)
-    ).apply(instance, (baseItem, slot, menuAction) -> new MenuItem(
+        MenuAction.CODEC_UNIFIED.optionalFieldOf("action", new NoopAction()).forGetter(MenuItem::action),
+        Codec.BOOL.optionalFieldOf("close_on_click", false).forGetter(MenuItem::shouldCloseOnClick)
+    ).apply(instance, (baseItem, slot, menuAction, closeOnClick) -> new MenuItem(
         baseItem.item(),
         baseItem.name(),
         baseItem.count(),
         baseItem.components(),
         slot,
-        menuAction
+        menuAction,
+        closeOnClick
     )));
 
 
     private final MenuAction action;
     private final int slot;
+    private final boolean closeOnClick;
 
 
-    public MenuItem(ResourceLocation item, Component name, int count, Map<DataComponentType<?>, Object> components, int slot, MenuAction action) {
+    public MenuItem(ResourceLocation item, Component name, int count, Map<DataComponentType<?>, Object> components, int slot, MenuAction action, boolean closeOnClick) {
         super(item, name, count, components);
         this.slot = slot;
         this.action = action;
+        this.closeOnClick = closeOnClick;
+    }
+
+    public boolean shouldCloseOnClick() {
+        return closeOnClick;
     }
 
     public MenuAction action() {

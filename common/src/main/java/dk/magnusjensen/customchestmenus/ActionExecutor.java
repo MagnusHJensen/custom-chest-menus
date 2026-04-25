@@ -76,6 +76,10 @@ public final class ActionExecutor {
                 craftItems(player, action);
             }
         }
+
+        if (item.shouldCloseOnClick()) {
+            player.closeContainer();
+        }
     }
 
     private static void openPage(ServerPlayer player, MenuDefinition menu, int currentPage, int newPage) {

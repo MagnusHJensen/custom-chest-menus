@@ -142,6 +142,11 @@
                     { "$ref": "#/$defs/commandAction" },
                     { "$ref": "#/$defs/craftItemsAction" }
                 ]
+            },
+            "close_on_click": {
+              "type": "boolean",
+              "default": false,
+              "description": "If true, the menu will close when the item is clicked, regardless of the specified action."
             }
           },
           "required": [

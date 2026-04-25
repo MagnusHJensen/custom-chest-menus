@@ -61,9 +61,6 @@ public class BaseItem {
         this.components = components;
     }
 
-
-
-
     public ItemStack makeItemStack() {
         Item itemEntry = BuiltInRegistries.ITEM.getOptional(item)
             .orElse(net.minecraft.world.item.Items.BARRIER);

@@ -91,7 +91,8 @@ public record MenuItemV1(
             count,
             mergedComponents,
             slot,
-            mapAction(action)
+            mapAction(action),
+            false
         );
     }
 

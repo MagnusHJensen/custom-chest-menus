@@ -52,6 +52,7 @@
             "commands": ["give %player% minecraft:diamond 10", "say Enjoy your diamonds, %player%!"],
             "run_as_player": true
           },
+          "close_on_click": true,
           "components": {
             "minecraft:enchantment_glint_override": true
           }
