@@ -71,7 +71,7 @@ curseforge {
 
         changelog = rootProject.file("CHANGELOG.md").text
         changelogType = "markdown"
-        gameVersionStrings = ["26.1", "Fabric"]
+        gameVersionStrings = ["26.1", "26.1.1", "26.1.2", "Fabric"]
         mainArtifact(jar) {
             it.displayName = "${mod_name} (Fabric) - v${version} - ${minecraft_version}"
         }
