@@ -36,7 +36,7 @@ public class NeoforgeClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void renderLevel(RenderLevelStageEvent.AfterEntities event) {
+    public static void renderLevel(RenderLevelStageEvent.AfterLevel event) {
         MenuHighlightRenderer.renderLevelOverlay();
     }
 }

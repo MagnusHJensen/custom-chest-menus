@@ -39,7 +39,8 @@ public class BaseItem {
         Identifier.CODEC.fieldOf("item").forGetter(BaseItem::item),
         ComponentSerialization.CODEC.optionalFieldOf("name", Component.empty()).forGetter(BaseItem::name),
         Codec.INT.optionalFieldOf("count", 1).forGetter(BaseItem::count),
-        DataComponentType.VALUE_MAP_CODEC.optionalFieldOf("components", Map.of()).forGetter(BaseItem::components)
+        DataComponentType.VALUE_MAP_CODEC.optionalFieldOf("components", Map.of()).forGetter(BaseItem::components),
+        Codec.BOOL.optionalFieldOf("close_on_click", false).forGetter(BaseItem::shouldCloseOnClick)
     ).apply(instance, BaseItem::new));
 
     public static final Codec<BaseItem> CODEC = MAP_CODEC.codec();
@@ -48,21 +49,26 @@ public class BaseItem {
     private final Component name;
     private final int count;
     private final Map<DataComponentType<?>, Object> components;
+    private final boolean closeOnClick;
 
     public BaseItem(
         Identifier item,
         Component name,
         int count,
-        Map<DataComponentType<?>, Object> components
+        Map<DataComponentType<?>, Object> components,
+        boolean closeOnClick
     ) {
         this.item = item;
         this.name = name;
         this.count = count;
         this.components = components;
+        this.closeOnClick = closeOnClick;
     }
 
 
-
+    public boolean shouldCloseOnClick() {
+        return closeOnClick;
+    }
 
     public ItemStack makeItemStack() {
         Item itemEntry = BuiltInRegistries.ITEM.getOptional(item)

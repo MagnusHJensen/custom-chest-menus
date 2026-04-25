@@ -24,7 +24,7 @@ import dk.magnusjensen.customchestmenus.registry.FabricAttachmentRegistry;
 import dk.magnusjensen.customchestmenus.registry.FabricMenuRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -72,7 +72,7 @@ public class FabricCustomChestMenus implements ModInitializer {
         ServerEntityEvents.ENTITY_UNLOAD.register((entity, serverLevel) -> EventHandler.onEntityUnload(entity));
         EntityTrackingEvents.START_TRACKING.register((entity, serverPlayer) -> EventHandler.onPlayerStartTracking(serverPlayer, entity));
         EntityTrackingEvents.STOP_TRACKING.register((entity, serverPlayer) -> EventHandler.onPlayerStopTracking(serverPlayer, entity));
-        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(((serverPlayer, origin, destination) -> {
+        ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register(((serverPlayer, origin, destination) -> {
             EventHandler.onPlayerChangeDimension(serverPlayer, destination);
         }));
         ServerPlayerEvents.LEAVE.register(EventHandler::onPlayerLeaveServer);

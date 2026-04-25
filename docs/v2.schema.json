@@ -110,6 +110,11 @@
         "count": {
           "$ref": "#/$defs/itemCount"
         },
+        "close_on_click": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, the menu will close when the item is clicked."
+        },
         "components": {
           "type": "object",
           "patternProperties": {

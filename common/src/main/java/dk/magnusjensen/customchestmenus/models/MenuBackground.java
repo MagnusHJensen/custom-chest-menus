@@ -35,6 +35,14 @@ public record MenuBackground(Identifier texture, Vector2i size, boolean showPlay
         return this.equals(DEFAULT);
     }
 
+    public int getImageWidth() {
+        return isDefault() ? 176 : size.x();
+    }
+
+    public int getImageHeight(int rowCount) {
+        return isDefault() ? 114 + rowCount * 18 : size.y();
+    }
+
     private static final Codec<Vector2i> SIZE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.INT.fieldOf("width").forGetter(Vector2i::x),
         Codec.INT.fieldOf("height").forGetter(Vector2i::y)

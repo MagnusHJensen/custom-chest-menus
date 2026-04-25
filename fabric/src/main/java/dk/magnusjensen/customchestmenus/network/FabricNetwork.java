@@ -18,12 +18,11 @@
 
 package dk.magnusjensen.customchestmenus.network;
 
-import dk.magnusjensen.customchestmenus.network.overlay.UpdateMenuBoundEntityS2C;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 
 public class FabricNetwork {
     public static void register() {
-        PayloadTypeRegistry.playS2C().register(UpdateMenuTitleS2C.TYPE, UpdateMenuTitleS2C.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(UpdateMenuTitleS2C.TYPE, UpdateMenuTitleS2C.STREAM_CODEC);
     }
 
 }

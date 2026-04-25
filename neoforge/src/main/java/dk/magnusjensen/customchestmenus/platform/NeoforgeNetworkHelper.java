@@ -46,15 +46,14 @@ public class NeoforgeNetworkHelper implements INetworkHelper {
             @Override
             public CustomChestMenu createMenu(int windowId, Inventory inv, Player p) {
                 // Server container with authoritative contents:
-                CustomChestMenu cont = new CustomChestMenu(windowId, inv, definition.id(), payload);
+                CustomChestMenu cont = new CustomChestMenu(windowId, inv, new CustomChestMenu.Payload(definition.id(), payload));
                 cont.populateFromDefinition(definition, pageIndex);  // Fill backing SimpleContainer on server
                 return cont;
             }
         };
 
         player.openMenu(provider, buf -> {
-            buf.writeUtf(definition.id());
-            payload.write(buf);
+            CustomChestMenu.Payload.STREAM_CODEC.encode(buf, new CustomChestMenu.Payload(definition.id(), payload));
         });
     }
 }

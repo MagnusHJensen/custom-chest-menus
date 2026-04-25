@@ -66,7 +66,8 @@ public record MenuItemV1(
             item,
             Component.literal(name),
             count,
-            components
+            components,
+            false
         );
     }
 
@@ -90,6 +91,7 @@ public record MenuItemV1(
             Component.literal(name),
             count,
             mergedComponents,
+            false,
             slot,
             mapAction(action)
         );

@@ -48,6 +48,7 @@ public class MenuItem extends BaseItem {
         baseItem.name(),
         baseItem.count(),
         baseItem.components(),
+        baseItem.shouldCloseOnClick(),
         slot,
         menuAction
     )));
@@ -57,8 +58,8 @@ public class MenuItem extends BaseItem {
     private final int slot;
 
 
-    public MenuItem(Identifier item, Component name, int count, Map<DataComponentType<?>, Object> components, int slot, MenuAction action) {
-        super(item, name, count, components);
+    public MenuItem(Identifier item, Component name, int count, Map<DataComponentType<?>, Object> components, boolean closeOnClick, int slot, MenuAction action) {
+        super(item, name, count, components, closeOnClick);
         this.slot = slot;
         this.action = action;
     }
@@ -89,14 +90,16 @@ public class MenuItem extends BaseItem {
         itemLore = itemLore.withLineAdded(Component.literal("§lInputs:§r"));
         for (BaseItem craftItem : craftItemsAction.inputs()) {
             Item craftItemEntry = BuiltInRegistries.ITEM.getValue(craftItem.item());
-            itemLore = itemLore.withLineAdded(Component.literal(" - " + craftItem.count() + "x ").append(craftItemEntry.getName()));
+            var craftStack = new ItemStack(craftItemEntry);
+            itemLore = itemLore.withLineAdded(Component.literal(" - " + craftItem.count() + "x ").append(craftItemEntry.getName(craftStack)));
         }
         itemLore = itemLore.withLineAdded(Component.literal(""));
 
         itemLore = itemLore.withLineAdded(Component.literal(String.format("§lOutput%s:§r", craftItemsAction.outputs().size() == 1 ? "" : "s")));
         for (BaseItem craftItem : craftItemsAction.outputs()) {
             Item craftItemEntry = BuiltInRegistries.ITEM.getValue(craftItem.item());
-            itemLore = itemLore.withLineAdded(Component.literal(" - " + craftItem.count() + "x ").append(craftItemEntry.getName()));
+            var craftStack = new ItemStack(craftItemEntry);
+            itemLore = itemLore.withLineAdded(Component.literal(" - " + craftItem.count() + "x ").append(craftItemEntry.getName(craftStack)));
         }
 
         stack.set(DataComponents.LORE, itemLore);

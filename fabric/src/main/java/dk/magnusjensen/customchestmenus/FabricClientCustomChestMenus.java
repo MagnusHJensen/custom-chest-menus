@@ -23,7 +23,7 @@ import dk.magnusjensen.customchestmenus.client.screen.CustomChestScreen;
 import dk.magnusjensen.customchestmenus.network.FabricClientNetwork;
 import dk.magnusjensen.customchestmenus.registry.FabricMenuRegistry;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.gui.screens.MenuScreens;
 
 public class FabricClientCustomChestMenus implements ClientModInitializer {
@@ -31,7 +31,7 @@ public class FabricClientCustomChestMenus implements ClientModInitializer {
     public void onInitializeClient() {
         FabricClientNetwork.register();
 
-        WorldRenderEvents.AFTER_ENTITIES.register(worldRenderContext -> {
+        LevelRenderEvents.END_MAIN.register(_ -> {
             MenuHighlightRenderer.renderLevelOverlay();
         });
 

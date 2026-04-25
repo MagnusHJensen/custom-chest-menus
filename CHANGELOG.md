@@ -1,2 +1,3 @@
-# 2.1.0 - 1.21.11
-- Added support for component JSON in item names, for better formatting.
+# 2.2.0 - 26.1
+- Ported to 26.1
+- Added support for `close_on_click` item property, to close the menu after clicking the given item.

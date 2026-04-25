@@ -21,6 +21,7 @@ package dk.magnusjensen.customchestmenus.data;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dk.magnusjensen.customchestmenus.Constants;
+import dk.magnusjensen.customchestmenus.Utils;
 import dk.magnusjensen.customchestmenus.models.interactivity.InteractiveBlock;
 import dk.magnusjensen.customchestmenus.models.interactivity.InteractiveEntity;
 import net.minecraft.core.BlockPos;
@@ -78,7 +79,7 @@ public class ChestMenuSavedData extends SavedData {
     ).apply(instance, ChestMenuSavedData::new));
 
     public static final SavedDataType<ChestMenuSavedData> ID = new SavedDataType<>(
-        "custom_chest_menus",
+        Utils.modLoc("custom_chest_menus"),
         ChestMenuSavedData::new,
         CODEC,
         null

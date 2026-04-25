@@ -19,19 +19,32 @@
 package dk.magnusjensen.customchestmenus.registry;
 
 import dk.magnusjensen.customchestmenus.Constants;
+import dk.magnusjensen.customchestmenus.Utils;
 import dk.magnusjensen.customchestmenus.menu.CustomChestMenu;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuType;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
 public class FabricMenuRegistry {
-    public static final MenuType<CustomChestMenu> CUSTOM_CHEST_MENU = Registry.register(
-        BuiltInRegistries.MENU,
-        Identifier.tryBuild(Constants.MOD_ID, "custom_chest_menu"),
-        new ExtendedScreenHandlerType<>(CustomChestMenu::new, CustomChestMenu.Payload.STREAM_CODEC) // factory: (syncId, playerInv) -> new MyMenu(syncId, playerInv)
+
+
+    public static final ExtendedMenuType<CustomChestMenu, CustomChestMenu.Payload> CUSTOM_CHEST_MENU = register(
+        Utils.modLoc("custom_chest_menu"),
+        CustomChestMenu::new,
+        CustomChestMenu.Payload.STREAM_CODEC
     );
+
+    public static <T extends AbstractContainerMenu, D> ExtendedMenuType<T, D> register(
+        Identifier name,
+        ExtendedMenuType.ExtendedFactory<T, D> supplier,
+        StreamCodec<RegistryFriendlyByteBuf, D> dataCodec
+    ) {
+        return Registry.register(BuiltInRegistries.MENU, name, new ExtendedMenuType<>(supplier, dataCodec));
+    }
 
     public static void register() {
         Constants.LOGGER.info("Registering menus for Fabric.");

@@ -22,8 +22,8 @@ import dk.magnusjensen.customchestmenus.menu.CustomChestMenu;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
 import dk.magnusjensen.customchestmenus.models.PagePayload;
 import dk.magnusjensen.customchestmenus.platform.services.INetworkHelper;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuProvider;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,7 +40,7 @@ public class FabricNetworkHelper implements INetworkHelper {
 
     public void openChestMenuScreen(ServerPlayer player, MenuDefinition definition, int pageIndex) {
         PagePayload payload = definition.build(pageIndex);
-        player.openMenu(new ExtendedScreenHandlerFactory<CustomChestMenu.Payload>() {
+        player.openMenu(new ExtendedMenuProvider() {
 
             @Override
             public CustomChestMenu.Payload getScreenOpeningData(ServerPlayer serverPlayer) {
@@ -54,7 +54,7 @@ public class FabricNetworkHelper implements INetworkHelper {
 
             @Override
             public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-                CustomChestMenu menu = new CustomChestMenu(i, inventory, definition.id(), payload);
+                CustomChestMenu menu = new CustomChestMenu(i, inventory, new CustomChestMenu.Payload(definition.id(), payload));
                 menu.populateFromDefinition(definition, pageIndex);
                 return menu;
             }

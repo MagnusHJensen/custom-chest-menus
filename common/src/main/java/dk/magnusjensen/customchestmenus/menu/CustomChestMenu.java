@@ -30,7 +30,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -44,21 +44,17 @@ public class CustomChestMenu extends AbstractContainerMenu {
 
     // Client constructor
     public CustomChestMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf extraData) {
-        this(containerId, playerInventory, extraData.readUtf(), PagePayload.read(extraData));
-    }
-
-    public CustomChestMenu(int containerId, Inventory playerInventory, Payload extraData) {
-        this(containerId, playerInventory, extraData.customChestMenuId(), extraData.pagePayload());
+        this(containerId, playerInventory, Payload.STREAM_CODEC.decode(extraData));
     }
 
     // Server constructor
-    public CustomChestMenu(int containerId, Inventory playerInventory, String customChestMenuId, PagePayload payload) {
+    public CustomChestMenu(int containerId, Inventory playerInventory, Payload payload) {
         super(Services.REGISTRY.getCustomChestMenuType(), containerId);
-
-        this.slotCount = payload.size() == MenuSize.SINGLE ? 27 : 54;
+        var pagePayload = payload.pagePayload();
+        this.slotCount = pagePayload.size() == MenuSize.SINGLE ? 27 : 54;
         this.backing = new SimpleContainer(slotCount);
-        this.customChestMenuId = customChestMenuId;
-        this.background = payload.background();
+        this.customChestMenuId = payload.customChestMenuId();
+        this.background = pagePayload.background();
 
 
         addGridSlots(backing, this.getRowCount());
@@ -102,21 +98,15 @@ public class CustomChestMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotId, int dragType, ClickType clickType, Player player) {
-        // Block all transfer-y click types outright
-        if (clickType == ClickType.QUICK_MOVE   // shift-click
-            || clickType == ClickType.SWAP         // number keys
-            || clickType == ClickType.THROW        // Q
-            || clickType == ClickType.QUICK_CRAFT  // drag paint
-            || clickType == ClickType.PICKUP_ALL   // double-click collect to cursor
-            || clickType == ClickType.CLONE) {     // middle click in creative
+    public void clicked(int slotIndex, int buttonNum, ContainerInput containerInput, Player player) {
+        if (containerInput != ContainerInput.PICKUP) {
+            // Block all non pickup interactions
             return;
         }
 
-        if (slotId >= 0 && slotId < this.slotCount && player instanceof ServerPlayer sp) {
-            ActionExecutor.onClick(sp, customChestMenuId, this.pageIndex, slotId); // your action resolver (next/prev/teleport/close)
+        if (slotIndex >= 0 && slotIndex < this.slotCount && player instanceof ServerPlayer sp) {
+            ActionExecutor.onClick(sp, customChestMenuId, this.pageIndex, slotIndex);
         }
-        // Do NOT call super.clicked(...) or items will try to move.
     }
 
     /** Disable shift-click routing entirely. */
