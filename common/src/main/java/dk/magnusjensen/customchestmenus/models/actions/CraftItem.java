@@ -39,8 +39,7 @@ public record CraftItem(Identifier item, int quantity) {
             item,
             Component.empty(),
             quantity,
-            Map.of(),
-            false
+            Map.of()
         );
     }
 }

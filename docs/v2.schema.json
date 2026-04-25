@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Custom Chest Menu Definition (v1)",
+  "title": "Custom Chest Menu Definition (v2)",
   "type": "object",
   "required": ["format_version", "id", "name", "size", "pages"],
   "properties": {
@@ -110,11 +110,6 @@
         "count": {
           "$ref": "#/$defs/itemCount"
         },
-        "close_on_click": {
-            "type": "boolean",
-            "default": false,
-            "description": "If true, the menu will close when the item is clicked."
-        },
         "components": {
           "type": "object",
           "patternProperties": {
@@ -147,6 +142,11 @@
                 { "$ref": "#/$defs/commandAction" },
                 { "$ref": "#/$defs/craftItemsAction" }
               ]
+            },
+            "close_on_click": {
+              "type": "boolean",
+              "default": false,
+              "description": "If true, the menu will close when the item is clicked."
             }
           },
           "required": [

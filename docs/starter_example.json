@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/MagnusHJensen/custom-chest-menus/refs/heads/1.21.11/docs/v2.schema.json",
+  "$schema": "https://raw.githubusercontent.com/MagnusHJensen/custom-chest-menus/refs/heads/26.1/docs/v2.schema.json",
   "format_version": 2,
   "id": "test_menu",
   "name": "Test Menu",
