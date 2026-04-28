@@ -1,2 +1,3 @@
-# 2.2.0 - 1.21.1
-- Added support for `close_on_click` menu item property, to close the menu after clicking the item.
+# 2.3.0 - 1.21.1
+- Added permission support to Fabric. _Makes it integrate with LuckPerms_
+- Fixed parsing registry required data components (e.g. enchantments). 

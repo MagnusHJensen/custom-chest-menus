@@ -19,10 +19,7 @@
 package dk.magnusjensen.customchestmenus.platform;
 
 import dk.magnusjensen.customchestmenus.Constants;
-import dk.magnusjensen.customchestmenus.platform.services.IAttachmentHelper;
-import dk.magnusjensen.customchestmenus.platform.services.INetworkHelper;
-import dk.magnusjensen.customchestmenus.platform.services.IPlatformHelper;
-import dk.magnusjensen.customchestmenus.platform.services.IRegistryHelper;
+import dk.magnusjensen.customchestmenus.platform.services.*;
 
 import java.util.ServiceLoader;
 
@@ -38,6 +35,7 @@ public class Services {
     public static final IRegistryHelper REGISTRY = load(IRegistryHelper.class);
     public static final INetworkHelper NETWORK = load(INetworkHelper.class);
     public static final IAttachmentHelper ATTACHMENT = load(IAttachmentHelper.class);
+    public static final IPermissionHelper PERMISSION = load(IPermissionHelper.class);
 
     // This code is used to load a service for the current environment. Your implementation of the service must be defined
     // manually by including a text file in META-INF/services named with the fully qualified class name of the service.

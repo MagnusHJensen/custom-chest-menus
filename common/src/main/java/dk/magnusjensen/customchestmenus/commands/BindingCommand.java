@@ -25,6 +25,7 @@ import dk.magnusjensen.customchestmenus.Utils;
 import dk.magnusjensen.customchestmenus.commands.arguments.MenuArgument;
 import dk.magnusjensen.customchestmenus.data.ChestMenuSavedData;
 import dk.magnusjensen.customchestmenus.data.PlayerDataAttachment;
+import dk.magnusjensen.customchestmenus.permissions.CCMPermission;
 import dk.magnusjensen.customchestmenus.platform.Services;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -37,7 +38,7 @@ public class BindingCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal(CommandHandler.COMMAND_ROOT)
             .then(Commands.literal("bind")
-                .requires(source -> source.hasPermission(2))
+                .requires(Services.PERMISSION.getCommandPermissionPredicate(CCMPermission.BIND))
                 .then(Commands.argument("menu", StringArgumentType.word())
                     .suggests(MenuArgument.MENU_IDS)
                     .executes(ctx -> {
@@ -62,7 +63,7 @@ public class BindingCommand {
                 )
             )
             .then(Commands.literal("unbind")
-                .requires(src -> src.hasPermission(2))
+                .requires(Services.PERMISSION.getCommandPermissionPredicate(CCMPermission.UNBIND))
                 .executes(ctx -> {
                     var player = ctx.getSource().getPlayerOrException();
 
@@ -84,7 +85,7 @@ public class BindingCommand {
                 })
             )
             .then(Commands.literal("stop-binding") // Stops all bindings
-                .requires(src -> src.hasPermission(2))
+                .requires(Services.PERMISSION.getCommandPermissionPredicate(CCMPermission.STOP_BIND))
                 .executes(ctx -> {
                     var player = ctx.getSource().getPlayerOrException();
 
@@ -100,7 +101,7 @@ public class BindingCommand {
                 })
             )
             .then(Commands.literal("list-bindings")
-                .requires(src -> src.hasPermission(2))
+                .requires(Services.PERMISSION.getCommandPermissionPredicate(CCMPermission.LIST_BINDS))
                 .executes(ctx -> {
                     var savedData = ctx.getSource().getLevel().getDataStorage().computeIfAbsent(new SavedData.Factory<>(ChestMenuSavedData::new, ChestMenuSavedData::load, null), ChestMenuSavedData.CHEST_MENU_KEY);
 
@@ -158,7 +159,7 @@ public class BindingCommand {
                 })
             )
             .then(Commands.literal("bind-overlay")
-                .requires(src -> src.hasPermission(2))
+                .requires(Services.PERMISSION.getCommandPermissionPredicate(CCMPermission.BIND_OVERLAY))
                 .executes(ctx -> {
                     var player = ctx.getSource().getPlayerOrException();
 

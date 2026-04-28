@@ -21,6 +21,7 @@ package dk.magnusjensen.customchestmenus.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import dk.magnusjensen.customchestmenus.commands.arguments.MenuArgument;
+import dk.magnusjensen.customchestmenus.permissions.CCMPermission;
 import dk.magnusjensen.customchestmenus.platform.Services;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -32,6 +33,7 @@ public class OpenMenuCommand {
         dispatcher.register(Commands.literal(CommandHandler.COMMAND_ROOT)
             .then(Commands.literal("open")
                 .then(Commands.argument("menu", StringArgumentType.word())
+                    .requires(Services.PERMISSION.getCommandPermissionPredicate(CCMPermission.OPEN))
                     .suggests(MenuArgument.MENU_IDS)
                     .executes(ctx -> {
                         var menuDef = MenuArgument.requireMenu(ctx, "menu");
@@ -40,7 +42,7 @@ public class OpenMenuCommand {
                         return 1;
                     })
                     .then(Commands.argument("player", EntityArgument.player())
-                        .requires(ctx -> ctx.hasPermission(2))
+                        .requires(Services.PERMISSION.getCommandPermissionPredicate(CCMPermission.OPEN_OTHERS))
                         .executes(ctx -> {
                             var menuDef = MenuArgument.requireMenu(ctx, "menu");
                             var targetPlayer = EntityArgument.getPlayer(ctx, "player");

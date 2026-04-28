@@ -24,6 +24,8 @@ import com.mojang.serialization.JsonOps;
 import dk.magnusjensen.customchestmenus.Constants;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
 import dk.magnusjensen.customchestmenus.models.MenuValidationException;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.MinecraftServer;
 
 import java.io.IOException;
@@ -64,7 +66,7 @@ public class CustomChestMenuRegistry {
         int loaded = 0;
         try (Stream<Path> files = Files.list(customMenusPath)) {
             for (Path p : (Iterable<Path>) files.filter(f -> f.toString().endsWith(".json"))::iterator) {
-                if (loadMenuFile(p)) loaded++;
+                if (loadMenuFile(p, server.registryAccess())) loaded++;
             }
         } catch (IOException e) {
             Constants.LOGGER.error("Failed to list {}", customMenusPath.toAbsolutePath(), e);
@@ -73,7 +75,7 @@ public class CustomChestMenuRegistry {
         Constants.LOGGER.info("Loaded {} menu(s) from {}", loaded, customMenusPath.toAbsolutePath());
     }
 
-    private static boolean loadMenuFile(Path path) {
+    private static boolean loadMenuFile(Path path, RegistryAccess.Frozen registryAccess) {
         try {
             String raw = Files.readString(path);
             JsonElement element = JsonParser.parseString(raw);
@@ -82,7 +84,7 @@ public class CustomChestMenuRegistry {
 
             MenuDefinition menu;
             try {
-                var result = MenuDefinition.CODEC.parse(JsonOps.INSTANCE, element)
+                var result = MenuDefinition.CODEC.parse(RegistryOps.create(JsonOps.INSTANCE, registryAccess), element)
                     .resultOrPartial(err ->
                         Constants.LOGGER.warn("Menu parse error in {}: {}", path.getFileName(), err)
                     );

@@ -19,6 +19,8 @@
 package dk.magnusjensen.customchestmenus.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
+import dk.magnusjensen.customchestmenus.permissions.CCMPermission;
+import dk.magnusjensen.customchestmenus.platform.Services;
 import dk.magnusjensen.customchestmenus.registry.CustomChestMenuRegistry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -29,7 +31,7 @@ public class ReloadMenuCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal(CommandHandler.COMMAND_ROOT)
             .then(Commands.literal("reload")
-                .requires(src -> src.hasPermission(2))
+                .requires(Services.PERMISSION.getCommandPermissionPredicate(CCMPermission.RELOAD))
                 .executes(ctx -> {
                     MinecraftServer server = ctx.getSource().getServer();
                     CustomChestMenuRegistry.loadMenus(server);
