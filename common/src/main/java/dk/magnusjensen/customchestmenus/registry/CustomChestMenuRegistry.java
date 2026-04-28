@@ -24,6 +24,8 @@ import com.mojang.serialization.JsonOps;
 import dk.magnusjensen.customchestmenus.Constants;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
 import dk.magnusjensen.customchestmenus.models.MenuValidationException;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,7 +69,7 @@ public class CustomChestMenuRegistry {
         StringBuilder fullExceptionMessage = new StringBuilder();
         try (Stream<Path> files = Files.list(customMenusPath)) {
             for (Path p : (Iterable<Path>) files.filter(f -> f.toString().endsWith(".json"))::iterator) {
-                var ex = loadMenuFile(p);
+                var ex = loadMenuFile(p, server.registryAccess());
                 if (ex == null) {
                     loaded++;
                 } else {
@@ -85,14 +87,14 @@ public class CustomChestMenuRegistry {
             : null;
     }
 
-    private static @Nullable Exception loadMenuFile(Path path) {
+    private static @Nullable Exception loadMenuFile(Path path, RegistryAccess.Frozen registryAccess) {
         try {
             String raw = Files.readString(path);
             JsonElement element = JsonParser.parseString(raw);
 
             MenuDefinition menu;
             try {
-                var result = MenuDefinition.CODEC.parse(JsonOps.INSTANCE, element)
+                var result = MenuDefinition.CODEC.parse(RegistryOps.create(JsonOps.INSTANCE, registryAccess), element)
                     .resultOrPartial(err ->
                         Constants.LOGGER.warn("Menu parse error in {}: {}", path.getFileName(), err)
                     );
