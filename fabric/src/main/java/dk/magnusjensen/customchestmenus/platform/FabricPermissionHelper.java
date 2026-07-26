@@ -18,16 +18,18 @@
 
 package dk.magnusjensen.customchestmenus.platform;
 
+import dk.magnusjensen.customchestmenus.Constants;
 import dk.magnusjensen.customchestmenus.permissions.CCMPermission;
 import dk.magnusjensen.customchestmenus.platform.services.IPermissionHelper;
-import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.fabricmc.fabric.api.permission.v1.PermissionPredicates;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.resources.Identifier;
 
 import java.util.function.Predicate;
 
 public class FabricPermissionHelper implements IPermissionHelper {
     @Override
     public Predicate<CommandSourceStack> getCommandPermissionPredicate(CCMPermission permission) {
-        return Permissions.require(permission.getNode(), permission.getDefaultLevel());
+        return PermissionPredicates.require(Identifier.fromNamespaceAndPath(Constants.MOD_ID, permission.getNode()), permission.getDefaultLevel());
     }
 }

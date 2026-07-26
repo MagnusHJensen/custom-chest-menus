@@ -11,8 +11,6 @@ dependencies {
     implementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
-    include(implementation('me.lucko:fabric-permissions-api:0.7.0'))
-
 }
 
 loom {
@@ -61,7 +59,7 @@ modrinth {
     versionName = "${mod_name} (Fabric) - v${version} - ${minecraft_version}"
     versionType = "release"
     uploadFile = jar
-    gameVersions = ["26.1", "26.1.1", "26.1.2"]
+    gameVersions = ["26.2"]
     loaders = ["fabric"]
     changelog = rootProject.file("CHANGELOG.md").text
 }
@@ -74,7 +72,7 @@ curseforge {
 
         changelog = rootProject.file("CHANGELOG.md").text
         changelogType = "markdown"
-        gameVersionStrings = ["26.1", "26.1.1", "26.1.2", "Fabric"]
+        gameVersionStrings = ["26.2", "Fabric"]
         mainArtifact(jar) {
             it.displayName = "${mod_name} (Fabric) - v${version} - ${minecraft_version}"
         }

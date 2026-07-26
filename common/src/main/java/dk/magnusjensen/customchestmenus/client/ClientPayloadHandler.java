@@ -26,7 +26,7 @@ import java.util.Objects;
 
 public class ClientPayloadHandler {
     public static void handleTitleUpdate(UpdateMenuTitleS2C packet) {
-        if (!(Minecraft.getInstance().screen instanceof CustomChestScreen ccs) || !Objects.equals(ccs.getMenu().menuId(), packet.menuId()))  {
+        if (!(Minecraft.getInstance().gui.screen() instanceof CustomChestScreen ccs) || !Objects.equals(ccs.getMenu().menuId(), packet.menuId()))  {
             return; // Do nothing
         }
 

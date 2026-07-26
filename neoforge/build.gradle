@@ -71,7 +71,7 @@ modrinth {
     versionName = "${mod_name} (NeoForge) - v${version} - ${minecraft_version}"
     versionType = "release"
     uploadFile = jar
-    gameVersions = ["26.1", "26.1.1", "26.1.2"]
+    gameVersions = ["26.2"]
     loaders = ["neoforge"]
     changelog = rootProject.file("CHANGELOG.md").text
 }
@@ -84,7 +84,7 @@ curseforge {
 
         changelog = rootProject.file("CHANGELOG.md").text
         changelogType = "markdown"
-        gameVersionStrings = ["26.1", "26.1.1", "26.1.2", "NeoForge"]
+        gameVersionStrings = ["26.2", "NeoForge"]
         mainArtifact(jar) {
             it.displayName = "${mod_name} (NeoForge) - v${version} - ${minecraft_version}"
         }

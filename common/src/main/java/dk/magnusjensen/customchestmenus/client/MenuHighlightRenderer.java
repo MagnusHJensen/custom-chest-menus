@@ -18,7 +18,6 @@
 
 package dk.magnusjensen.customchestmenus.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import dk.magnusjensen.customchestmenus.data.PlayerDataAttachment;
 import dk.magnusjensen.customchestmenus.platform.Services;
 import net.minecraft.client.Camera;
@@ -46,7 +45,7 @@ public class MenuHighlightRenderer {
         var boundEntities = playerData.boundEntities();
 
 
-        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        Camera camera = Minecraft.getInstance().gameRenderer.mainCamera();
 
         Vec3 cam = camera.position();
 
@@ -63,7 +62,8 @@ public class MenuHighlightRenderer {
             // move box into camera-relative space
             AABB box = new AABB(pos);
 
-            Gizmos.cuboid(box, GizmoStyle.stroke(DyeColor.CYAN.getTextColor()), true);
+            var props = Gizmos.cuboid(box, GizmoStyle.stroke(DyeColor.CYAN.getTextColor()), true);
+            props.setAlwaysOnTop();
         }
 
         // -------- Entity outlines --------
@@ -81,7 +81,8 @@ public class MenuHighlightRenderer {
 
             // Render the outline
 
-            Gizmos.cuboid(entityBox, GizmoStyle.stroke(DyeColor.CYAN.getTextColor()), true);
+            var props = Gizmos.cuboid(entityBox, GizmoStyle.stroke(DyeColor.CYAN.getTextColor()), true);
+            props.setAlwaysOnTop();
         }
     }
 }
