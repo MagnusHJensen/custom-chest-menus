@@ -25,6 +25,10 @@ dependencies {
     testRuntimeOnly sourceSets.main.runtimeClasspath
 }
 
+// Lets tests reference vanilla types (ItemStack, Inventory, ...) directly.
+sourceSets.test.compileClasspath += sourceSets.main.compileClasspath
+
+
 test {
     useJUnitPlatform()
 }

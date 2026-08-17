@@ -20,13 +20,48 @@ package dk.magnusjensen.customchestmenus;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.SharedConstants;
+import net.minecraft.core.component.DataComponentInitializers;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.registries.VanillaRegistries;
+import net.minecraft.server.Bootstrap;
+import net.minecraft.world.entity.EntityEquipment;
+import net.minecraft.world.entity.player.Inventory;
 
 public class TestUtils {
+
+    private static boolean bootstrapped = false;
+
     public static JsonElement NoopAction() {
 
         var action = new JsonObject();
         action.addProperty("type", "noop");
 
         return action;
+    }
+
+    /**
+     * Brings up just enough of Minecraft for tests to be able to work with items.
+     * <p>
+     * Item data components are bound when a server loads its datapacks, so on top of the regular
+     * bootstrap the vanilla registry contents have to be baked in, otherwise creating an
+     * {@link net.minecraft.world.item.ItemStack} fails with "Components not bound yet".
+     */
+    public static synchronized void bootstrapMinecraft() {
+        if (bootstrapped) return;
+        bootstrapped = true;
+
+        SharedConstants.tryDetectVersion();
+        Bootstrap.bootStrap();
+        BuiltInRegistries.DATA_COMPONENT_INITIALIZERS.build(VanillaRegistries.createLookup())
+            .forEach(DataComponentInitializers.PendingComponents::apply);
+    }
+
+    /**
+     * An inventory detached from any player. Only the slot storage is usable, anything that would
+     * talk back to the player (syncing, dropping, creative mode checks) is not.
+     */
+    public static Inventory emptyInventory() {
+        return new Inventory(null, new EntityEquipment());
     }
 }
