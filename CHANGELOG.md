@@ -1,2 +1,2 @@
-# 2.3.0 - 26.2
-- Ported to 26.2.x 
+# 2.3.1 - 26.2
+- Fixed an issue where `craft_items` action could not use more than 64 of a single item in its input.

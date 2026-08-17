@@ -84,7 +84,7 @@ curseforge {
 
         changelog = rootProject.file("CHANGELOG.md").text
         changelogType = "markdown"
-        gameVersionStrings = ["26.2", "NeoForge"]
+        gameVersionStrings = ["26.2", "NeoForge", "Server", "Client"]
         mainArtifact(jar) {
             it.displayName = "${mod_name} (NeoForge) - v${version} - ${minecraft_version}"
         }

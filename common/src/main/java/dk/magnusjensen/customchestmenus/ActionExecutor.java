@@ -37,8 +37,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -133,23 +136,38 @@ public final class ActionExecutor {
             return;
         }
 
+        for (ItemStack leftover : craftItems(player.getInventory(), action)) {
+            // If inventory is full, drop the item in the world
+            player.drop(leftover, false);
+        }
+    }
+
+    /**
+     * Consumes the inputs of the action from the inventory and hands out the outputs.
+     * <p>
+     * The caller is responsible for checking {@link CraftItemsAction#canCraft(Inventory)} first.
+     *
+     * @return the outputs that did not fit in the inventory, and therefore have to be dropped.
+     */
+    static List<ItemStack> craftItems(Inventory inventory, CraftItemsAction action) {
         // Map of inv. slot -> how many needs to be removed.
-        Map<Integer, Integer> slotToQuantity = action.getInputSlots(player);
+        Map<Integer, Integer> slotToQuantity = action.getInputSlots(inventory);
 
         // We can safely removeItems here, as the canCraft checks quantity and items being in the inventory.
         for (Map.Entry<Integer, Integer> entry : slotToQuantity.entrySet()) {
             // Remove the items from the inventory
-            player.getInventory().removeItem(entry.getKey(), entry.getValue());
+            inventory.removeItem(entry.getKey(), entry.getValue());
         }
 
         // Add the output items
+        List<ItemStack> leftovers = new ArrayList<>();
         for (BaseItem item : action.outputs()) {
             ItemStack toGive = item.makeItemStack();
-            if (!player.getInventory().add(toGive)) {
-                // If inventory is full, drop the item in the world
-                player.drop(toGive, false);
+            if (!inventory.add(toGive)) {
+                leftovers.add(toGive);
             }
         }
+        return leftovers;
     }
 }
 
