@@ -62,7 +62,7 @@ curseforge {
 
         changelog = rootProject.file("CHANGELOG.md").text
         changelogType = "markdown"
-        gameVersionStrings = ["1.21.1"]
+        gameVersionStrings = ["1.21.1", "Server", "Client"]
         mainArtifact(remapJar) {
             it.displayName = "${mod_name} (Fabric) - v${version} - ${minecraft_version}"
         }
