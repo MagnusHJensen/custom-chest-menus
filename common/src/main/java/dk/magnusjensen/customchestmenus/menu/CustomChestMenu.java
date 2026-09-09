@@ -99,13 +99,13 @@ public class CustomChestMenu extends AbstractContainerMenu {
 
     @Override
     public void clicked(int slotIndex, int buttonNum, ContainerInput containerInput, Player player) {
-        if (containerInput != ContainerInput.PICKUP) {
+        if (containerInput != ContainerInput.PICKUP && containerInput != ContainerInput.QUICK_MOVE) {
             // Block all non pickup interactions
             return;
         }
 
         if (slotIndex >= 0 && slotIndex < this.slotCount && player instanceof ServerPlayer sp) {
-            ActionExecutor.onClick(sp, customChestMenuId, this.pageIndex, slotIndex);
+            ActionExecutor.onClick(sp, customChestMenuId, this.pageIndex, slotIndex, containerInput == ContainerInput.QUICK_MOVE);
         }
     }
 

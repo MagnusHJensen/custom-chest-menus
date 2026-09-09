@@ -27,6 +27,8 @@ import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.world.entity.EntityEquipment;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import org.mockito.Mockito;
 
 public class TestUtils {
 
@@ -62,6 +64,7 @@ public class TestUtils {
      * talk back to the player (syncing, dropping, creative mode checks) is not.
      */
     public static Inventory emptyInventory() {
-        return new Inventory(null, new EntityEquipment());
+        Player player = Mockito.mock(Player.class);   // hasInfiniteMaterials() defaults to false
+        return new Inventory(player, new EntityEquipment());
     }
 }

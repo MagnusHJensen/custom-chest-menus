@@ -286,6 +286,11 @@
           "type": "boolean",
           "default": false,
           "description": "If true, the 'Craft Items' text will be hidden from the item lore."
+        },
+        "missing_input_message": {
+          "type": "array",
+          "minLength": 1,
+          "description": "A list of text components to display when the player is missing required input items. Supports placeholders, see GitHub README for more info."
         }
       },
       "required": [

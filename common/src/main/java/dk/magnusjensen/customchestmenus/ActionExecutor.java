@@ -18,6 +18,7 @@
 
 package dk.magnusjensen.customchestmenus;
 
+import dk.magnusjensen.customchestmenus.exception.CraftFailedException;
 import dk.magnusjensen.customchestmenus.menu.CustomChestMenu;
 import dk.magnusjensen.customchestmenus.models.BaseItem;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
@@ -47,7 +48,7 @@ import java.util.Set;
 
 public final class ActionExecutor {
 
-    public static void onClick(ServerPlayer player, String menuId, int pageIndex, int slot) {
+    public static void onClick(ServerPlayer player, String menuId, int pageIndex, int slot, boolean isShiftDown) {
         var menu = CustomChestMenuRegistry.get(menuId);
         if (menu == null) return;
         if (!inBounds(menu.size(), slot)) return;
@@ -76,7 +77,7 @@ public final class ActionExecutor {
             }
             case CRAFT_ITEMS -> {
                 CraftItemsAction action = (CraftItemsAction) item.action();
-                craftItems(player, action);
+                craftItems(player, action, isShiftDown);
             }
         }
 
@@ -129,29 +130,40 @@ public final class ActionExecutor {
 
     }
 
-    private static void craftItems(ServerPlayer player, CraftItemsAction action) {
-        if (!action.canCraft(player)) {
-            // TODO: Improve error message and display of error
-            player.sendSystemMessage(Component.literal("Can't craft, missing input items"));
-            return;
+    private static void craftItems(ServerPlayer player, CraftItemsAction action, boolean isShiftDown) {
+        try {
+            for (ItemStack leftover : craftItems(player.getInventory(), action, isShiftDown)) {
+                // If inventory is full, drop the item in the world
+                player.drop(leftover, false);
+            }
+        } catch (CraftFailedException e) {
+            // Keeps the component intact, so translatable item names stay client side.
+            player.sendSystemMessage(e.componentMessage());
+        } catch (RuntimeException e) {
+            player.sendSystemMessage(Component.literal(e.getMessage()));
+        } catch(Exception e) {
+            player.sendSystemMessage(Component.literal("An unexpected error occurred while crafting items."));
+            Constants.LOGGER.error("Unexpected error while crafting items for player {}: {}", player.getScoreboardName(), e.getMessage(), e);
         }
 
-        for (ItemStack leftover : craftItems(player.getInventory(), action)) {
-            // If inventory is full, drop the item in the world
-            player.drop(leftover, false);
-        }
     }
 
     /**
      * Consumes the inputs of the action from the inventory and hands out the outputs.
-     * <p>
-     * The caller is responsible for checking {@link CraftItemsAction#canCraft(Inventory)} first.
-     *
+     * Throws a {@link CraftFailedException} if the inventory does not have enough of the required inputs.
      * @return the outputs that did not fit in the inventory, and therefore have to be dropped.
      */
-    static List<ItemStack> craftItems(Inventory inventory, CraftItemsAction action) {
-        // Map of inv. slot -> how many needs to be removed.
-        Map<Integer, Integer> slotToQuantity = action.getInputSlots(inventory);
+    static List<ItemStack> craftItems(Inventory inventory, CraftItemsAction action, boolean craftAll) {
+        var requirements = action.requirements();
+        int maxCountOfCrafts = action.maxRepeats(inventory, requirements);
+        if (maxCountOfCrafts < 1) {
+            throw new CraftFailedException(action.firstShortfall(inventory, requirements)
+                .map(action::missingMessageFor)
+                .orElse(Component.literal("This item cannot be crafted.")));
+        }
+
+        int repeats = craftAll ? maxCountOfCrafts : 1;
+        var slotToQuantity = action.plan(inventory, requirements, repeats).orElseThrow();
 
         // We can safely removeItems here, as the canCraft checks quantity and items being in the inventory.
         for (Map.Entry<Integer, Integer> entry : slotToQuantity.entrySet()) {
@@ -162,11 +174,15 @@ public final class ActionExecutor {
         // Add the output items
         List<ItemStack> leftovers = new ArrayList<>();
         for (BaseItem item : action.outputs()) {
-            ItemStack toGive = item.makeItemStack();
-            if (!inventory.add(toGive)) {
-                leftovers.add(toGive);
-
+            for (int i = 0; i < repeats; i++) {
+                ItemStack toGive = item.makeItemStack();
+                if (!inventory.add(toGive)) {
+                    while (!toGive.isEmpty()) {
+                        leftovers.add(toGive.split(toGive.getMaxStackSize()));
+                    }
+                }
             }
+
         }
         return leftovers;
     }
