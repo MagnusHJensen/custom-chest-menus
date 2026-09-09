@@ -23,6 +23,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dk.magnusjensen.customchestmenus.models.BaseItem;
 
 import java.util.List;
+import java.util.Optional;
 
 public record CraftItemsActionV1(List<CraftItem> inputs, List<CraftItem> outputs) implements MenuAction {
 
@@ -45,6 +46,6 @@ public record CraftItemsActionV1(List<CraftItem> inputs, List<CraftItem> outputs
     public CraftItemsAction toUnified() {
         List<BaseItem> mappedInputs = this.inputs.stream().map(CraftItem::toBaseItem).toList();
         List<BaseItem> mappedOutputs = this.outputs.stream().map(CraftItem::toBaseItem).toList();
-        return new CraftItemsAction(mappedInputs, mappedOutputs, false);
+        return new CraftItemsAction(mappedInputs, mappedOutputs, false, Optional.empty());
     }
 }

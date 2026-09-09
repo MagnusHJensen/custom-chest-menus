@@ -84,7 +84,7 @@ public class MenuItem extends BaseItem {
     }
 
     private ItemStack makeCraftingItemStack(CraftItemsAction craftItemsAction, ItemStack stack) {
-        if (craftItemsAction.hideText()) {
+        if (craftItemsAction.hideDefaultText()) {
             return stack; // Don't add lore, and since we don't do anything else we exit early.
         }
 

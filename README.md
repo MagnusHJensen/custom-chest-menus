@@ -21,6 +21,11 @@ _If you aren't good with how to write JSON, you can use [this website](https://j
 - Currently supported actions:
     - Teleport to a location (also supports cross dimensions)
     - Craft Items
+      - Supported placeholders in `missing_input_message`:
+        - `%item%` - The missing item name.
+        - `%missing%` - The amount that is missing.
+        - `%required%` - The total amount that is required.
+        - `%available%` - The amount the player currently has.
     - Run a command/commands as player or server
         - Placeholders:
             - `%player%` will be replaced with the player's name.

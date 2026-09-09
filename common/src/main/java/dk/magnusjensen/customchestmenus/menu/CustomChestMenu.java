@@ -103,18 +103,14 @@ public class CustomChestMenu extends AbstractContainerMenu {
 
     @Override
     public void clicked(int slotId, int dragType, ClickType clickType, Player player) {
-        // Block all transfer-y click types outright
-        if (clickType == ClickType.QUICK_MOVE   // shift-click
-            || clickType == ClickType.SWAP         // number keys
-            || clickType == ClickType.THROW        // Q
-            || clickType == ClickType.QUICK_CRAFT  // drag paint
-            || clickType == ClickType.PICKUP_ALL   // double-click collect to cursor
-            || clickType == ClickType.CLONE) {     // middle click in creative
+        // Shift-click is not a transfer here, it is the craft all signal, so it is let through.
+        if (clickType != ClickType.PICKUP && clickType != ClickType.QUICK_MOVE) {
+            // Block all non pickup interactions
             return;
         }
 
         if (slotId >= 0 && slotId < this.slotCount && player instanceof ServerPlayer sp) {
-            ActionExecutor.onClick(sp, customChestMenuId, this.pageIndex, slotId); // your action resolver (next/prev/teleport/close)
+            ActionExecutor.onClick(sp, customChestMenuId, this.pageIndex, slotId, clickType == ClickType.QUICK_MOVE);
         }
         // Do NOT call super.clicked(...) or items will try to move.
     }
