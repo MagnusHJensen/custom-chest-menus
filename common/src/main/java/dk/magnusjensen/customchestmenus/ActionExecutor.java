@@ -38,6 +38,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
@@ -134,7 +135,7 @@ public final class ActionExecutor {
         try {
             for (ItemStack leftover : craftItems(player.getInventory(), action, isShiftDown)) {
                 // If inventory is full, drop the item in the world
-                player.drop(leftover, false);
+                player.drop(leftover, false, Prediction.SERVER_ONLY);
             }
         } catch (CraftFailedException e) {
             // Keeps the component intact, so translatable item names stay client side.
