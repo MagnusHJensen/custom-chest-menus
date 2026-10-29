@@ -39,7 +39,7 @@ class MenuDefinitionTest {
         // Parse using the codec
 
         var error = Assertions.assertThrows(IllegalArgumentException.class, () -> MenuDefinition.CODEC.decode(JsonOps.INSTANCE, json));
-        Assertions.assertEquals("No enum constant dk.magnusjensen.customchestmenus.models.MenuSize.9X3", error.getMessage());
+        Assertions.assertEquals("No enum constant dk.magnusjensen.customchestmenus.models.MenuSizeType.9X3", error.getMessage());
     }
 
     void testTooManyItemsPerPageThrows() {
