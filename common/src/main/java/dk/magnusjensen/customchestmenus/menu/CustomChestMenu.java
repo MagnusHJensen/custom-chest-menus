@@ -20,6 +20,7 @@ package dk.magnusjensen.customchestmenus.menu;
 
 import dk.magnusjensen.customchestmenus.ActionExecutor;
 import dk.magnusjensen.customchestmenus.models.*;
+import dk.magnusjensen.customchestmenus.models.v2.MenuSize;
 import dk.magnusjensen.customchestmenus.platform.Services;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -41,6 +42,8 @@ public class CustomChestMenu extends AbstractContainerMenu {
     private final String customChestMenuId;
     private int pageIndex;
     public final MenuBackground background;
+    public final MenuSize menuSize;
+    public final MenuLayout layout;
 
     // Client constructor
     public CustomChestMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf extraData) {
@@ -55,49 +58,45 @@ public class CustomChestMenu extends AbstractContainerMenu {
     public CustomChestMenu(int containerId, Inventory playerInventory, String customChestMenuId, PagePayload payload) {
         super(Services.REGISTRY.getCustomChestMenuType(), containerId);
 
-        this.slotCount = payload.size() == MenuSize.SINGLE ? 27 : 54;
+        this.slotCount = payload.size().slotCount();
         this.backing = new SimpleContainer(slotCount);
         this.customChestMenuId = customChestMenuId;
         this.background = payload.background();
+        this.menuSize = payload.size();
+        this.layout = MenuLayout.of(payload.size(), payload.background());
 
+        addGridSlots(backing, payload.size().getRows(), payload.size().getColumns());
 
-        addGridSlots(backing, this.getRowCount());
-
-        if (this.background.showPlayerInventory()) {
+        if (layout.showPlayerInventory()) {
             // Only add slots if we show player inventory
-            addPlayerInventoryLocked(playerInventory, this.getRowCount());
+            addPlayerInventoryLocked(playerInventory);
         }
     }
 
-    private void addGridSlots(Container container, int rows) {
-        // Vanilla chest layout: left margin 8px, top margin 18px, step 18px
+    private void addGridSlots(Container container, int rows, int columns) {
         for (int row = 0; row < rows; row++) {
-            for (int col = 0; col < 9; col++) {
-                int index = row * 9 + col;
-                int x = 8 + col * 18;
-                int y = 18 + row * 18;
-                addSlot(new LockedSlot(container, index, x, y));
+            for (int col = 0; col < columns; col++) {
+                int x = MenuLayout.SLOT_START + col * MenuLayout.SLOT;
+                int y = MenuLayout.GRID_Y + row * MenuLayout.SLOT;
+                addSlot(new LockedSlot(container, row * columns + col, x, y));
             }
         }
     }
 
     // Optional: show player inventory but keep it locked (coords match vanilla)
-    private void addPlayerInventoryLocked(Inventory inv, int gridRows) {
-        // Baseline is just below the chest rows with a small gap.
-        int baseY = 18 + gridRows * 18 + 13;   // 84 for 3 rows, ~140 for 6 rows
+    private void addPlayerInventoryLocked(Inventory inv) {
         // Main inventory (3 rows)
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
-                int x = 8 + col * 18;
-                int y = baseY + row * 18;
+                int x = MenuLayout.SLOT_START + col * MenuLayout.SLOT;
+                int y = layout.invY() + row * MenuLayout.SLOT;
                 addSlot(new LockedSlot(inv, col + row * 9 + 9, x, y));
             }
         }
         // Hotbar
-        int hotbarY = baseY + 58;              // 142-ish for 3 rows, 198-ish for 6 rows
         for (int col = 0; col < 9; ++col) {
-            int x = 8 + col * 18;
-            addSlot(new LockedSlot(inv, col, x, hotbarY));
+            int x = MenuLayout.SLOT_START + col * MenuLayout.SLOT;
+            addSlot(new LockedSlot(inv, col, x, layout.hotbarY()));
         }
     }
 
@@ -140,7 +139,7 @@ public class CustomChestMenu extends AbstractContainerMenu {
         this.pageIndex = Math.max(0, Math.min(pageIdx, pageCount - 1));
 
         // compute slot count for this menu
-        int slotCount = sizeFor(def.size()); // 27 for SINGLE, 54 for DOUBLE
+        int slotCount = def.size().slotCount();
 
         // 1) clear & (optionally) lay down filler
         this.backing.clearContent();
@@ -173,10 +172,6 @@ public class CustomChestMenu extends AbstractContainerMenu {
         return slot >= 0 && slot < slotCount;
     }
 
-    private static int sizeFor(MenuSize size) {
-        return (size == MenuSize.SINGLE) ? 27 : 54;
-    }
-
     private static final class LockedSlot extends Slot {
         LockedSlot(Container container, int index, int x, int y) { super(container, index, x, y); }
         @Override public boolean mayPlace(ItemStack stack) { return false; }
@@ -185,8 +180,6 @@ public class CustomChestMenu extends AbstractContainerMenu {
         @Override public boolean isActive() { return true; }                          // clickable area remains active
         @Override public boolean isHighlightable() { return false; }                  // prevent highlight flicker (1.21+)
     }
-
-    public int getRowCount() { return (this.slotCount == 27) ? 3 : 6; }
 
     public String menuId() { return this.customChestMenuId; }
 

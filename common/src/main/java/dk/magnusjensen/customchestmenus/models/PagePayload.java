@@ -18,6 +18,7 @@
 
 package dk.magnusjensen.customchestmenus.models;
 
+import dk.magnusjensen.customchestmenus.models.v2.MenuSize;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -38,7 +39,8 @@ public record PagePayload(
     public record Entry(int slot, ItemStack stack) {}
 
     public void write(RegistryFriendlyByteBuf buf) {
-        buf.writeEnum(size);
+        buf.writeVarInt(size.getRows());
+        buf.writeVarInt(size.getColumns());
         ComponentSerialization.STREAM_CODEC.encode(buf, title);
         MenuBackground.STREAM_CODEC.encode(buf, background);
 
@@ -51,7 +53,9 @@ public record PagePayload(
     }
 
     public static PagePayload read(RegistryFriendlyByteBuf buf) {
-        MenuSize size = buf.readEnum(MenuSize.class);
+        var rows = buf.readVarInt();
+        var columns = buf.readVarInt();
+        MenuSize size = new MenuSize(rows, columns);
         Component title = ComponentSerialization.STREAM_CODEC.decode(buf);
         MenuBackground background = MenuBackground.STREAM_CODEC.decode(buf);
         ItemStack filler = ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
@@ -74,10 +78,7 @@ public record PagePayload(
     );
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PagePayload> STREAM_CODEC = StreamCodec.composite(
-        ByteBufCodecs.STRING_UTF8.map(
-            s -> MenuSize.valueOf(s.toUpperCase()),
-            MenuSize::name
-        ), PagePayload::size,
+        MenuSize.STREAM_CODEC, PagePayload::size,
         ComponentSerialization.STREAM_CODEC, PagePayload::title,
         MenuBackground.STREAM_CODEC, PagePayload::background,
         ItemStack.OPTIONAL_STREAM_CODEC, PagePayload::filler,

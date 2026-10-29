@@ -25,6 +25,7 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import dk.magnusjensen.customchestmenus.models.v1.MenuDefinitionV1;
 import dk.magnusjensen.customchestmenus.models.v2.MenuDefinitionV2;
+import dk.magnusjensen.customchestmenus.models.v2.MenuSize;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 

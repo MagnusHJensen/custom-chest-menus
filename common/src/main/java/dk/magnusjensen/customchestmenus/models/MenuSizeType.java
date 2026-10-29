@@ -25,22 +25,24 @@ import java.util.Locale;
 /**
  * Enum describing the size of the menu based on chest size, either SINGLE (3 rows) or DOUBLE (6 rows).
  */
-public enum MenuSize {
-    SINGLE(27),
-    DOUBLE(54);
+public enum MenuSizeType {
+    SINGLE,
+    DOUBLE;
 
-    public static final Codec<MenuSize> CODEC = Codec.STRING.xmap(
-        s -> MenuSize.valueOf(s.toUpperCase(Locale.ROOT)),
-        MenuSize::name
+    public static final Codec<MenuSizeType> CODEC = Codec.STRING.xmap(
+        s -> MenuSizeType.valueOf(s.toUpperCase(Locale.ROOT)),
+        MenuSizeType::name
     );
 
-    private final int slots;
-    MenuSize(int slots) {
-        this.slots = slots;
+    private static final int SINGLE_ROWS = 3;
+    private static final int DOUBLE_ROWS = 6;
+    private static final int COLUMNS = 9;
+
+    public int getRows() {
+        return this == SINGLE ? SINGLE_ROWS : DOUBLE_ROWS;
     }
 
-    public int getSlots() {
-        return slots;
+    public int getColumns() {
+        return COLUMNS;
     }
-
 }

@@ -16,9 +16,27 @@
       "type": "string"
     },
     "size": {
-      "type": "string",
-      "enum": ["single", "double"],
-      "description": "Determines chest size: single (3 rows) or double (6 rows)"
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": ["single", "double"],
+          "description": "Determines chest size: single (3 rows) or double (6 rows)"
+        },
+        {
+          "type": "object",
+          "required": ["rows", "columns"],
+          "properties": {
+            "rows": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "columns": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      ]
     },
     "background": {
       "required": ["texture", "size", "show_player_inventory"],

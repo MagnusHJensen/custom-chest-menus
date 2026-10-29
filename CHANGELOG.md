@@ -1,2 +1,9 @@
-# 2.4.1 - 1.21.1
-- Fixed a bug that could crash the game from time to time due to initialization races.
+# 2.5.0 - 1.21.1
+- Added support for custom chest sizes.
+
+```json
+"size": {
+  "rows": 3,
+  "columns": 6
+}
+```
