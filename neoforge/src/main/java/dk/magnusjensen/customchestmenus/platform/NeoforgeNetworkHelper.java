@@ -52,9 +52,7 @@ public class NeoforgeNetworkHelper implements INetworkHelper {
             }
         };
 
-        player.openMenu(provider, buf -> {
-            buf.writeUtf(definition.id());
-            payload.write(buf);
-        });
+        player.openMenu(provider, buf ->
+            CustomChestMenu.Payload.STREAM_CODEC.encode(buf, new CustomChestMenu.Payload(definition.id(), payload)));
     }
 }

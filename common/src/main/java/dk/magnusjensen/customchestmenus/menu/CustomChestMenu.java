@@ -47,7 +47,7 @@ public class CustomChestMenu extends AbstractContainerMenu {
 
     // Client constructor
     public CustomChestMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf extraData) {
-        this(containerId, playerInventory, extraData.readUtf(), PagePayload.read(extraData));
+        this(containerId, playerInventory, Payload.STREAM_CODEC.decode(extraData));
     }
 
     public CustomChestMenu(int containerId, Inventory playerInventory, Payload extraData) {
