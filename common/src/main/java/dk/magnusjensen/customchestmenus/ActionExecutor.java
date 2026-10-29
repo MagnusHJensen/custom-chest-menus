@@ -22,11 +22,11 @@ import dk.magnusjensen.customchestmenus.exception.CraftFailedException;
 import dk.magnusjensen.customchestmenus.menu.CustomChestMenu;
 import dk.magnusjensen.customchestmenus.models.BaseItem;
 import dk.magnusjensen.customchestmenus.models.MenuDefinition;
-import dk.magnusjensen.customchestmenus.models.MenuSize;
 import dk.magnusjensen.customchestmenus.models.actions.CommandAction;
 import dk.magnusjensen.customchestmenus.models.actions.CraftItemsAction;
 import dk.magnusjensen.customchestmenus.models.actions.PageAction;
 import dk.magnusjensen.customchestmenus.models.actions.TeleportAction;
+import dk.magnusjensen.customchestmenus.models.v2.MenuSize;
 import dk.magnusjensen.customchestmenus.network.UpdateMenuTitleS2C;
 import dk.magnusjensen.customchestmenus.platform.Services;
 import dk.magnusjensen.customchestmenus.registry.CustomChestMenuRegistry;
@@ -111,7 +111,7 @@ public final class ActionExecutor {
     }
 
     private static boolean inBounds(MenuSize size, int slot) {
-        int max = size == MenuSize.SINGLE ? 27 : 54;
+        int max = size.slotCount();
         return slot >= 0 && slot < max;
     }
 

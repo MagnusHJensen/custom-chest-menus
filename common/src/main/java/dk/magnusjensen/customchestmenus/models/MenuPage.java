@@ -20,6 +20,7 @@ package dk.magnusjensen.customchestmenus.models;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dk.magnusjensen.customchestmenus.models.v2.MenuSize;
 import net.minecraft.network.chat.Component;
 
 import java.util.HashMap;
@@ -48,8 +49,8 @@ public record MenuPage(
         // Track if duplicate slots is used or out of bound slots
         var usedSlots = new HashMap<Integer, Boolean>();
         for (var menuItem : menuItems) {
-            if (menuItem.slot() < 0 || menuItem.slot() >= size.getSlots()) {
-                errors.append("Slot ").append(menuItem.slot()).append(" out of bounds (").append(0).append(", ").append(size.getSlots()).append(")\n");
+            if (menuItem.slot() < 0 || menuItem.slot() >= size.slotCount()) {
+                errors.append("Slot ").append(menuItem.slot()).append(" out of bounds (").append(0).append(", ").append(size.slotCount()).append(")\n");
             }
             if (usedSlots.getOrDefault(menuItem.slot(), false)) {
                 errors.append("Slot ").append(menuItem.slot()).append(" already used\n");

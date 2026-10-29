@@ -21,6 +21,7 @@ package dk.magnusjensen.customchestmenus.models.v1;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dk.magnusjensen.customchestmenus.models.*;
+import dk.magnusjensen.customchestmenus.models.v2.MenuSize;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +29,7 @@ import java.util.Optional;
 public record MenuDefinitionV1(int formatVersion,
                                String id,
                                String name,
-                               MenuSize size,
+                               MenuSizeType size,
                                Optional<MenuItemV1> filler,
                                List<MenuPageV1> pages) {
 
@@ -36,12 +37,13 @@ public record MenuDefinitionV1(int formatVersion,
         Codec.INT.fieldOf("format_version").forGetter(v -> v.formatVersion),
         Codec.STRING.fieldOf("id").forGetter(v -> v.id),
         Codec.STRING.fieldOf("name").forGetter(v -> v.name),
-        MenuSize.CODEC.fieldOf("size").forGetter(v -> v.size),
+        MenuSizeType.CODEC.fieldOf("size").forGetter(v -> v.size),
         MenuItemV1.CODEC.optionalFieldOf("filler").forGetter(v -> v.filler),
         MenuPageV1.CODEC.listOf().fieldOf("pages").forGetter(v -> v.pages)
     ).apply(instance, MenuDefinitionV1::new));
 
     public MenuDefinition toMenuDefinition() {
-        return new MenuDefinition(id, name, size, MenuBackground.DEFAULT, filler.map(MenuItemV1::toBaseItem), pages.stream().map(MenuPageV1::toMenuPage).toList());
+        var menuSize = new MenuSize(size.getRows(), size.getColumns(), true);
+        return new MenuDefinition(id, name, menuSize, MenuBackground.DEFAULT, filler.map(MenuItemV1::toBaseItem), pages.stream().map(MenuPageV1::toMenuPage).toList());
     }
 }

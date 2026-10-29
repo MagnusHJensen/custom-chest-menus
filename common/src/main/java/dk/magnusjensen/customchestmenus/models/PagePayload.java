@@ -18,6 +18,7 @@
 
 package dk.magnusjensen.customchestmenus.models;
 
+import dk.magnusjensen.customchestmenus.models.v2.MenuSize;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -25,45 +26,16 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public record PagePayload(
-    MenuSize size,                    // 27 or 54
+    MenuSize size,
     Component title,             // page title
     MenuBackground background,
     ItemStack filler,  // may be ItemStack.EMPTY
     List<Entry> entries          // explicit slot -> stack
 ) {
     public record Entry(int slot, ItemStack stack) {}
-
-    public void write(RegistryFriendlyByteBuf buf) {
-        buf.writeEnum(size);
-        ComponentSerialization.STREAM_CODEC.encode(buf, title);
-
-        MenuBackground.STREAM_CODEC.encode(buf, background);
-        ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, filler);
-        buf.writeVarInt(entries.size());
-        for (Entry e : entries) {
-            buf.writeVarInt(e.slot());
-            ItemStack.STREAM_CODEC.encode(buf, e.stack());
-        }
-    }
-
-    public static PagePayload read(RegistryFriendlyByteBuf buf) {
-        MenuSize size = buf.readEnum(MenuSize.class);
-        Component title = ComponentSerialization.STREAM_CODEC.decode(buf);
-        MenuBackground background = MenuBackground.STREAM_CODEC.decode(buf);
-        ItemStack filler = ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
-        int n = buf.readVarInt();
-        List<Entry> entries = new ArrayList<>(n);
-        for (int i = 0; i < n; i++) {
-            int slot = buf.readVarInt();
-            ItemStack stack = ItemStack.STREAM_CODEC.decode(buf);
-            entries.add(new Entry(slot, stack));
-        }
-        return new PagePayload(size, title, background, filler, entries);
-    }
 
     public static final StreamCodec<RegistryFriendlyByteBuf, Entry> ENTRY_STREAM_CODEC = StreamCodec.composite(
         ByteBufCodecs.VAR_INT,
@@ -74,10 +46,7 @@ public record PagePayload(
     );
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PagePayload> STREAM_CODEC = StreamCodec.composite(
-        ByteBufCodecs.STRING_UTF8.map(
-            s -> MenuSize.valueOf(s.toUpperCase()),
-            MenuSize::name
-        ), PagePayload::size,
+        MenuSize.STREAM_CODEC, PagePayload::size,
         ComponentSerialization.STREAM_CODEC, PagePayload::title,
         MenuBackground.STREAM_CODEC, PagePayload::background,
         ItemStack.OPTIONAL_STREAM_CODEC, PagePayload::filler,
